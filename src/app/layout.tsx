@@ -8,6 +8,7 @@ import { cn } from "@/lib/shadcn/utils";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
+import { BackNavigationFix } from "@/components/navigation/back-fix";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -58,8 +59,8 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: [{ url: "/assets/logo/favicon.ico", type: "image/x-icon" }],
-    shortcut: [{ url: "/assets/logo/favicon.ico", type: "image/x-icon" }],
+    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
+    shortcut: [{ url: "/favicon.ico", type: "image/x-icon" }],
   },
 };
 
@@ -87,7 +88,10 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          {children}
+          {/*<BackNavigationFix />*/}
+        </TooltipProvider>
         <Analytics />
         <Toaster />
       </body>
