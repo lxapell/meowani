@@ -15,7 +15,12 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { ChevronRightIcon, HomeIcon, ShuffleIcon } from "lucide-react";
+import {
+  ChevronRightIcon,
+  HomeIcon,
+  LibraryIcon,
+  ShuffleIcon,
+} from "lucide-react";
 import Link from "next/link";
 
 export function NavMain() {
@@ -27,6 +32,14 @@ export function NavMain() {
             <Link href="/">
               <HomeIcon />
               Home
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton tooltip="Library" asChild>
+            <Link href="/library">
+              <LibraryIcon />
+              Library
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
