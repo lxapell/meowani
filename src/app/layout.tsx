@@ -8,7 +8,6 @@ import { cn } from "@/lib/shadcn/utils";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
-import { BackNavigationFix } from "@/components/navigation/back-fix";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans" });
 
