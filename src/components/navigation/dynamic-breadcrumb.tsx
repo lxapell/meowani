@@ -18,6 +18,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function NavWithBreadcrumb({
   children,
@@ -30,8 +31,9 @@ export default function NavWithBreadcrumb({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      <SidebarInset className="md:bg-none md:bg-background/95 md:backdrop-blur-md md:border-b">
+        {/*<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">*/}
+        <header className="md:absolute md:top-0 md:left-0 md:right-0 md:z-10 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ms-1" />
             <Separator
@@ -41,7 +43,9 @@ export default function NavWithBreadcrumb({
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                  <BreadcrumbLink asChild>
+                    <Link href="/">Home</Link>
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
                 {segments.map((segment, index) => {
                   const href = `/${segments.slice(0, index + 1).join("/")}`;
@@ -59,7 +63,9 @@ export default function NavWithBreadcrumb({
                         </BreadcrumbItem>
                       ) : (
                         <BreadcrumbItem className="hidden md:block">
-                          <BreadcrumbLink href={href}>{label}</BreadcrumbLink>
+                          <BreadcrumbLink asChild>
+                            <Link href={href}>{label}</Link>
+                          </BreadcrumbLink>
                         </BreadcrumbItem>
                       )}
                     </React.Fragment>
