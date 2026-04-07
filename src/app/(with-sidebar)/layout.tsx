@@ -1,4 +1,4 @@
-import NavWithBreadcrumb from "@/components/navigation/dynamic-breadcrumb";
+import NavWithBreadcrumb from "./nav-with-breadcrumb";
 
 export default function SidebarLayout({
   children,

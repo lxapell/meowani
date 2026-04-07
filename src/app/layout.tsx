@@ -6,6 +6,7 @@ import { Geist, Geist_Mono, Montserrat, Sora } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/shadcn/utils";
 
+import { SerwistProvider } from "./serwist";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 
@@ -86,11 +87,14 @@ export default function RootLayout({
         "dark",
       )}
     >
+      <head />
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>
-          {children}
-          {/*<BackNavigationFix />*/}
-        </TooltipProvider>
+        <SerwistProvider swUrl="/serwist/sw.js">
+          <TooltipProvider>
+            {children}
+            {/*<BackNavigationFix />*/}
+          </TooltipProvider>
+        </SerwistProvider>
         <Analytics />
         <Toaster />
       </body>
