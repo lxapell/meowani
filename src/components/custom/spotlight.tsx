@@ -50,7 +50,7 @@ export function Spotlight({ items }: SpotlightProps) {
         {items.map((item: ISpotlight) => (
           <CarouselItem
             key={item.id}
-            className="rounded-none border-none pl-0 w-full relative"
+            className="rounded-none border-none pl-0 w-full max-w-full relative overflow-hidden"
           >
             <div className="w-full max-w-full">
               <Card className="rounded-none overflow-hidden p-0">

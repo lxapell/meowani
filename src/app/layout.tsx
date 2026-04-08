@@ -91,7 +91,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <SerwistProvider swUrl="/serwist/sw.js">
           <TooltipProvider>
-            {children}
+            <div className="min-h-svh h-svh overflow-x-hidden">{children}</div>
             {/*<BackNavigationFix />*/}
           </TooltipProvider>
         </SerwistProvider>
