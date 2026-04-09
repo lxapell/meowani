@@ -125,7 +125,7 @@ export function Spotlight({ items }: SpotlightProps) {
 
 export function SpotlightSkeleton() {
   return (
-    <Carousel className="">
+    <Carousel className="pb-4 md:pb-8">
       <CarouselContent className="-ml-1 border-none">
         <CarouselItem className="rounded-none border-none pl-0 w-full relative">
           <div className="w-full max-w-full">
