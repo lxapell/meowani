@@ -39,65 +39,67 @@ export function AnimeCards({ animes }: AnimeProps) {
           Trending Now
         </h2>
       </Label>
-      <CarouselContent className="relative group/scroll px-6 lg:px-12 gap-3">
-        {animes.map((anime) => {
-          const href = `/library/anime/${anime.id}`;
+      <div className="overflow-hidden w-full">
+        <CarouselContent className="relative group/scroll flex px-6 lg:px-12 gap-3">
+          {animes.map((anime) => {
+            const href = `/library/anime/${anime.id}`;
 
-          return (
-            <CarouselItem key={anime.id} className="w-auto! mr-3">
-              <div className="perspective-distant transform-3d">
-                <Link
-                  href={href}
-                  className="group relative shrink-0 block max-w-35 sm:max-w-40 md:max-w-[180px] transform-all duration-300 ease-out"
-                >
-                  <Card className="relative aspect-2/3 w-full overflow-hidden rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
-                    <Image
-                      src={anime.image}
-                      alt="slide"
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/40" />
-                    <div className="absolute inset-0 z-10 flex flex-col items-end justify-start p-2 gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <div className="inline-block transform-none">
-                        <div className="flex size-2 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 scale-75 group-hover:scale-100">
-                          <PlayIcon />
+            return (
+              <CarouselItem key={anime.id} className="min-w-0 basis-auto ps-4">
+                <div className="perspective-distant transform-3d">
+                  <Link
+                    href={href}
+                    className="group relative block min-w-0 w-full transform-all duration-300 ease-out max-w-35 sm:max-w-40 md:max-w-45 shrink-0"
+                  >
+                    <Card className="relative aspect-2/3 w-full overflow-hidden max-w-45 rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
+                      <Image
+                        src={anime.image}
+                        alt="slide"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/40" />
+                      <div className="absolute inset-0 z-10 flex flex-col items-end justify-start p-2 gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <div className="inline-block transform-none">
+                          <div className="flex size-2 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 scale-75 group-hover:scale-100">
+                            <PlayIcon />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-linear-to-t from-black/90 via-black/60 to-transparent p-3 pt-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <p className="line-clamp-3 text-[10px] leading-snug text-foreground/90">
+                      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-linear-to-t from-black/90 via-black/60 to-transparent p-3 pt-12 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <p className="line-clamp-3 text-[10px] leading-snug text-foreground/90">
+                          {anime.title}
+                        </p>
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          <Badge>Adventure</Badge>
+                          <Badge>Drama</Badge>
+                        </div>
+                      </div>
+                    </Card>
+                    <div className="mt-2.5 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex gap-1.5">
+                          <TvIcon className="size-3 text-muted-foreground" />
+                          <span className="text-[11px] font-medium text-muted-foreground">
+                            {anime.type}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge>{anime.status}</Badge>
+                        </div>
+                      </div>
+                      <h3 className="line-clamp-2 text-[13px] font-semibold leading-tight text-foreground/90 transition-colors duration-200 group-hover:text-foreground">
                         {anime.title}
-                      </p>
-                      <div className="mt-1.5 flex flex-wrap gap-1">
-                        <Badge>Adventure</Badge>
-                        <Badge>Drama</Badge>
-                      </div>
+                      </h3>
                     </div>
-                  </Card>
-                  <div className="mt-2.5 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-1.5">
-                        <TvIcon className="size-3 text-muted-foreground" />
-                        <span className="text-[11px] font-medium text-muted-foreground">
-                          {anime.type}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge>{anime.status}</Badge>
-                      </div>
-                    </div>
-                    <h3 className="line-clamp-2 text-[13px] font-semibold leading-tight text-foreground/90 transition-colors duration-200 group-hover:text-foreground">
-                      {anime.title}
-                    </h3>
-                  </div>
-                  {/* <AspectRatio className="rounded-lg bg-muted">bds</AspectRatio> */}
-                </Link>
-              </div>
-            </CarouselItem>
-          );
-        })}
-      </CarouselContent>
+                    {/* <AspectRatio className="rounded-lg bg-muted">bds</AspectRatio> */}
+                  </Link>
+                </div>
+              </CarouselItem>
+            );
+          })}
+        </CarouselContent>
+      </div>
       <CarouselPrevious className="static" />
       <CarouselNext className="static" />
     </Carousel>

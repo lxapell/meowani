@@ -29,17 +29,18 @@ interface AnimeProps {
 
 export function AnimeCards({ animes }: AnimeProps) {
   return (
-    <Carousel
-      opts={{ align: "start", dragFree: true }}
-      className="w-full max-x-[10rem] sm:max-w-xs"
-    >
+    <Carousel opts={{ align: "start", dragFree: true }} className="">
       <CarouselContent>
         {animes.map((anime) => {
           const href = `/library/anime/${anime.id}`;
 
           return (
-            <CarouselItem key={anime.id} className="basis-1/3 md:basis-1/5">
-              <Link href={href} className="p-1">
+            <CarouselItem
+              key={anime.id}
+              className="basis-1/3 md:basis-1/5"
+              asChild
+            >
+              <Link href={href} className="p-1 w-full max-w-full">
                 <Card>
                   <Image
                     src={anime.image}
