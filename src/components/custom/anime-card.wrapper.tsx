@@ -73,7 +73,9 @@ export function AnimeCards({ animes, label = "Trending Now" }: AnimeProps) {
                       </p>
                       <div className="mt-1.5 flex flex-wrap gap-1">
                         {anime.genre.map((genre) => (
-                          <Badge>{genre}</Badge>
+                          <Badge key={genre} className="">
+                            {genre}
+                          </Badge>
                         ))}
                       </div>
                     </div>
@@ -88,7 +90,10 @@ export function AnimeCards({ animes, label = "Trending Now" }: AnimeProps) {
                           {anime.type}
                         </span>
                       </div>
-                      <Badge variant="outline" className="text-[8px] h-4">
+                      <Badge
+                        variant="outline"
+                        className="bg-primary text-primary-foreground text-[8px] h-4"
+                      >
                         {anime.status}
                       </Badge>
                     </div>
@@ -101,7 +106,6 @@ export function AnimeCards({ animes, label = "Trending Now" }: AnimeProps) {
             );
           })}
         </CarouselContent>
-
         <div className="flex justify-end gap-2 px-6 lg:px-12 mt-4">
           <CarouselPrevious className="static translate-y-0" />
           <CarouselNext className="static translate-y-0" />

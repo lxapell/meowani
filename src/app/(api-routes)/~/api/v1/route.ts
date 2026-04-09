@@ -18,10 +18,18 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
   const method = searchParams.get("method");
+  const animeSeason = searchParams.get("season");
+  const seasonYear = searchParams.get("year");
 
   try {
     let query;
-    let variables = { perPage: 10, page: 1, id: id };
+    let variables = {
+      perPage: 10,
+      page: 1,
+      id: id,
+      season: animeSeason,
+      seasonYear,
+    };
     switch (method) {
       case "animeInfo":
         query = animeInfo;

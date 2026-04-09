@@ -3,7 +3,7 @@ import * as React from "react";
 import { SpotlightComponent } from "./spotlight";
 import { SpotlightSkeleton } from "@/components/custom/spotlight";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AnimeCardsComponent } from "./anime-card";
+import { TrendingComponent, SeasonalComponent } from "./anime-card";
 import { anilistRequest } from "@/lib/anilist/client";
 
 const test = [
@@ -17,13 +17,17 @@ const test = [
 
 export default function LibraryPage() {
   return (
-    <div className="min-w-0 flex flex-1 shrink w-full flex-col overflow-x-hidden gap-5">
+    <div className="min-w-0 flex flex-1 shrink flex-col overflow-x-hidden gap-5">
       <React.Suspense fallback={<SpotlightSkeleton />}>
         <SpotlightComponent />
       </React.Suspense>
       {/*<ScrollBar />*/}
       <React.Suspense fallback={<>vav</>}>
-        <AnimeCardsComponent />
+        <TrendingComponent />
+      </React.Suspense>
+
+      <React.Suspense fallback={<>jvd</>}>
+        <SeasonalComponent />
       </React.Suspense>
     </div>
   );

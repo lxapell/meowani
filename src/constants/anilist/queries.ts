@@ -161,8 +161,8 @@ export const popular = `
   }
 `;
 
-export const season = `
-  query($perPage: Int, $page: Int) {
+export const seasonal = `
+  query($perPage: Int, $page: Int, $season: MediaSeason, $seasonYear: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         total
@@ -171,7 +171,7 @@ export const season = `
         lastPage
         hasNextPage
       }
-      media(season: SPRING, seasonYear: 2024, sort: POPULARITY_DESC, type: ANIME) {
+      media(season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, type: ANIME) {
         id
         idMal
         title {
