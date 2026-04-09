@@ -2,18 +2,17 @@ import * as React from "react";
 
 import { SpotlightComponent } from "./spotlight";
 import { SpotlightSkeleton } from "@/components/custom/spotlight";
+import { EndOfContent } from "@/components/custom/end-of-content";
 import {
   AnimeCardsSkeleton,
   AnimeCardsEmpty,
 } from "@/components/custom/anime-card.wrapper";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   TrendingComponent,
   SeasonalComponent,
   PopularComponent,
   UpcomingComponent,
 } from "./anime-card";
-import { anilistRequest } from "@/lib/anilist/client";
 
 const test = [
   {
@@ -50,7 +49,7 @@ export default function LibraryPage() {
       <React.Suspense fallback={<AnimeCardsSkeleton label="Upcoming Anime" />}>
         <UpcomingComponent />
       </React.Suspense>
-
+      <EndOfContent className="my-8" />
       {/*<AnimeCardsEmpty label="TEST" />*/}
     </div>
   );

@@ -16,7 +16,7 @@ export async function SpotlightComponent() {
 
         return {
           ...item,
-          id: `${item.id.split("-").slice(0, -1).join("-")}-m${malID}_a${alID}`,
+          id: `${item.id.split("-").slice(0, -1).join("-")}-${alID}`,
         };
       }),
     );
