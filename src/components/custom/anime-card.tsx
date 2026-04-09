@@ -35,11 +35,7 @@ export function AnimeCards({ animes }: AnimeProps) {
           const href = `/library/anime/${anime.id}`;
 
           return (
-            <CarouselItem
-              key={anime.id}
-              className="basis-1/3 md:basis-1/5"
-              asChild
-            >
+            <CarouselItem key={anime.id} className="basis-1/3 md:basis-1/5">
               <Link href={href} className="p-1 w-full max-w-full">
                 <Card>
                   <Image

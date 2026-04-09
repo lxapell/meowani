@@ -17,7 +17,7 @@ const test = [
 
 export default function LibraryPage() {
   return (
-    <div className="min-w-0 flex flex-1 shrink w-full flex-col pt-0 overflow-x-hidden gap-5">
+    <div className="min-w-0 flex flex-1 shrink w-full flex-col overflow-x-hidden gap-5">
       <React.Suspense fallback={<SpotlightSkeleton />}>
         <SpotlightComponent />
       </React.Suspense>

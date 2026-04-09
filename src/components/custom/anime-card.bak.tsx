@@ -31,7 +31,7 @@ export function AnimeCards({ animes }: AnimeProps) {
   return (
     <Carousel
       opts={{ align: "start", dragFree: true }}
-      className="group/row w-full max-x-[12rem] relative flex-flex-col gap-4 py-4 md:py-8 transition-opacity duration-500 overflow-visible max-w-full"
+      className="group/row w-full relative flex flex-col gap-4 py-4 md:py-8 transition-opacity duration-500"
     >
       <Label className="flex items-center gap-3 px-6 lg:px-12 mb-2">
         <div className="h-6 w-0.75 rounded-full bg-foreground shadow-[0_0_12px_rgba(255,255,255,0.6)] md:h-8 md:w-1" />
@@ -40,16 +40,19 @@ export function AnimeCards({ animes }: AnimeProps) {
         </h2>
       </Label>
       <div className="overflow-hidden w-full">
-        <CarouselContent className="relative group/scroll flex px-6 lg:px-12 gap-3">
+        <CarouselContent className="min-w-0 -ml-4 px-6 lg:px-12">
           {animes.map((anime) => {
             const href = `/library/anime/${anime.id}`;
 
             return (
-              <CarouselItem key={anime.id} className="min-w-0 basis-auto ps-4">
+              <CarouselItem
+                key={anime.id}
+                className="basis-1/3 sm:basis-1/4 md:basis-1/5 pl-4"
+              >
                 <div className="perspective-distant transform-3d">
                   <Link
                     href={href}
-                    className="group relative block min-w-0 w-full transform-all duration-300 ease-out max-w-35 sm:max-w-40 md:max-w-45 shrink-0"
+                    className="group relative block min-w-0 transform-all duration-300 ease-out w-[140px] sm:w-[160px] md:w-[180px]"
                   >
                     <Card className="relative aspect-2/3 w-full overflow-hidden max-w-45 rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
                       <Image

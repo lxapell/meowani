@@ -1,4 +1,4 @@
-import { AnimeCards } from "@/components/custom/anime-card.bak";
+import { AnimeCards } from "@/components/custom/anime-card.grid";
 import { anilistRequest } from "@/lib/anilist/client";
 import { trending } from "@/constants/anilist/queries";
 
