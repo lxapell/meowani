@@ -9,7 +9,7 @@ import { anilistRequest } from "@/lib/anilist/client";
 import {
   animeInfo,
   top100anime,
-  season,
+  seasonal,
   popular,
   trending,
 } from "@/constants/anilist/queries";
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
         query = animeInfo;
         break;
       case "seasonal":
-        query = season;
+        query = seasonal;
         break;
       case "popular":
         query = popular;

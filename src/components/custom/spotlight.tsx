@@ -44,7 +44,7 @@ export function Spotlight({ items }: SpotlightProps) {
       }}
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
-      className=""
+      className="pb-4 md:pb-8"
     >
       <CarouselContent className="-ml-1 border-none">
         {items.map((item: ISpotlight) => (
