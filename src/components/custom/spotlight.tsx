@@ -61,7 +61,7 @@ export function Spotlight({ items }: SpotlightProps) {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/50 bg-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-background from-20% via-background/80 via-60% bg-transparent" />
                   <div className="absolute inset-0 bg-radial from-transparent via-transparent to-black/50" />
                 </div>
                 <div className="absolute inset-0 flex flex-col gap-4 justify-end max-h-auto pb-4 md:pb-10">
