@@ -1,7 +1,5 @@
-import {
-  AnimeCards,
-  AnimeCardsEmpty,
-} from "@/components/custom/anime-card.wrapper";
+import { AnimeCardsEmpty } from "@/components/custom/anime-card";
+import AnimeCardsClient from "@/components/custom/anime-card.wrapper";
 import { anilistRequest } from "@/lib/anilist/client";
 import { trending, seasonal, popular } from "@/constants/anilist/queries";
 import { AnimeSeason } from "@/utils/current-season";
@@ -25,7 +23,7 @@ export async function TrendingComponent() {
     });
     const mapped = map(raw.Page.media);
 
-    return <AnimeCards animes={mapped} />;
+    return <AnimeCardsClient animes={mapped} />;
   } catch (error) {
     console.error("[TrendingFetch] Error fetching trending:", error);
     return <AnimeCardsEmpty />;
@@ -46,7 +44,7 @@ export async function SeasonalComponent() {
     });
     const mapped = map(raw.Page.media);
 
-    return <AnimeCards animes={mapped} label={label} />;
+    return <AnimeCardsClient animes={mapped} label={label} />;
   } catch (error) {
     console.error("[SeasonalFetch] Error fetching seasonal:", error);
     return <AnimeCardsEmpty label={label} />;
@@ -64,7 +62,7 @@ export async function PopularComponent() {
     });
     const mapped = map(raw.Page.media);
 
-    return <AnimeCards animes={mapped} label={label} />;
+    return <AnimeCardsClient animes={mapped} label={label} />;
   } catch (error) {
     console.error("[PopularFetch] Error fetching popular:", error);
     return <AnimeCardsEmpty label={label} />;
@@ -85,7 +83,7 @@ export async function UpcomingComponent() {
     });
     const mapped = map(raw.Page.media);
 
-    return <AnimeCards animes={mapped} label={label} />;
+    return <AnimeCardsClient animes={mapped} label={label} />;
   } catch (error) {
     console.error("[UpcomingFetch] Error fetching upcoming:", error);
     return <AnimeCardsEmpty label={label} />;

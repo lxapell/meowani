@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/card";
 
 import { InfoIcon } from "lucide-react";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SpotlightProps {
   items: ISpotlight[];
@@ -44,7 +44,7 @@ export function Spotlight({ items }: SpotlightProps) {
       }}
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
-      className="pb-4 md:pb-8"
+      className="pb-4 md:pb-8 overflow-hidden aspect-video"
     >
       <CarouselContent className="-ml-1 border-none">
         {items.map((item: ISpotlight) => (

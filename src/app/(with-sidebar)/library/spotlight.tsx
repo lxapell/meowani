@@ -1,6 +1,6 @@
 import type { ISpotlight } from "@/types/library";
 
-import { Spotlight } from "@/components/custom/spotlight";
+import SpotlightClient from "@/components/custom/spotlight.wrapper";
 import { SOURCE_API } from "@/constants/api";
 
 export async function SpotlightComponent() {
@@ -21,7 +21,7 @@ export async function SpotlightComponent() {
       }),
     );
 
-    return <Spotlight items={formatted} />;
+    return <SpotlightClient items={formatted} />;
   } catch (error) {
     console.error("[SpotlightFormatter] Error processing spotlight", error);
     return <>Banana</>;
