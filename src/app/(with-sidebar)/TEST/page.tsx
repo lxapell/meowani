@@ -69,7 +69,7 @@ interface Value {
   name: string;
 }
 
-export function CatalogSearch() {
+export default function CatalogSearch() {
   const anchor = useComboboxAnchor();
   return (
     <>
@@ -467,7 +467,7 @@ export function CatalogSearch() {
           </ComboboxGroup>
         </CollapsibleContent>
       </Collapsible>
-      <div>TEST</div>
+      <div>hola</div>
     </>
   );
 }
