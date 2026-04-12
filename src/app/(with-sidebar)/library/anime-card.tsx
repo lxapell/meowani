@@ -3,6 +3,7 @@ import AnimeCardsClient from "@/components/custom/anime-card.wrapper";
 import { anilistRequest } from "@/lib/anilist/client";
 import { trending, seasonal, popular } from "@/constants/anilist/queries";
 import { AnimeSeason } from "@/utils/current-season";
+import { mapStatus } from "@/utils/mapper";
 
 interface IAnilistQuery {
   Page: {
@@ -21,7 +22,7 @@ export async function TrendingComponent() {
       page: 1,
       perPage: 10,
     });
-    const mapped = map(raw.Page.media);
+    const mapped = map(raw?.Page?.media);
 
     return <AnimeCardsClient animes={mapped} />;
   } catch (error) {
@@ -101,13 +102,14 @@ const map = (data: any[]) =>
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-|-$/g, "")}-${anime.id}`;
+    const status = mapStatus(anime.status);
     return {
       id,
       title: (anime.title.english || anime.title.romaji) as string,
       image: anime.coverImage.large as string,
       type: anime.format as string,
-      status: (anime.status[0].toUpperCase() +
-        anime.status.slice(1).toLowerCase()) as string,
+      status: (status[0].toUpperCase() +
+        status.slice(1).toLowerCase()) as string,
       genre: anime.genres as string[],
       episodes: anime.episodes as number,
     };

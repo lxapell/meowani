@@ -1,5 +1,7 @@
-export const trending = `
-  query($perPage: Int, $page: Int) {
+import gpl from "graphql-tag";
+
+export const trending = gpl`
+  query Trending($perPage: Int, $page: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         total
@@ -57,8 +59,8 @@ export const trending = `
   }
 `;
 
-export const top100anime = `
-  query($perPage: Int, $page: Int) {
+export const top100anime = gpl`
+  query Top100Anime($perPage: Int, $page: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         total
@@ -109,8 +111,8 @@ export const top100anime = `
   }
 `;
 
-export const popular = `
-  query($perPage: Int, $page: Int) {
+export const popular = gpl`
+  query Popular($perPage: Int, $page: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         total
@@ -161,8 +163,8 @@ export const popular = `
   }
 `;
 
-export const seasonal = `
-  query($perPage: Int, $page: Int, $season: MediaSeason, $seasonYear: Int) {
+export const seasonal = gpl`
+  query Seasonal($perPage: Int, $page: Int, $season: MediaSeason, $seasonYear: Int) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         total
@@ -213,8 +215,8 @@ export const seasonal = `
   }
 `;
 
-export const animeInfo = `
-  query($id: Int) {
+export const animeInfo = gpl`
+  query AnimeInfo($id: Int) {
     Media(id: $id) {
       id
       idMal
@@ -345,6 +347,148 @@ export const animeInfo = `
               }
             }
           }
+        }
+      }
+    }
+  }
+`;
+
+export const advancedsearch = gpl`
+  query AdvancedSearch(
+    $page: Int = 1,
+    $id: Int,
+    $studioId: Int,
+    $type: MediaType,
+    $search: String,
+    $format: [MediaFormat],
+    $status: MediaStatus,
+    $countryOfOrigin: CountryCode,
+    $source: MediaSource,
+    $season: MediaSeason,
+    $seasonYear: Int,
+    $year: String,
+    $onList: Boolean,
+    $episodesLesser: Int,
+    $episodesGreater: Int,
+    $durationLesser: Int,
+    $genres: [String],
+    $tags: [String],
+    $sort: [MediaSort] = [POPULARITY_DESC, SCORE_DESC]
+  ) {
+    Page(page: $page, perPage: 20) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
+      media(
+        id: $id,
+        studioId: $studioId,
+        type: $type,
+        season: $season,
+        format_in: $format,
+        status: $status,
+        countryOfOrigin: $countryOfOrigin,
+        source: $source,
+        search: $search,
+        onList: $onList,
+        seasonYear: $seasonYear,
+        startDate_like: $year,
+        episodes_lesser: $episodesLesser,
+        episodes_greater: $episodesGreater,
+        duration_lesser: $durationLesser,
+        genre_in: $genres,
+        tag_in: $tags,
+        sort: $sort
+      ) {
+        id
+        idMal
+        title {
+          english
+          romaji
+          native
+          userPreferred
+        }
+        coverImage {
+          extraLarge
+          large
+          color
+        }
+        bannerImage
+        startDate {
+          year
+          month
+          day
+        }
+        endDate {
+          year
+          month
+          day
+        }
+        season
+        seasonYear
+        description
+        type
+        format
+        status(version: 2)
+        episodes
+        duration
+        chapters
+        volumes
+        genres
+        isAdult
+        averageScore
+        popularity
+        nextAiringEpisode {
+          airingAt
+          timeUntilAiring
+          episode
+        }
+        mediaListEntry {
+          id
+          status
+        }
+      }
+    }
+  }
+`;
+
+export const schedule = gpl`
+  query AiringSchedule($page: Int, $perPage: Int, $from: Int, $to: Int) {
+    Page(page: $page, perPage: $perPage) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
+      airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
+        episode
+        timeUntilAiring
+        airingAt
+        media {
+          id
+          title {
+            english
+            romaji
+            native
+            userPreferred
+          }
+          description
+          coverImage {
+            extraLarge
+            large
+            color
+          }
+          bannerImage
+          format
+          status(version: 2)
+          episodes
+          type
+          genres
         }
       }
     }

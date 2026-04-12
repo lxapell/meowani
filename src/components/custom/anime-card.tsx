@@ -93,7 +93,7 @@ export function AnimeCards({ animes, label = "Trending Now" }: AnimeProps) {
                       </div>
                       <Badge
                         variant="outline"
-                        className="bg-primary text-primary-foreground text-[8px] h-4"
+                        className="bg-primary text-primary-foreground text-[8px] h-4 px-1.5"
                       >
                         {anime.status}
                       </Badge>

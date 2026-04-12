@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import gpl from "graphql-tag";
 
 import { anilistRequest } from "@/lib/anilist/client";
 import {
@@ -13,6 +14,27 @@ import {
   popular,
   trending,
 } from "@/constants/anilist/queries";
+
+const Tag = gpl`
+  query MediaTagCollection {
+    MediaTagCollection {
+      name
+      isAdult
+    }
+  }
+`;
+
+const Studio = gpl`
+   query($page: Int) {
+    Page(page: $page, perPage: 50) {
+      pageInfo { hasNextPage }
+      studios {
+        id
+        name
+      }
+    }
+  }
+`;
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -42,6 +64,15 @@ export async function GET(request: NextRequest) {
         break;
       case "trending":
         query = trending;
+        break;
+      case "genres":
+        query = "{ GenreCollection }";
+        break;
+      case "tags":
+        query = Tag;
+        break;
+      case "studios":
+        query = Studio;
         break;
       default:
         query = top100anime;

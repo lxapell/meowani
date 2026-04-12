@@ -25,11 +25,11 @@ export default function DynamicBreadcrumb() {
   return (
     <Breadcrumb>
       <BreadcrumbList className="">
-        <BreadcrumbItem className="hidden md:block">
+        {/*<BreadcrumbItem className="hidden md:block">
           <BreadcrumbLink asChild>
             <Link href="/">Home</Link>
           </BreadcrumbLink>
-        </BreadcrumbItem>
+        </BreadcrumbItem>*/}
         {filtered.map((segment, index) => {
           const isLast = index === filtered.length - 1;
           const animeIndex = segments.indexOf("anime");
@@ -49,7 +49,7 @@ export default function DynamicBreadcrumb() {
 
           const watchIndex = segments.indexOf("watch");
           if (watchIndex !== -1 && segment === segments[watchIndex + 1]) {
-            href = `/library/anime/${segment}`;
+            href = `/anime/${segment}`;
             try {
               const slug = new TitleSlug(segment);
               const { title } = slug.toTitle();
@@ -59,22 +59,24 @@ export default function DynamicBreadcrumb() {
 
           return (
             <React.Fragment key={href}>
-              <BreadcrumbSeparator className="hidden md:block" />
               {isLast ? (
                 <BreadcrumbItem className="max-w-[20ch]">
                   <BreadcrumbPage className="truncate">{label}</BreadcrumbPage>
                 </BreadcrumbItem>
               ) : (
-                <BreadcrumbItem className="hidden md:block max-w-[20ch]">
-                  <BreadcrumbLink
-                    className="max-w-[20ch] overflow-hidden"
-                    asChild
-                  >
-                    <Link className="line-clamp-1 text-wrap" href={href}>
-                      {label}
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
+                <>
+                  <BreadcrumbItem className="hidden md:block max-w-[20ch]">
+                    <BreadcrumbLink
+                      className="max-w-[20ch] overflow-hidden"
+                      asChild
+                    >
+                      <Link className="line-clamp-1 text-wrap" href={href}>
+                        {label}
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                </>
               )}
             </React.Fragment>
           );

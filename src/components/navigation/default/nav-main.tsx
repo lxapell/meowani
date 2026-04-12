@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import {
   ChevronRightIcon,
+  CompassIcon,
   HomeIcon,
   LibraryIcon,
   ShuffleIcon,
@@ -26,6 +27,7 @@ import Link from "next/link";
 export function NavMain() {
   return (
     <SidebarGroup>
+      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton tooltip="Home" asChild>
@@ -40,6 +42,14 @@ export function NavMain() {
             <Link href="/library">
               <LibraryIcon />
               Library
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton tooltip="Browse" asChild>
+            <Link href="/browse">
+              <CompassIcon />
+              Browse
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
