@@ -42,6 +42,8 @@ import {
   FieldLabel,
   FieldError,
 } from "@/components/ui/field";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { VirtualizedComboboxList } from "@/components/ui/virtualized-list";
 import {
   ChevronsUpDownIcon,
   SearchIcon,
@@ -90,62 +92,61 @@ function normalize(item: string | any, index: number): Normalized {
     value: "query" in item ? item.query : item.name,
   };
 }
+const data: Data[] = [
+  {
+    label: "Genres",
+    data: genreEnums.map((genre, index) => normalize(genre, index)),
+    type: "multiple",
+    defaultValue: [],
+  },
+  {
+    label: "Tags",
+    data: tagEnums
+      .filter((tag) => !tag.isAdult)
+      .map((tag, index) => normalize(tag, index)),
+    type: "multiple",
+    defaultValue: [],
+  },
+  {
+    label: "Formats",
+    data: formatEnums.map((format, index) => normalize(format, index)),
+    type: "multiple",
+    defaultValue: [],
+  },
+  {
+    label: "Year",
+    data: yearEnums.map((year, index) => normalize(year, index)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Season",
+    data: seasonEnums.map((season, index) => normalize(season, index)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Status",
+    data: statusEnums.map((status, index) => normalize(status, index)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Sort by",
+    data: sortEnums.map((sort, index) => normalize(sort, index)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Studio",
+    data: studioEnums.map((studio, index) => normalize(studio, index)),
+    type: "single",
+    defaultValue: null,
+  },
+];
 
 export function CatalogSearch() {
   const anchor = useComboboxAnchor();
-
-  const data: Data[] = [
-    {
-      label: "Genres",
-      data: genreEnums.map((genre, index) => normalize(genre, index)),
-      type: "multiple",
-      defaultValue: [],
-    },
-    {
-      label: "Tags",
-      data: tagEnums
-        .filter((tag) => !tag.isAdult)
-        .map((tag, index) => normalize(tag, index)),
-      type: "multiple",
-      defaultValue: [],
-    },
-    {
-      label: "Formats",
-      data: formatEnums.map((format, index) => normalize(format, index)),
-      type: "multiple",
-      defaultValue: [],
-    },
-    {
-      label: "Year",
-      data: yearEnums.map((year, index) => normalize(year, index)),
-      type: "single",
-      defaultValue: null,
-    },
-    {
-      label: "Season",
-      data: seasonEnums.map((season, index) => normalize(season, index)),
-      type: "single",
-      defaultValue: null,
-    },
-    {
-      label: "Status",
-      data: statusEnums.map((status, index) => normalize(status, index)),
-      type: "single",
-      defaultValue: null,
-    },
-    {
-      label: "Sort by",
-      data: sortEnums.map((sort, index) => normalize(sort, index)),
-      type: "single",
-      defaultValue: null,
-    },
-    {
-      label: "Studio",
-      data: studioEnums.map((studio, index) => normalize(studio, index)),
-      type: "single",
-      defaultValue: null,
-    },
-  ];
 
   const [values, setValues] = React.useState<SelectState>({});
 
@@ -192,58 +193,92 @@ export function CatalogSearch() {
         <CollapsibleContent>
           <ComboboxGroup className="grid grid-cols-2 md:grid-cols-6 gap-2">
             {data.map((data) => {
+              const virtualizerRef = React.useRef<ReturnType<
+                typeof useVirtualizer<HTMLDivElement, Element>
+              > | null>(null);
+              const virtualized =
+                data.label === "Tags" || data.label === "Studio";
+
               return (
-                <React.Fragment key={data.label}>
-                  <Combobox
-                    multiple={data.type === "multiple"}
-                    autoHighlight
-                    items={data.data}
-                    onValueChange={(value) => handleChange(data.label, value)}
-                    value={values[data.label] ?? data.defaultValue}
-                  >
-                    <div className="flex flex-col relative">
-                      <ComboboxLabel className="px-0 font-bold">
-                        {data.label}
-                      </ComboboxLabel>
-                      <ComboboxTrigger
-                        aria-placeholder={data.label}
-                        render={
-                          <Button
-                            variant="outline"
-                            className="justify-between font-normal"
-                          >
-                            <div className="w-full text-start truncate">
-                              <ComboboxValue placeholder="Any" />
-                            </div>
-                            <ChevronsUpDownIcon />
-                          </Button>
-                        }
-                      />
-                    </div>
-                    <ComboboxContent className="">
-                      <ComboboxInput
-                        showTrigger={false}
-                        placeholder="Search"
-                        showClear
-                        autoComplete="on"
-                      >
-                        <InputGroupAddon>
-                          <SearchIcon />
-                        </InputGroupAddon>
-                      </ComboboxInput>
-                      <ComboboxEmpty className="p-5">
-                        No results found.
-                      </ComboboxEmpty>
+                <Combobox
+                  key={data.label}
+                  virtualized={virtualized}
+                  multiple={data.type === "multiple"}
+                  autoHighlight
+                  items={data.data}
+                  onValueChange={(value) => handleChange(data.label, value)}
+                  value={values[data.label] ?? data.defaultValue}
+                  onItemHighlighted={(item, { reason, index }) => {
+                    const virtualizer = virtualizerRef.current;
+                    if (!item || !virtualizer) return;
+                    const isStart = index === 0;
+                    const isEnd = index === virtualizer.options.count - 1;
+                    const shouldScroll =
+                      reason === "none" ||
+                      (reason === "keyboard" && (isStart || isEnd));
+
+                    if (shouldScroll) {
+                      queueMicrotask(() => {
+                        virtualizer.scrollToIndex(index, {
+                          align: isEnd ? "start" : "end",
+                        });
+                      });
+                    }
+                  }}
+                >
+                  <div className="flex flex-col relative">
+                    <ComboboxLabel className="px-0 font-bold">
+                      {data.label}
+                    </ComboboxLabel>
+                    <ComboboxTrigger
+                      aria-placeholder={data.label}
+                      render={
+                        <Button
+                          variant="outline"
+                          className="justify-between font-normal"
+                        >
+                          <div className="w-full text-start truncate">
+                            <ComboboxValue placeholder="Any" />
+                          </div>
+                          <ChevronsUpDownIcon />
+                        </Button>
+                      }
+                    />
+                  </div>
+                  <ComboboxContent className="">
+                    <ComboboxInput
+                      showTrigger={false}
+                      placeholder="Search"
+                      showClear
+                      autoComplete="on"
+                    >
+                      <InputGroupAddon>
+                        <SearchIcon />
+                      </InputGroupAddon>
+                    </ComboboxInput>
+                    <ComboboxEmpty className="p-5">
+                      No results found.
+                    </ComboboxEmpty>
+                    {virtualized ? (
+                      <ComboboxList>
+                        <VirtualizedComboboxList
+                          overscan={5}
+                          virtualizerRef={virtualizerRef}
+                        />
+                      </ComboboxList>
+                    ) : (
                       <ComboboxList>
                         {(item: Normalized) => (
                           <ComboboxItem key={item.id} value={item}>
-                            {item.label}
+                            <div className="truncate line-clamp-1">
+                              {item.label}
+                            </div>
                           </ComboboxItem>
                         )}
                       </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                </React.Fragment>
+                    )}
+                  </ComboboxContent>
+                </Combobox>
               );
             })}
             <FieldGroup className="grid grid-cols-2 col-span-2 gap-2">
