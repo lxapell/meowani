@@ -3,9 +3,8 @@
 import * as React from "react";
 import { useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
 import { useDebouncedCallback } from "@/hooks/use-debounce";
+import { useInView } from "react-intersection-observer";
 
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
@@ -53,48 +52,22 @@ import {
   SearchIcon,
   SlidersVerticalIcon,
   Trash2Icon,
-  TvIcon,
-  PlayIcon,
 } from "lucide-react";
-import {
-  genreEnums,
-  tagEnums,
-  formatEnums,
-  seasonEnums,
-  statusEnums,
-  sortEnums,
-  studioEnums,
-  yearEnums,
-} from "@/constants/anilist/enums";
+import { initialFilters, staticCatalogData } from "@/constants/anilist/enums";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import type { FilterState, Normalized, PageData } from "@/types/catalog";
+import { filtersToURLParams } from "@/utils/catalog/helpers";
+import { fetchCatalog } from "@/app/(with-sidebar)/browse/actions";
+import { AnimeCard, AnimeCardSkeleton } from "./anime-card";
+import { Skeleton } from "../ui/skeleton";
 
-interface Normalized {
-  label: string;
-  value: string;
-}
 interface Data {
   label: string;
   data: Normalized[];
   type: "single" | "multiple";
   defaultValue: null | [];
-}
-type FilterState = Record<string, any>;
-
-interface PageData {
-  pageInfo: { hasNextPage: boolean };
-  media: {
-    id: string;
-    status: string;
-    image: string;
-    title: string;
-    genre: string[];
-    type: string;
-    episodes: number;
-  };
 }
 
 type CatalogContextValue = {
@@ -139,124 +112,88 @@ function CatalogProvider({
     <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
       setFilters((prev) => {
         const newFilters = { ...prev, [key]: value };
-        const params;
+        const params = filtersToURLParams(newFilters);
+        router.replace(`${pathname}?${params.toString()}`, undefined, {
+          scroll: false,
+        });
+        return newFilters;
       });
     },
+    [pathname, router],
+  );
+
+  const clearFilters = React.useCallback(() => {
+    setFilters(initialFilters);
+    router.replace(pathname);
+  }, [initialFilters, pathname, router]);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["catalog", filters],
+    queryFn: ({ pageParam }) =>
+      fetchCatalog({ pageParam: pageParam as number, filters }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.pageInfo.hasNextPage
+        ? lastPage.pageInfo.currentPage + 1
+        : undefined,
+    initialData: { pages: [initialData], pageParams: [1] },
+  });
+
+  const debouncedRefetch = useDebouncedCallback(() => {
+    refetch({ refetchPage: (_, index) => index === 0 });
+  }, 500);
+
+  React.useEffect(() => {
+    debouncedRefetch();
+  }, [filters, debouncedRefetch]);
+
+  const value = {
+    filters,
+    updateFilter,
+    clearFilters,
+    data,
+    isLoading,
+    isError,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  };
+
+  return (
+    <CatalogContext.Provider
+      style={style}
+      className={className}
+      value={value}
+      {...props}
+    >
+      {children}
+    </CatalogContext.Provider>
   );
 }
 
-function normalize(item: string | any): Normalized {
-  if (typeof item === "string") {
-    return { label: item, value: item };
-  }
-  return {
-    label: "normal" in item ? item.normal : item.name,
-    value: "query" in item ? item.query : item.name,
-  };
-}
-const data: Data[] = [
-  {
-    label: "Genres",
-    data: genreEnums.map((genre, index) => normalize(genre)),
-    type: "multiple",
-    defaultValue: [],
-  },
-  {
-    label: "Tags",
-    data: tagEnums
-      .filter((tag) => !tag.isAdult)
-      .map((tag, index) => normalize(tag)),
-    type: "multiple",
-    defaultValue: [],
-  },
-  {
-    label: "Formats",
-    data: formatEnums.map((format, index) => normalize(format)),
-    type: "multiple",
-    defaultValue: [],
-  },
-  {
-    label: "Year",
-    data: yearEnums.map((year, index) => normalize(year)),
-    type: "single",
-    defaultValue: null,
-  },
-  {
-    label: "Season",
-    data: seasonEnums.map((season, index) => normalize(season)),
-    type: "single",
-    defaultValue: null,
-  },
-  {
-    label: "Status",
-    data: statusEnums.map((status, index) => normalize(status)),
-    type: "single",
-    defaultValue: null,
-  },
-  {
-    label: "Sort by",
-    data: sortEnums.map((sort, index) => normalize(sort)),
-    type: "single",
-    defaultValue: null,
-  },
-  {
-    label: "Studio",
-    data: studioEnums.map((studio, index) => normalize(studio)),
-    type: "single",
-    defaultValue: null,
-  },
-];
-
-const initialFilters: FilterState = {
-  Genres: [],
-  Tags: [],
-  Formats: [],
-  Year: null,
-  Season: null,
-  Status: null,
-  "Sort by": null,
-  Studio: null,
-  Query: "",
-  "Min Duration": "",
-  "Max Duration": "",
-  "Min Episodes": "1",
-  "Max Episodes": "",
-};
-
-export function CatalogSearch() {
-  const anchor = useComboboxAnchor();
-  const [filters, setFilters] = React.useState<FilterState>(initialFilters);
-
-  const updateFilter = <K extends keyof FilterState>(
-    key: K,
-    value: FilterState[K],
-  ) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
+function CatalogSearch() {
+  const { filters, updateFilter, clearFilters } = useCatalog();
 
   const handleChange = (key: string, value: any) => {
-    updateFilter(key as keyof FilterState, value);
+    debouncedInputUpdate(value, key);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    updateFilter(name as keyof FilterState, value);
+    debouncedInputUpdate(value, name);
   };
 
-  const handleClearAll = () => {
-    setFilters(initialFilters);
-  };
-
-  const debouncedFetch = useDebouncedCallback((currentFilters: FilterState) => {
-    console.log("[DebounceTest] Fetching:", currentFilters);
+  const debouncedInputUpdate = useDebouncedCallback((value, key) => {
+    updateFilter(key as keyof FilterState, value);
   }, 500);
-
-  React.useEffect(() => {
-    debouncedFetch(filters);
-  }, [filters, debouncedFetch]);
 
   return (
     <>
@@ -285,7 +222,7 @@ export function CatalogSearch() {
                   <SlidersVerticalIcon />
                 </Button>
               </CollapsibleTrigger>
-              <Button className="md:size-10" onClick={handleClearAll}>
+              <Button className="md:size-10" onClick={clearFilters}>
                 <Trash2Icon />
               </Button>
             </div>
@@ -293,7 +230,7 @@ export function CatalogSearch() {
         </ButtonGroup>
         <CollapsibleContent>
           <ComboboxGroup className="grid grid-cols-2 md:grid-cols-6 gap-2">
-            {data.map((data) => {
+            {staticCatalogData.map((data) => {
               const virtualizerRef = React.useRef<ReturnType<
                 typeof useVirtualizer<HTMLDivElement, Element>
               > | null>(null);
@@ -308,7 +245,10 @@ export function CatalogSearch() {
                   autoHighlight
                   items={data.data}
                   onValueChange={(value) => handleChange(data.label, value)}
-                  value={filters[data.label] ?? data.defaultValue}
+                  value={
+                    filters[data.label as keyof FilterState] ??
+                    data.defaultValue
+                  }
                   onItemHighlighted={(item, { reason, index }) => {
                     const virtualizer = virtualizerRef.current;
                     if (!item || !virtualizer) return;
@@ -457,72 +397,74 @@ export function CatalogSearch() {
           </ComboboxGroup>
         </CollapsibleContent>
       </Collapsible>
-      <div className="space-y-6">
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-5 pt-5">
-          {Array.from({ length: 24 }).map((_, index) => {
-            return (
-              <React.Fragment key={index}>
-                <Link href="/" className="group relative block w-full">
-                  <Card className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
-                    <Image
-                      src="https://s4.anilist.co/file/anilistcdn/media/anime/banner/184951-Rx1mZZfKa9IU.jpg"
-                      alt="Card"
-                      fill
-                      sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/40" />
-
-                    {/*Play Button*/}
-                    <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 scale-75 group-hover:scale-100">
-                        <PlayIcon />
-                      </div>
-                    </div>
-
-                    {/* Hover Info */}
-                    <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-linear-to-t from black/90 via-black/60 to-transparent p-3 pt-16 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <p className="line-clamp-2 text-xs leading-snug text-white/90">
-                        {index + 1}
-                      </p>
-                      <div className="mt-1.5 flex flex-wrap gap-1">
-                        {Array.from({ length: 3 }).map((_, genre) => (
-                          <Badge key={genre} className="">
-                            {genre + 1}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Info Below */}
-                  <div className="mt-2 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <TvIcon className="size-3 text-muted-foreground" />
-                        <span className="text-[10px] text-muted-foreground">
-                          TV
-                        </span>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className="bg-primary text-primary-foreground text-[8px] h-4 px-1.5"
-                      >
-                        Ongoing
-                      </Badge>
-                    </div>
-                    <h3 className="line-clamp-2 text-xs font-semibold text-foreground/90 group-hover:text-foreground">
-                      {index + 1}
-                    </h3>
-                  </div>
-                </Link>
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </div>
     </>
   );
 }
 
-export function CatalogResult();
+function CatalogResult() {
+  const {
+    data,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isError,
+    isFetchingNextPage,
+  } = useCatalog();
+  const { ref, inView } = useInView();
+
+  React.useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-5 pt-5">
+        {Array.from({ length: 24 }).map((_, index) => (
+          <AnimeCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-center py-10 text-destructive">
+        Failed to load catalog
+      </div>
+    );
+  }
+
+  const medias = data?.pages.flatMap((page) => page.media) ?? [];
+
+  if (medias.length === 0) {
+    return (
+      <div className="text-center py-10 text-muted-foreground">
+        No results found.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-5 pt-5">
+        {medias.map((media) => {
+          const href = `/library/anime/${media.id}`;
+          return <AnimeCard key={media.id} href={href} anime={media} />;
+        })}
+      </div>
+      <div ref={ref} className="flex justify-center py-4">
+        {isFetchingNextPage && (
+          <div className="flex gap-2">
+            <Skeleton className="size-8 rounded-full" />
+            <Skeleton className="size-8 rounded-full" />
+            <Skeleton className="size-8 rounded-full" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export { CatalogProvider, CatalogSearch, CatalogResult, useCatalog };

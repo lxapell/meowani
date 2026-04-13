@@ -357,7 +357,6 @@ export const advancedsearch = gpl`
   query AdvancedSearch(
     $page: Int = 1,
     $id: Int,
-    $studioId: Int,
     $type: MediaType,
     $search: String,
     $format: [MediaFormat],
@@ -376,7 +375,7 @@ export const advancedsearch = gpl`
     $tags: [String],
     $sort: [MediaSort] = [POPULARITY_DESC, SCORE_DESC]
   ) {
-    Page(page: $page, perPage: 20) {
+    Page(page: $page, perPage: 24) {
       pageInfo {
         total
         perPage
@@ -386,7 +385,6 @@ export const advancedsearch = gpl`
       }
       media(
         id: $id,
-        studioId: $studioId,
         type: $type,
         season: $season,
         format_in: $format,

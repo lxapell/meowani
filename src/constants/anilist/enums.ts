@@ -1,4 +1,6 @@
 import { MediaStatus } from "@/types/anilist-types";
+import { FilterState } from "@/types/catalog";
+import { normalize } from "@/utils/catalog/helpers";
 
 export const statusEnums = [
   { normal: "Cancelled", query: "CANCELLED" },
@@ -1518,7 +1520,7 @@ for (let y = start; y >= end; y--) {
 }
 export const yearEnums = years.map(String);
 
-export const staticCatalogData: Data[] = [
+export const staticCatalogData = [
   {
     label: "Genres",
     data: genreEnums.map((genre, index) => normalize(genre)),
@@ -1569,4 +1571,19 @@ export const staticCatalogData: Data[] = [
     type: "single",
     defaultValue: null,
   },
-] as const;
+];
+export const initialFilters: FilterState = {
+  Genres: [],
+  Tags: [],
+  Formats: [],
+  Year: null,
+  Season: null,
+  Status: null,
+  "Sort by": null,
+  Studio: null,
+  Query: "",
+  "Min Duration": "",
+  "Max Duration": "",
+  "Min Episodes": "1",
+  "Max Episodes": "",
+};

@@ -18,3 +18,21 @@ export interface FilterState {
   "Min Episodes": string;
   "Max Episodes": string;
 }
+
+export interface PageData {
+  pageInfo: {
+    total: number;
+    currentPage: number;
+    lastPage: number;
+    hasNextPage: boolean;
+  };
+  media: {
+    id: string;
+    status: string;
+    image: string;
+    title: string;
+    genre: string[];
+    type: string;
+    episodes: number;
+  };
+}

@@ -20,7 +20,7 @@ interface AnimeCardProps extends React.ComponentPropsWithRef<typeof Link> {
     type: string;
     episodes?: number;
   };
-  className: string;
+  className?: string;
 }
 
 export function AnimeCard({ anime, className, ...props }: AnimeCardProps) {
