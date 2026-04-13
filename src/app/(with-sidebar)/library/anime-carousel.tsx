@@ -1,5 +1,5 @@
-import { AnimeCardsEmpty } from "@/components/custom/anime-card";
-import AnimeCardsClient from "@/components/custom/anime-card.wrapper";
+import { AnimeCardsEmpty } from "@/components/custom/anime-carousel";
+import AnimeCardsClient from "@/components/custom/anime-carousel.wrapper";
 import { anilistRequest } from "@/lib/anilist/client";
 import { trending, seasonal, popular } from "@/constants/anilist/queries";
 import { AnimeSeason } from "@/utils/current-season";

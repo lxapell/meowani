@@ -6,13 +6,13 @@ import { EndOfContent } from "@/components/custom/end-of-content";
 import {
   AnimeCardsSkeleton,
   AnimeCardsEmpty,
-} from "@/components/custom/anime-card";
+} from "@/components/custom/anime-carousel";
 import {
   TrendingComponent,
   SeasonalComponent,
   PopularComponent,
   UpcomingComponent,
-} from "./anime-card";
+} from "./anime-carousel";
 
 const test = [
   {

@@ -371,6 +371,7 @@ export const advancedsearch = gpl`
     $episodesLesser: Int,
     $episodesGreater: Int,
     $durationLesser: Int,
+    $durationGreater: Int,
     $genres: [String],
     $tags: [String],
     $sort: [MediaSort] = [POPULARITY_DESC, SCORE_DESC]
@@ -399,6 +400,7 @@ export const advancedsearch = gpl`
         episodes_lesser: $episodesLesser,
         episodes_greater: $episodesGreater,
         duration_lesser: $durationLesser,
+        duration_greater: $durationGreater,
         genre_in: $genres,
         tag_in: $tags,
         sort: $sort

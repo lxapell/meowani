@@ -1517,3 +1517,56 @@ for (let y = start; y >= end; y--) {
   years.push(y);
 }
 export const yearEnums = years.map(String);
+
+export const staticCatalogData: Data[] = [
+  {
+    label: "Genres",
+    data: genreEnums.map((genre, index) => normalize(genre)),
+    type: "multiple",
+    defaultValue: [],
+  },
+  {
+    label: "Tags",
+    data: tagEnums
+      .filter((tag) => !tag.isAdult)
+      .map((tag, index) => normalize(tag)),
+    type: "multiple",
+    defaultValue: [],
+  },
+  {
+    label: "Formats",
+    data: formatEnums.map((format, index) => normalize(format)),
+    type: "multiple",
+    defaultValue: [],
+  },
+  {
+    label: "Year",
+    data: yearEnums.map((year, index) => normalize(year)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Season",
+    data: seasonEnums.map((season, index) => normalize(season)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Status",
+    data: statusEnums.map((status, index) => normalize(status)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Sort by",
+    data: sortEnums.map((sort, index) => normalize(sort)),
+    type: "single",
+    defaultValue: null,
+  },
+  {
+    label: "Studio",
+    data: studioEnums.map((studio, index) => normalize(studio)),
+    type: "single",
+    defaultValue: null,
+  },
+] as const;

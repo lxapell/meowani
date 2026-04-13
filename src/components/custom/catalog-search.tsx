@@ -1,7 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
+import { useDebouncedCallback } from "@/hooks/use-debounce";
 
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
@@ -49,8 +53,9 @@ import {
   SearchIcon,
   SlidersVerticalIcon,
   Trash2Icon,
+  TvIcon,
+  PlayIcon,
 } from "lucide-react";
-
 import {
   genreEnums,
   tagEnums,
@@ -62,15 +67,12 @@ import {
   yearEnums,
 } from "@/constants/anilist/enums";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 
-interface Value {
-  normal: string;
-  query: string;
-  id: number;
-  name: string;
-}
 interface Normalized {
-  id: number;
   label: string;
   value: string;
 }
@@ -80,14 +82,74 @@ interface Data {
   type: "single" | "multiple";
   defaultValue: null | [];
 }
-type SelectState = Record<string, any>;
+type FilterState = Record<string, any>;
 
-function normalize(item: string | any, index: number): Normalized {
+interface PageData {
+  pageInfo: { hasNextPage: boolean };
+  media: {
+    id: string;
+    status: string;
+    image: string;
+    title: string;
+    genre: string[];
+    type: string;
+    episodes: number;
+  };
+}
+
+type CatalogContextValue = {
+  filters: FilterState;
+  updateFilter: <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K],
+  ) => void;
+  clearFilters: () => void;
+  data: InfiniteData<PageData> | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  hasNextPage: () => void;
+  isFetchingNextPage: boolean;
+};
+
+const CatalogContext = React.createContext<CatalogContextValue | null>(null);
+
+function useCatalog() {
+  const ctx = React.useContext(CatalogContext);
+  if (!ctx) throw new Error("useCatalog must be used within CatalogProvider");
+  return ctx;
+}
+
+function CatalogProvider({
+  initialData,
+  initialFilters: initialFiltersProps,
+  className,
+  style,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  initialData: PageData;
+  initialFilters: FilterState;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [filters, setFilters] =
+    React.useState<FilterState>(initialFiltersProps);
+
+  const updateFilter = React.useCallback(
+    <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
+      setFilters((prev) => {
+        const newFilters = { ...prev, [key]: value };
+        const params;
+      });
+    },
+  );
+}
+
+function normalize(item: string | any): Normalized {
   if (typeof item === "string") {
-    return { id: index + 1, label: item, value: item };
+    return { label: item, value: item };
   }
   return {
-    id: "id" in item ? item.id : index + 1,
     label: "normal" in item ? item.normal : item.name,
     value: "query" in item ? item.query : item.name,
   };
@@ -95,7 +157,7 @@ function normalize(item: string | any, index: number): Normalized {
 const data: Data[] = [
   {
     label: "Genres",
-    data: genreEnums.map((genre, index) => normalize(genre, index)),
+    data: genreEnums.map((genre, index) => normalize(genre)),
     type: "multiple",
     defaultValue: [],
   },
@@ -103,64 +165,98 @@ const data: Data[] = [
     label: "Tags",
     data: tagEnums
       .filter((tag) => !tag.isAdult)
-      .map((tag, index) => normalize(tag, index)),
+      .map((tag, index) => normalize(tag)),
     type: "multiple",
     defaultValue: [],
   },
   {
     label: "Formats",
-    data: formatEnums.map((format, index) => normalize(format, index)),
+    data: formatEnums.map((format, index) => normalize(format)),
     type: "multiple",
     defaultValue: [],
   },
   {
     label: "Year",
-    data: yearEnums.map((year, index) => normalize(year, index)),
+    data: yearEnums.map((year, index) => normalize(year)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Season",
-    data: seasonEnums.map((season, index) => normalize(season, index)),
+    data: seasonEnums.map((season, index) => normalize(season)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Status",
-    data: statusEnums.map((status, index) => normalize(status, index)),
+    data: statusEnums.map((status, index) => normalize(status)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Sort by",
-    data: sortEnums.map((sort, index) => normalize(sort, index)),
+    data: sortEnums.map((sort, index) => normalize(sort)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Studio",
-    data: studioEnums.map((studio, index) => normalize(studio, index)),
+    data: studioEnums.map((studio, index) => normalize(studio)),
     type: "single",
     defaultValue: null,
   },
 ];
 
+const initialFilters: FilterState = {
+  Genres: [],
+  Tags: [],
+  Formats: [],
+  Year: null,
+  Season: null,
+  Status: null,
+  "Sort by": null,
+  Studio: null,
+  Query: "",
+  "Min Duration": "",
+  "Max Duration": "",
+  "Min Episodes": "1",
+  "Max Episodes": "",
+};
+
 export function CatalogSearch() {
   const anchor = useComboboxAnchor();
+  const [filters, setFilters] = React.useState<FilterState>(initialFilters);
 
-  const [values, setValues] = React.useState<SelectState>({});
-
-  const handleChange = (key: string, selected: any) => {
-    setValues((prev) => ({
+  const updateFilter = <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K],
+  ) => {
+    setFilters((prev) => ({
       ...prev,
-      [key]: selected,
+      [key]: value,
     }));
   };
 
+  const handleChange = (key: string, value: any) => {
+    updateFilter(key as keyof FilterState, value);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    updateFilter(name as keyof FilterState, value);
+  };
+
+  const handleClearAll = () => {
+    setFilters(initialFilters);
+  };
+
+  const debouncedFetch = useDebouncedCallback((currentFilters: FilterState) => {
+    console.log("[DebounceTest] Fetching:", currentFilters);
+  }, 500);
+
   React.useEffect(() => {
-    console.log("Value changed:", values);
-    console.log("Value for Format:", values["Formats"]);
-  }, [values]);
+    debouncedFetch(filters);
+  }, [filters, debouncedFetch]);
 
   return (
     <>
@@ -172,7 +268,12 @@ export function CatalogSearch() {
           <div className="flex w-full gap-2">
             <ButtonGroup className="flex flex-1">
               <InputGroup className="md:h-10 relative flex w-full">
-                <InputGroupInput placeholder="Search for anime, movies..." />
+                <InputGroupInput
+                  name="Query"
+                  value={filters.Query}
+                  onChange={handleInputChange}
+                  placeholder="Search for anime, movies..."
+                />
                 <InputGroupAddon align="inline-start">
                   <SearchIcon />
                 </InputGroupAddon>
@@ -184,7 +285,7 @@ export function CatalogSearch() {
                   <SlidersVerticalIcon />
                 </Button>
               </CollapsibleTrigger>
-              <Button className="md:size-10">
+              <Button className="md:size-10" onClick={handleClearAll}>
                 <Trash2Icon />
               </Button>
             </div>
@@ -207,7 +308,7 @@ export function CatalogSearch() {
                   autoHighlight
                   items={data.data}
                   onValueChange={(value) => handleChange(data.label, value)}
-                  value={values[data.label] ?? data.defaultValue}
+                  value={filters[data.label] ?? data.defaultValue}
                   onItemHighlighted={(item, { reason, index }) => {
                     const virtualizer = virtualizerRef.current;
                     if (!item || !virtualizer) return;
@@ -269,7 +370,7 @@ export function CatalogSearch() {
                     ) : (
                       <ComboboxList>
                         {(item: Normalized) => (
-                          <ComboboxItem key={item.id} value={item}>
+                          <ComboboxItem key={item.value} value={item}>
                             <div className="truncate line-clamp-1">
                               {item.label}
                             </div>
@@ -289,7 +390,15 @@ export function CatalogSearch() {
                 >
                   Min duration
                 </FieldLabel>
-                <Input id="min-duration" type="number" placeholder="0" />
+                <Input
+                  name="Min Duration"
+                  value={filters["Min Duration"]}
+                  onChange={handleInputChange}
+                  min={0}
+                  id="min-duration"
+                  type="number"
+                  placeholder="0"
+                />
               </Field>
               <Field className="gap-0">
                 <FieldLabel
@@ -298,7 +407,15 @@ export function CatalogSearch() {
                 >
                   Max duration
                 </FieldLabel>
-                <Input id="max-duration" type="number" placeholder="Any" />
+                <Input
+                  name="Max Duration"
+                  value={filters["Max Duration"]}
+                  onChange={handleInputChange}
+                  min={0}
+                  id="max-duration"
+                  type="number"
+                  placeholder="Any"
+                />
               </Field>
             </FieldGroup>
             <FieldGroup className="grid grid-cols-2 col-span-2 gap-2">
@@ -309,7 +426,15 @@ export function CatalogSearch() {
                 >
                   Min episodes
                 </FieldLabel>
-                <Input id="min-episodes" type="number" placeholder="1" />
+                <Input
+                  name="Min Episodes"
+                  value={filters["Min Episodes"]}
+                  onChange={handleInputChange}
+                  min={1}
+                  id="min-episodes"
+                  type="number"
+                  placeholder="1"
+                />
               </Field>
               <Field className="gap-0">
                 <FieldLabel
@@ -318,319 +443,86 @@ export function CatalogSearch() {
                 >
                   Max expisodes
                 </FieldLabel>
-                <Input id="max-episodes" type="number" placeholder="Any" />
+                <Input
+                  name="Max Episodes"
+                  value={filters["Max Episodes"]}
+                  onChange={handleInputChange}
+                  min={1}
+                  id="max-episodes"
+                  type="number"
+                  placeholder="Any"
+                />
               </Field>
             </FieldGroup>
           </ComboboxGroup>
         </CollapsibleContent>
       </Collapsible>
-      <div>TEST</div>
+      <div className="space-y-6">
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-5 pt-5">
+          {Array.from({ length: 24 }).map((_, index) => {
+            return (
+              <React.Fragment key={index}>
+                <Link href="/" className="group relative block w-full">
+                  <Card className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
+                    <Image
+                      src="https://s4.anilist.co/file/anilistcdn/media/anime/banner/184951-Rx1mZZfKa9IU.jpg"
+                      alt="Card"
+                      fill
+                      sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/40" />
+
+                    {/*Play Button*/}
+                    <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 scale-75 group-hover:scale-100">
+                        <PlayIcon />
+                      </div>
+                    </div>
+
+                    {/* Hover Info */}
+                    <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-linear-to-t from black/90 via-black/60 to-transparent p-3 pt-16 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <p className="line-clamp-2 text-xs leading-snug text-white/90">
+                        {index + 1}
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap gap-1">
+                        {Array.from({ length: 3 }).map((_, genre) => (
+                          <Badge key={genre} className="">
+                            {genre + 1}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* Info Below */}
+                  <div className="mt-2 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <TvIcon className="size-3 text-muted-foreground" />
+                        <span className="text-[10px] text-muted-foreground">
+                          TV
+                        </span>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className="bg-primary text-primary-foreground text-[8px] h-4 px-1.5"
+                      >
+                        Ongoing
+                      </Badge>
+                    </div>
+                    <h3 className="line-clamp-2 text-xs font-semibold text-foreground/90 group-hover:text-foreground">
+                      {index + 1}
+                    </h3>
+                  </div>
+                </Link>
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
     </>
   );
 }
 
-<ComboboxGroup className="grid grid-cols-2 md:grid-cols-6 gap-2">
-  <Combobox multiple autoHighlight items={genreEnums} defaultValue={[]}>
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Genres</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Genres"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent className="">
-      <ComboboxInput
-        showTrigger={false}
-        placeholder="Search"
-        showClear
-        autoComplete="on"
-      >
-        <InputGroupAddon>
-          <SearchIcon />
-        </InputGroupAddon>
-      </ComboboxInput>
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item} value={item}>
-            {item}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <Combobox
-    itemToStringValue={(itemValue: Value) => itemValue.name}
-    itemToStringLabel={(itemValue: Value) => itemValue.name}
-    multiple
-    autoHighlight
-    items={tagEnums}
-    defaultValue={[]}
-  >
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Tags</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Tags"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent className="">
-      <ComboboxInput showTrigger={false} placeholder="Search" showClear />
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item.name} value={item}>
-            {item.name}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <Combobox
-    multiple
-    itemToStringValue={(itemValue: Value) => itemValue.query}
-    itemToStringLabel={(itemValue: Value) => itemValue.normal}
-    autoHighlight
-    items={formatEnums}
-    defaultValue={[]}
-  >
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Formats</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Formats"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent>
-      <ComboboxInput showTrigger={false} placeholder="Search" showClear />
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item.query} value={item}>
-            {item.normal}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <Combobox autoHighlight items={yearEnums} defaultValue={null}>
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Year</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Year"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent>
-      <ComboboxInput showTrigger={false} placeholder="Search" showClear />
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item} value={item}>
-            {item}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <Combobox
-    itemToStringValue={(itemValue: Value) => itemValue.query}
-    itemToStringLabel={(itemValue: Value) => itemValue.normal}
-    autoHighlight
-    items={seasonEnums}
-    defaultValue={null}
-  >
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Season</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Season"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent className="">
-      <ComboboxInput showTrigger={false} placeholder="Search" showClear />
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item.normal} value={item}>
-            {item.normal}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <Combobox
-    itemToStringValue={(itemValue: Value) => itemValue.query}
-    itemToStringLabel={(itemValue: Value) => itemValue.normal}
-    autoHighlight
-    items={statusEnums}
-    defaultValue={null}
-  >
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Status</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Status"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent className="">
-      <ComboboxInput showTrigger={false} placeholder="Search" showClear />
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item.normal} itemID={item.query} value={item}>
-            {item.normal}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <Combobox
-    itemToStringValue={(itemValue: Value) => itemValue.query}
-    itemToStringLabel={(itemValue: Value) => itemValue.normal}
-    autoHighlight
-    items={sortEnums}
-    defaultValue={null}
-  >
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Sort by</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Sort by"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent className="">
-      <ComboboxInput showTrigger={false} placeholder="Search" showClear />
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item.normal} value={item}>
-            {item.normal}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <Combobox
-    itemToStringValue={(itemValue: Value) => itemValue.name}
-    itemToStringLabel={(itemValue: Value) => itemValue.name}
-    autoHighlight
-    items={studioEnums}
-    defaultValue={null}
-  >
-    <div className="flex flex-col relative">
-      <ComboboxLabel className="px-0 font-bold">Studio</ComboboxLabel>
-      <ComboboxTrigger
-        aria-placeholder="Studio"
-        render={
-          <Button variant="outline" className="justify-between font-normal">
-            <div className="w-full text-start truncate">
-              <ComboboxValue placeholder="Any" />
-            </div>
-            <ChevronsUpDownIcon />
-          </Button>
-        }
-      />
-    </div>
-    <ComboboxContent className="">
-      <ComboboxInput showTrigger={false} placeholder="Search" showClear />
-      <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
-      <ComboboxList>
-        {(item) => (
-          <ComboboxItem key={item.id} value={item}>
-            {item.name}
-          </ComboboxItem>
-        )}
-      </ComboboxList>
-    </ComboboxContent>
-  </Combobox>
-  <FieldGroup className="grid grid-cols-2 col-span-2 gap-2">
-    <Field className="gap-0">
-      <FieldLabel
-        htmlFor="min-duration"
-        className="py-1.5 text-xs text-muted-foreground px-0 font-bold"
-      >
-        Min duration
-      </FieldLabel>
-      <Input id="min-duration" type="number" placeholder="0" />
-    </Field>
-    <Field className="gap-0">
-      <FieldLabel
-        htmlFor="max-duration"
-        className="py-1.5 text-xs text-muted-foreground px-0 font-bold"
-      >
-        Max duration
-      </FieldLabel>
-      <Input id="max-duration" type="number" placeholder="Any" />
-    </Field>
-  </FieldGroup>
-  <FieldGroup className="grid grid-cols-2 col-span-2 gap-2">
-    <Field className="gap-0">
-      <FieldLabel
-        htmlFor="min-episodes"
-        className="py-1.5 text-xs text-muted-foreground px-0 font-bold"
-      >
-        Min episodes
-      </FieldLabel>
-      <Input id="min-episodes" type="number" placeholder="1" />
-    </Field>
-    <Field className="gap-0">
-      <FieldLabel
-        htmlFor="max-episodes"
-        className="py-1.5 text-xs text-muted-foreground px-0 font-bold"
-      >
-        Max expisodes
-      </FieldLabel>
-      <Input id="max-episodes" type="number" placeholder="Any" />
-    </Field>
-  </FieldGroup>
-</ComboboxGroup>;
+export function CatalogResult();

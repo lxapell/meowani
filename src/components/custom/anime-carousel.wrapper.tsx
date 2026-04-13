@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import { AnimeCardsSkeleton } from "@/components/custom/anime-card";
+import { AnimeCardsSkeleton } from "@/components/custom/anime-carousel";
 
 interface AnimeProps {
   animes: {
@@ -18,7 +18,8 @@ interface AnimeProps {
 }
 
 const AnimeCards = dynamic(
-  () => import("@/components/custom/anime-card").then((mod) => mod.AnimeCards),
+  () =>
+    import("@/components/custom/anime-carousel").then((mod) => mod.AnimeCards),
   { ssr: false, loading: () => <AnimeCardsSkeleton /> },
 );
 
