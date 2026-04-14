@@ -14,6 +14,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { genreEnums } from "@/constants/anilist/enums";
 import {
   GalleryVerticalEndIcon,
   AudioLinesIcon,
@@ -119,10 +120,14 @@ const data = {
       title: "Genre",
       url: "#",
       icon: <TagsIcon />,
-      items: genres.map((name) => ({
-        title: name,
-        url: "/genre/" + name.toLowerCase().replace(/\s+/g, "-"),
-      })),
+      items: genreEnums.map((name) => {
+        const params = new URLSearchParams();
+        params.set("genres", name);
+        return {
+          title: name,
+          url: "/browse?" + params,
+        };
+      }),
     },
     {
       title: "Others",
