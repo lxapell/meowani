@@ -11,8 +11,12 @@ import type {
   MediaSeason,
   MediaStatus,
   MediaFormat,
+  AdvancedStudioSearchQueryVariables,
+  Scalars,
+  Studio,
 } from "@/types/anilist-types";
 import { mapStatus } from "@/utils/mapper";
+import { Maybe } from "graphql/jsutils/Maybe";
 
 export async function fetchCatalog({
   pageParam = 1,
@@ -21,9 +25,11 @@ export async function fetchCatalog({
   pageParam: number;
   filters: FilterState;
 }) {
-  const variables: AdvancedSearchQueryVariables = {
-    page: pageParam,
-    search: filters.Query || null,
+  const variables: AdvancedSearchQueryVariables & {
+    studioId: InputMaybe<Scalars["Int"]["output"]>;
+  } = {
+    page: (pageParam as InputMaybe<number>) || undefined,
+    search: filters.Query,
     type: "ANIME",
     format: filters.Formats.map((f) => f.value) as MediaFormat[],
     genres: filters.Genres.map((g) => g.value),
