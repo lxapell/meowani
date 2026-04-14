@@ -373,7 +373,7 @@ export const advancedsearch = gpl`
     $durationGreater: Int,
     $genres: [String],
     $tags: [String],
-    $sort: [MediaSort] = [POPULARITY_DESC, SCORE_DESC]
+    $sort: [MediaSort] = [POPULARITY_DESC, SCORE_DESC],
   ) {
     Page(page: $page, perPage: 24) {
       pageInfo {
@@ -401,7 +401,7 @@ export const advancedsearch = gpl`
         duration_greater: $durationGreater,
         genre_in: $genres,
         tag_in: $tags,
-        sort: $sort
+        sort: $sort,
       ) {
         id
         idMal
@@ -427,6 +427,12 @@ export const advancedsearch = gpl`
           month
           day
         }
+        studios {
+          nodes {
+            id
+            name
+          }
+        }
         season
         seasonYear
         description
@@ -449,6 +455,88 @@ export const advancedsearch = gpl`
         mediaListEntry {
           id
           status
+        }
+      }
+    }
+  }
+`;
+
+export const advancedstudio = gpl`
+  query AdvancedStudioSearch(
+    $page: Int = 1,
+    $onList: Boolean,
+    $sort: [MediaSort] = [POPULARITY_DESC, SCORE_DESC],
+    $studioId: Int,
+  ) {
+    Studio(id: $studioId) {
+      name
+      media(
+        onList: $onList,
+        sort: $sort, 
+        page: $page, 
+        perPage: 24
+      ) {
+        pageInfo {
+          total
+          perPage
+          currentPage
+          lastPage
+          hasNextPage
+        }
+        nodes {
+          id
+          idMal
+          title {
+            english
+            romaji
+            native
+            userPreferred
+          }
+          coverImage {
+            extraLarge
+            large
+            color
+          }
+          bannerImage
+          startDate {
+            year
+            month
+            day
+          }
+          endDate {
+            year
+            month
+            day
+          }
+          studios {
+            nodes {
+              id
+              name
+            }
+          }
+          season
+          seasonYear
+          description
+          type
+          format
+          status(version: 2)
+          episodes
+          duration
+          chapters
+          volumes
+          genres
+          isAdult
+          averageScore
+          popularity
+          nextAiringEpisode {
+            airingAt
+            timeUntilAiring
+            episode
+          }
+          mediaListEntry {
+            id
+            status
+          }
         }
       }
     }

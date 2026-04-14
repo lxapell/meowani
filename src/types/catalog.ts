@@ -1,4 +1,5 @@
 export interface Normalized {
+  id?: number;
   label: string;
   value: string;
 }

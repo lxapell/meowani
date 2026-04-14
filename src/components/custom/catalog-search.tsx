@@ -62,6 +62,8 @@ import { filtersToURLParams } from "@/utils/catalog/helpers";
 import { fetchCatalog } from "@/app/(with-sidebar)/browse/actions";
 import { AnimeCard, AnimeCardSkeleton } from "./anime-card";
 import { Skeleton } from "../ui/skeleton";
+import { serialize } from "node:v8";
+import { EndOfContent } from "./end-of-content";
 
 interface Data {
   label: string;
@@ -80,6 +82,7 @@ type CatalogContextValue = {
   data: InfiniteData<PageData> | undefined;
   isLoading: boolean;
   isError: boolean;
+  fetchNextPage: () => void;
   hasNextPage: () => void;
   isFetchingNextPage: boolean;
 };
@@ -93,39 +96,43 @@ function useCatalog() {
 }
 
 function CatalogProvider({
-  initialData,
   initialFilters: initialFiltersProps,
-  className,
-  style,
   children,
   ...props
 }: React.ComponentProps<"div"> & {
-  initialData: PageData;
   initialFilters: FilterState;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const [filters, setFilters] =
     React.useState<FilterState>(initialFiltersProps);
+  const [isPending, startTransition] = React.useTransition();
 
   const updateFilter = React.useCallback(
     <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
-      setFilters((prev) => {
-        const newFilters = { ...prev, [key]: value };
-        const params = filtersToURLParams(newFilters);
-        router.replace(`${pathname}?${params.toString()}`, undefined, {
-          scroll: false,
-        });
-        return newFilters;
+      startTransition(() => {
+        setFilters((prev) => ({ ...prev, [key]: value }));
       });
     },
-    [pathname, router],
+    [],
   );
 
   const clearFilters = React.useCallback(() => {
-    setFilters(initialFilters);
-    router.replace(pathname);
-  }, [initialFilters, pathname, router]);
+    startTransition(() => {
+      setFilters(initialFilters);
+    });
+  }, [initialFilters]);
+
+  React.useEffect(() => {
+    const params = filtersToURLParams(filters);
+    const url = params.toString() ? `${pathname}?${params}` : pathname;
+    router.replace(url, { scroll: false });
+  }, [filters, pathname, router]);
+
+  const serializedFilters = React.useMemo(
+    () => JSON.stringify(filters),
+    [filters],
+  );
 
   const {
     data,
@@ -134,9 +141,8 @@ function CatalogProvider({
     isFetchingNextPage,
     isLoading,
     isError,
-    refetch,
   } = useInfiniteQuery({
-    queryKey: ["catalog", filters],
+    queryKey: ["catalog", serializedFilters],
     queryFn: ({ pageParam }) =>
       fetchCatalog({ pageParam: pageParam as number, filters }),
     initialPageParam: 1,
@@ -144,60 +150,71 @@ function CatalogProvider({
       lastPage.pageInfo.hasNextPage
         ? lastPage.pageInfo.currentPage + 1
         : undefined,
-    initialData: { pages: [initialData], pageParams: [1] },
   });
 
-  const debouncedRefetch = useDebouncedCallback(() => {
-    refetch({ refetchPage: (_, index) => index === 0 });
-  }, 500);
-
-  React.useEffect(() => {
-    debouncedRefetch();
-  }, [filters, debouncedRefetch]);
-
-  const value = {
-    filters,
-    updateFilter,
-    clearFilters,
-    data,
-    isLoading,
-    isError,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  };
+  const value = React.useMemo(
+    () => ({
+      filters,
+      updateFilter,
+      clearFilters,
+      data,
+      isLoading,
+      isError,
+      hasNextPage,
+      fetchNextPage,
+      isFetchingNextPage,
+    }),
+    [
+      filters,
+      updateFilter,
+      clearFilters,
+      data,
+      isLoading,
+      isError,
+      hasNextPage,
+      fetchNextPage,
+      isFetchingNextPage,
+    ],
+  );
 
   return (
-    <CatalogContext.Provider
-      style={style}
-      className={className}
-      value={value}
-      {...props}
-    >
+    <CatalogContext.Provider value={value} {...props}>
       {children}
     </CatalogContext.Provider>
   );
 }
 
-function CatalogSearch() {
+const CatalogSearch = React.memo(function CatalogSearch() {
   const { filters, updateFilter, clearFilters } = useCatalog();
 
+  const [searcDraft, setSearchDraft] = React.useState(filters.Query);
+
+  const debouncedCommitSearh = useDebouncedCallback((value: string) => {
+    updateFilter("Query", value);
+  }, 500);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchDraft(val);
+    debouncedCommitSearh(val);
+  };
+
+  React.useEffect(() => {
+    setSearchDraft(filters.Query);
+  }, [filters.Query]);
+
   const handleChange = (key: string, value: any) => {
-    debouncedInputUpdate(value, key);
+    updateFilter(key as keyof FilterState, value);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    debouncedInputUpdate(value, name);
+    updateFilter(name as keyof FilterState, value);
   };
-
-  const debouncedInputUpdate = useDebouncedCallback((value, key) => {
-    updateFilter(key as keyof FilterState, value);
-  }, 500);
 
   return (
     <>
-      <Collapsible className="w-full flex flex-col gap-2">
+      <Collapsible className="w-full flex flex-col gap-2 px-6 md:px-12">
         <ButtonGroup className="flex w-full flex-col">
           <Label className="py-1.5 px-0 text-xs font-bold text-muted-foreground">
             Search
@@ -208,7 +225,7 @@ function CatalogSearch() {
                 <InputGroupInput
                   name="Query"
                   value={filters.Query}
-                  onChange={handleInputChange}
+                  onChange={handleSearchChange}
                   placeholder="Search for anime, movies..."
                 />
                 <InputGroupAddon align="inline-start">
@@ -399,9 +416,9 @@ function CatalogSearch() {
       </Collapsible>
     </>
   );
-}
+});
 
-function CatalogResult() {
+const CatalogResult = React.memo(function CatalogResult() {
   const {
     data,
     isLoading,
@@ -420,17 +437,19 @@ function CatalogResult() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-5 pt-5">
-        {Array.from({ length: 24 }).map((_, index) => (
-          <AnimeCardSkeleton key={index} />
-        ))}
+      <div className="space-y-6 px-6 md:-12 pt-5">
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-5 overflow-hidden min-w-0 px-0 block">
+          {Array.from({ length: 24 }).map((_, index) => (
+            <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />
+          ))}
+        </div>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="text-center py-10 text-destructive">
+      <div className="text-center py-10 text-destructive px-6 md:px-12">
         Failed to load catalog
       </div>
     );
@@ -440,31 +459,31 @@ function CatalogResult() {
 
   if (medias.length === 0) {
     return (
-      <div className="text-center py-10 text-muted-foreground">
+      <div className="text-center py-10 text-muted-foreground px-6 md:px-12">
         No results found.
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-5 pt-5">
+    <div className="space-y-6 px-6 md:px-12 pt-5">
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-5">
         {medias.map((media) => {
           const href = `/library/anime/${media.id}`;
           return <AnimeCard key={media.id} href={href} anime={media} />;
         })}
       </div>
-      <div ref={ref} className="flex justify-center py-4">
-        {isFetchingNextPage && (
-          <div className="flex gap-2">
-            <Skeleton className="size-8 rounded-full" />
-            <Skeleton className="size-8 rounded-full" />
-            <Skeleton className="size-8 rounded-full" />
-          </div>
-        )}
-      </div>
+      {isFetchingNextPage && (
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-5 overflow-hidden min-w-0 px-0 block">
+          {Array.from({ length: 48 }).map((_, index) => (
+            <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />
+          ))}
+        </div>
+      )}
+      <div ref={ref} className="grid grid-cols-3 md:grid-cols-4 gap-5"></div>
+      {!isFetchingNextPage && <EndOfContent />}
     </div>
   );
-}
+});
 
 export { CatalogProvider, CatalogSearch, CatalogResult, useCatalog };

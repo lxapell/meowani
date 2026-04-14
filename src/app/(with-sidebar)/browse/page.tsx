@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import type { FilterState } from "@/types/catalog";
 import { fetchCatalog } from "./actions";
 import {
@@ -10,6 +12,11 @@ import {
   filtersToURLParams,
 } from "@/utils/catalog/helpers";
 import { initialFilters } from "@/constants/anilist/enums";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 export default async function BrowsePage({
   searchParams,
@@ -25,22 +32,25 @@ export default async function BrowsePage({
       urlParams.set(key, value);
     }
   });
-
   const initialFilters = URLParamsToFilters(urlParams);
-  const initialData = await fetchCatalog({
-    pageParam: 1,
-    filters: initialFilters,
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ["catalog", JSON.stringify(initialFilters)],
+    queryFn: ({ pageParam = 1 }) =>
+      fetchCatalog({ pageParam, filters: initialFilters }),
+    initialPageParam: 1,
   });
 
   return (
-    <div className="w-full flex flex-col flex-1 px-6 md:px-12 md:pt-16 overflow-y-scroll max-h-screen">
-      <CatalogProvider
-        initialData={initialData}
-        initialFilters={initialFilters}
-      >
-        <CatalogSearch />
-        <CatalogResult />
-      </CatalogProvider>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="min-w-0 flex flex-1 shrink flex-col bg-background overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh md:pt-16">
+        <CatalogProvider initialFilters={initialFilters}>
+          <CatalogSearch />
+          <CatalogResult />
+        </CatalogProvider>
+      </div>
+    </HydrationBoundary>
   );
 }

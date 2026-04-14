@@ -44,7 +44,7 @@ export function Spotlight({ items }: SpotlightProps) {
       }}
       onMouseEnter={plugin.current.stop}
       onMouseLeave={plugin.current.reset}
-      className="pb-4 md:pb-8 overflow-hidden aspect-video"
+      className="pb-4 md:pb-8 aspect-video"
     >
       <CarouselContent className="-ml-1 border-none">
         {items.map((item: ISpotlight) => (

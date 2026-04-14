@@ -9,7 +9,7 @@ export const statusEnums = [
   { normal: "Ongoing", query: "RELEASING" },
 ] as const;
 export const sortEnums = [
-  { normal: "Popularity", query: "POPULAR_DESC" },
+  { normal: "Popularity", query: "POPULARITY_DESC" },
   { normal: "Trending", query: "TRENDING_DESC" },
   { normal: "Score", query: "SCORE_DESC" },
   { normal: "Latest", query: "START_DATE_DESC" },
@@ -1523,7 +1523,7 @@ export const yearEnums = years.map(String);
 export const staticCatalogData = [
   {
     label: "Genres",
-    data: genreEnums.map((genre, index) => normalize(genre)),
+    data: genreEnums.map((genre, index) => normalize(genre, index)),
     type: "multiple",
     defaultValue: [],
   },
@@ -1531,43 +1531,45 @@ export const staticCatalogData = [
     label: "Tags",
     data: tagEnums
       .filter((tag) => !tag.isAdult)
-      .map((tag, index) => normalize(tag)),
+      .map((tag, index) => normalize(tag, index)),
     type: "multiple",
     defaultValue: [],
   },
   {
     label: "Formats",
-    data: formatEnums.map((format, index) => normalize(format)),
+    data: formatEnums.map((format, index) => normalize(format, index)),
     type: "multiple",
     defaultValue: [],
   },
   {
     label: "Year",
-    data: yearEnums.map((year, index) => normalize(year)),
+    data: yearEnums.map((year, index) => normalize(year, index)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Season",
-    data: seasonEnums.map((season, index) => normalize(season)),
+    data: seasonEnums.map((season, index) => normalize(season, index)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Status",
-    data: statusEnums.map((status, index) => normalize(status)),
+    data: statusEnums.map((status, index) => normalize(status, index)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Sort by",
-    data: sortEnums.map((sort, index) => normalize(sort)),
+    data: sortEnums.map((sort, index) => normalize(sort, index)),
     type: "single",
     defaultValue: null,
   },
   {
     label: "Studio",
-    data: studioEnums.map((studio, index) => normalize(studio)),
+    data: studioEnums.map((studio, index) =>
+      normalize(studio, index, "studio"),
+    ),
     type: "single",
     defaultValue: null,
   },
@@ -1584,6 +1586,6 @@ export const initialFilters: FilterState = {
   Query: "",
   "Min Duration": "",
   "Max Duration": "",
-  "Min Episodes": "1",
+  "Min Episodes": "",
   "Max Episodes": "",
 };

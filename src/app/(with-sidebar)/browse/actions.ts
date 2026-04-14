@@ -3,7 +3,7 @@
 import type { FilterState } from "@/types/catalog";
 import { filtersToURLParams } from "@/utils/catalog/helpers";
 import { anilistRequest } from "@/lib/anilist/client";
-import { advancedsearch } from "@/constants/anilist/queries";
+import { advancedsearch, advancedstudio } from "@/constants/anilist/queries";
 import type {
   AdvancedSearchQueryVariables,
   InputMaybe,
@@ -34,18 +34,18 @@ export async function fetchCatalog({
     sort: filters["Sort by"]
       ? [filters["Sort by"].value as MediaSort]
       : ["POPULARITY_DESC"],
-    // studioId: filters.Studio ? [filters.Studio.value] : null,
-    durationGreater: filters["Max Duration"]
-      ? parseInt(filters["Max Duration"])
-      : null,
-    durationLesser: filters["Min Duration"]
+    studioId: filters.Studio ? parseInt(filters.Studio.value) : null,
+    durationGreater: filters["Min Duration"]
       ? parseInt(filters["Min Duration"])
       : null,
-    episodesGreater: filters["Max Episodes"]
-      ? parseInt(filters["Max Episodes"])
+    durationLesser: filters["Max Duration"]
+      ? parseInt(filters["Max Duration"])
       : null,
-    episodesLesser: filters["Min Episodes"]
+    episodesGreater: filters["Min Episodes"]
       ? parseInt(filters["Min Episodes"])
+      : null,
+    episodesLesser: filters["Max Episodes"]
+      ? parseInt(filters["Max Episodes"])
       : null,
   };
 
@@ -56,10 +56,27 @@ export async function fetchCatalog({
     }
   });
 
-  const raw: { Page: { pageInfo: any; media: any[] } } = await anilistRequest(
-    advancedsearch,
-    variables,
-  );
+  console.log(filters.Studio?.value);
+  console.log(variables.studioId);
+  let query;
+  if (variables.studioId) {
+    query = advancedstudio;
+  } else {
+    query = advancedsearch;
+  }
+
+  const raw: {
+    Page: { pageInfo: any; media: any[] };
+    Studio: { media: { pageInfo: any; nodes: any[] } };
+  } = await anilistRequest(query, variables);
+
+  if (query === advancedstudio) {
+    console.log(map(raw.Studio.media.nodes));
+    return {
+      pageInfo: raw.Studio.media.pageInfo,
+      media: map(raw.Studio.media.nodes),
+    };
+  }
   console.log(map(raw.Page.media));
   return { pageInfo: raw.Page.pageInfo, media: map(raw.Page.media) };
 }
@@ -85,5 +102,6 @@ const map = (data: any[]) =>
         status.slice(1).toLowerCase()) as string,
       genre: anime.genres as string[],
       episodes: anime.episodes as number,
+      studios: anime.studios.nodes.map((studio) => studio.name),
     };
   });

@@ -1,11 +1,23 @@
-import { initialFilters, staticCatalogData } from "@/constants/anilist/enums";
+import {
+  initialFilters,
+  staticCatalogData,
+  studioEnums,
+} from "@/constants/anilist/enums";
 import type { FilterState, Normalized } from "@/types/catalog";
 
-export function normalize(item: string | any): Normalized {
+export function normalize(
+  item: string | any,
+  index: number,
+  type?: string,
+): Normalized {
   if (typeof item === "string") {
-    return { label: item, value: item };
+    return { id: index + 1, label: item, value: item };
+  }
+  if (type === "studio") {
+    return { id: item.id, label: item.name, value: item.id };
   }
   return {
+    id: "id" in item ? item.id : index + 1,
     label: "normal" in item ? item.normal : item.name,
     value: "query" in item ? item.query : item.name,
   };
@@ -67,10 +79,12 @@ export function URLParamsToFilters(params: URLSearchParams): FilterState {
   }
   const studioParam = params.get("studio");
   if (studioParam) {
+    console.log("[GetParam] found studio param:", studioParam);
     filters.Studio =
       staticCatalogData
         .find((d) => d.label === "Studio")!
-        .data.find((item) => item.value === studioParam) || null;
+        .data.find((item) => item.id === parseInt(studioParam)) || null;
+    console.log("[StoreParam] stored to filters:", filters.Studio);
   }
   filters["Min Duration"] = params.get("minDuration") || "";
   filters["Max Duration"] = params.get("maxDuration") || "";
@@ -92,7 +106,11 @@ export function filtersToURLParams(filters: FilterState): URLSearchParams {
   if (filters.Season) params.set("season", filters.Season.value);
   if (filters.Status) params.set("status", filters.Status.value);
   if (filters["Sort by"]) params.set("sort", filters["Sort by"].value);
-  if (filters.Studio) params.set("studio", filters.Studio.value);
+  if (filters.Studio) {
+    console.log("[GetFilters] found studio filter:", filters.Studio);
+    params.set("studio", filters.Studio.value);
+    console.log("[ParamSet] set param for studio:", params);
+  }
   if (filters["Min Duration"])
     params.set("minDuration", filters["Min Duration"]);
   if (filters["Max Duration"])
