@@ -5,6 +5,7 @@ import { filtersToURLParams } from "@/utils/catalog/helpers";
 import { anilistRequest } from "@/lib/anilist/client";
 import { advancedsearch, advancedstudio } from "@/constants/anilist/queries";
 import type {
+  AdvancedSearchQuery,
   AdvancedSearchQueryVariables,
   InputMaybe,
   MediaSort,
@@ -14,9 +15,11 @@ import type {
   AdvancedStudioSearchQueryVariables,
   Scalars,
   Studio,
+  AdvancedStudioSearchQuery,
 } from "@/types/anilist-types";
 import { mapStatus } from "@/utils/mapper";
 import { Maybe } from "graphql/jsutils/Maybe";
+import { Variable } from "lucide-react";
 
 export async function fetchCatalog({
   pageParam = 1,
@@ -25,12 +28,10 @@ export async function fetchCatalog({
   pageParam: number;
   filters: FilterState;
 }) {
-  const variables: AdvancedSearchQueryVariables & {
-    studioId: InputMaybe<Scalars["Int"]["output"]>;
-  } = {
-    page: (pageParam as InputMaybe<number>) || undefined,
-    search: filters.Query,
-    type: "ANIME",
+  const baseVariables = {
+    page: pageParam,
+    search: filters.Query || null,
+    type: "ANIME" as const,
     format: filters.Formats.map((f) => f.value) as MediaFormat[],
     genres: filters.Genres.map((g) => g.value),
     tags: filters.Tags.map((t) => t.value),
@@ -40,7 +41,6 @@ export async function fetchCatalog({
     sort: filters["Sort by"]
       ? [filters["Sort by"].value as MediaSort]
       : ["POPULARITY_DESC"],
-    studioId: filters.Studio ? parseInt(filters.Studio.value) : null,
     durationGreater: filters["Min Duration"]
       ? parseInt(filters["Min Duration"])
       : null,
@@ -53,38 +53,42 @@ export async function fetchCatalog({
     episodesLesser: filters["Max Episodes"]
       ? parseInt(filters["Max Episodes"])
       : null,
-  };
+  } as AdvancedSearchQueryVariables;
 
-  Object.keys(variables).forEach((key) => {
-    const val = variables[key];
-    if (val === undefined || !val || (Array.isArray(val) && val.length === 0)) {
-      delete variables[key];
+  Object.keys(baseVariables).forEach((key) => {
+    const val = baseVariables[key as keyof typeof baseVariables];
+    if (
+      val === undefined ||
+      val === null ||
+      (Array.isArray(val) && val.length === 0)
+    ) {
+      delete baseVariables[key as keyof typeof baseVariables];
     }
   });
 
   console.log(filters.Studio?.value);
-  console.log(variables.studioId);
   let query;
-  if (variables.studioId) {
+  if (filters.Studio?.value) {
+    const variables = {
+      ...baseVariables,
+      studioId: filters.Studio ? parseInt(filters.Studio.value) : null,
+    };
     query = advancedstudio;
+    const raw = await anilistRequest<AdvancedStudioSearchQuery>(
+      query,
+      variables,
+    );
+    console.log(map(raw.Studio?.media?.nodes!));
+    return {
+      pageInfo: raw.Studio!.media!.pageInfo,
+      media: map(raw.Studio?.media?.nodes!),
+    };
   } else {
     query = advancedsearch;
+    const raw = await anilistRequest<AdvancedSearchQuery>(query, baseVariables);
+    console.log(map(raw.Page?.media!));
+    return { pageInfo: raw.Page?.pageInfo, media: map(raw.Page?.media!) };
   }
-
-  const raw: {
-    Page: { pageInfo: any; media: any[] };
-    Studio: { media: { pageInfo: any; nodes: any[] } };
-  } = await anilistRequest(query, variables);
-
-  if (query === advancedstudio) {
-    console.log(map(raw.Studio.media.nodes));
-    return {
-      pageInfo: raw.Studio.media.pageInfo,
-      media: map(raw.Studio.media.nodes),
-    };
-  }
-  console.log(map(raw.Page.media));
-  return { pageInfo: raw.Page.pageInfo, media: map(raw.Page.media) };
 }
 
 const map = (data: any[]) =>
@@ -108,6 +112,6 @@ const map = (data: any[]) =>
         status.slice(1).toLowerCase()) as string,
       genre: anime.genres as string[],
       episodes: anime.episodes as number,
-      studios: anime.studios.nodes.map((studio) => studio.name),
+      studios: anime.studios.nodes.map((studio: Studio) => studio.name),
     };
   });

@@ -1,3 +1,5 @@
+import { PageInfo } from "./anilist-types";
+
 export interface Normalized {
   id?: number;
   label: string;
@@ -21,12 +23,7 @@ export interface FilterState {
 }
 
 export interface PageData {
-  pageInfo: {
-    total: number;
-    currentPage: number;
-    lastPage: number;
-    hasNextPage: boolean;
-  };
+  pageInfo: PageInfo;
   media: {
     id: string;
     status: string;

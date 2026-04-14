@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
-import { useDebouncedCallback } from "@/hooks/use-debounce";
+import { useDebouncedCallback } from "use-debounce";
 import { useInView } from "react-intersection-observer";
 
 import { Button } from "@/components/ui/button";
@@ -61,9 +61,8 @@ import type { FilterState, Normalized, PageData } from "@/types/catalog";
 import { filtersToURLParams } from "@/utils/catalog/helpers";
 import { fetchCatalog } from "@/app/(with-sidebar)/browse/actions";
 import { AnimeCard, AnimeCardSkeleton } from "./anime-card";
-import { Skeleton } from "../ui/skeleton";
-import { serialize } from "node:v8";
-import { EndOfContent } from "./end-of-content";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EndOfContent } from "@/components/custom/end-of-content";
 
 interface Data {
   label: string;
@@ -79,11 +78,11 @@ type CatalogContextValue = {
     value: FilterState[K],
   ) => void;
   clearFilters: () => void;
-  data: InfiniteData<PageData> | undefined;
+  data: InfiniteData<{ pageInfo: any; media: any[] }> | undefined;
   isLoading: boolean;
   isError: boolean;
   fetchNextPage: () => void;
-  hasNextPage: () => void;
+  hasNextPage: boolean;
   isFetchingNextPage: boolean;
 };
 
@@ -147,8 +146,8 @@ function CatalogProvider({
       fetchCatalog({ pageParam: pageParam as number, filters }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
-      lastPage.pageInfo.hasNextPage
-        ? lastPage.pageInfo.currentPage + 1
+      lastPage?.pageInfo?.hasNextPage
+        ? lastPage?.pageInfo?.currentPage! + 1
         : undefined,
   });
 
@@ -184,19 +183,24 @@ function CatalogProvider({
   );
 }
 
+type ComboboxKeys = Exclude<
+  keyof FilterState,
+  "Query" | "Min Duration" | "Max Duration" | "Min Episodes" | "Max Episodes"
+>;
+
 const CatalogSearch = React.memo(function CatalogSearch() {
   const { filters, updateFilter, clearFilters } = useCatalog();
 
-  const [searcDraft, setSearchDraft] = React.useState(filters.Query);
+  const [searchDraft, setSearchDraft] = React.useState(filters.Query);
 
-  const debouncedCommitSearh = useDebouncedCallback((value: string) => {
+  const debouncedCommitSearch = useDebouncedCallback((value: string) => {
     updateFilter("Query", value);
   }, 500);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearchDraft(val);
-    debouncedCommitSearh(val);
+    debouncedCommitSearch(val);
   };
 
   React.useEffect(() => {
@@ -263,8 +267,7 @@ const CatalogSearch = React.memo(function CatalogSearch() {
                   items={data.data}
                   onValueChange={(value) => handleChange(data.label, value)}
                   value={
-                    filters[data.label as keyof FilterState] ??
-                    data.defaultValue
+                    filters[data.label as ComboboxKeys] ?? data.defaultValue
                   }
                   onItemHighlighted={(item, { reason, index }) => {
                     const virtualizer = virtualizerRef.current;

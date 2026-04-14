@@ -27,7 +27,7 @@ export default async function BrowsePage({
   const urlParams = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
     if (Array.isArray(value)) {
-      value.forEach((V) => urlParams.append(key, v));
+      value.forEach((V) => urlParams.append(key, V));
     } else if (value !== undefined) {
       urlParams.set(key, value);
     }
