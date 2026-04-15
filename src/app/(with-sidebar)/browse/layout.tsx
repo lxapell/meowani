@@ -1,5 +1,9 @@
 import Providers from "./providers";
 import { Suspense } from "react";
+import {
+  CatalogSearchSkeleton,
+  CatalogResultSkeleton,
+} from "@/components/custom/catalog-search";
 
 export default function BrowseLayout({
   children,
@@ -8,7 +12,16 @@ export default function BrowseLayout({
 }) {
   return (
     <Providers>
-      <Suspense fallback={<div>Hi</div>}>{children}</Suspense>
+      <Suspense
+        fallback={
+          <div className="min-w-0 flex flex-1 shrink flex-col bg-background overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh md:pt-16">
+            <CatalogSearchSkeleton />
+            <CatalogResultSkeleton />
+          </div>
+        }
+      >
+        {children}
+      </Suspense>
     </Providers>
   );
 }

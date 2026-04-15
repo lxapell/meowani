@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import type { FilterState, Normalized, PageData } from "@/types/catalog";
 import { useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { useInView } from "react-intersection-observer";
@@ -57,12 +58,12 @@ import { initialFilters, staticCatalogData } from "@/constants/anilist/enums";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import type { FilterState, Normalized, PageData } from "@/types/catalog";
 import { filtersToURLParams } from "@/utils/catalog/helpers";
 import { fetchCatalog } from "@/app/(with-sidebar)/browse/actions";
 import { AnimeCard, AnimeCardSkeleton } from "./anime-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EndOfContent } from "@/components/custom/end-of-content";
+import { cn } from "@/lib/shadcn/utils";
 
 interface Data {
   label: string;
@@ -220,9 +221,7 @@ const CatalogSearch = React.memo(function CatalogSearch() {
     <>
       <Collapsible className="w-full flex flex-col gap-2 px-6 md:px-12">
         <ButtonGroup className="flex w-full flex-col">
-          <Label className="py-1.5 px-0 text-xs font-bold text-muted-foreground">
-            Search
-          </Label>
+          <Label className="py-1.5 px-0 text-xs font-bold ">Search</Label>
           <div className="flex w-full gap-2">
             <ButtonGroup className="flex flex-1">
               <InputGroup className="md:h-10 relative flex w-full">
@@ -439,15 +438,7 @@ const CatalogResult = React.memo(function CatalogResult() {
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isLoading) {
-    return (
-      <div className="space-y-6 px-6 md:-12 pt-5">
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-5 overflow-hidden min-w-0 px-0 block">
-          {Array.from({ length: 24 }).map((_, index) => (
-            <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />
-          ))}
-        </div>
-      </div>
-    );
+    return <CatalogResultSkeleton />;
   }
 
   if (isError) {
@@ -469,24 +460,88 @@ const CatalogResult = React.memo(function CatalogResult() {
   }
 
   return (
-    <div className="space-y-6 px-6 md:px-12 pt-5">
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-5">
+    <div className="space-y-6 px-6 md:px-12">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
         {medias.map((media) => {
           const href = `/library/anime/${media.id}`;
           return <AnimeCard key={media.id} href={href} anime={media} />;
         })}
       </div>
       {isFetchingNextPage && (
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-5 overflow-hidden min-w-0 px-0 block">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-hidden min-w-0 px-0 block">
           {Array.from({ length: 48 }).map((_, index) => (
             <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />
           ))}
         </div>
       )}
-      <div ref={ref} className="grid grid-cols-3 md:grid-cols-4 gap-5"></div>
+      <div
+        ref={ref}
+        className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5"
+      ></div>
       {!isFetchingNextPage && <EndOfContent />}
     </div>
   );
 });
 
-export { CatalogProvider, CatalogSearch, CatalogResult, useCatalog };
+function CatalogSearchSkeleton({
+  className,
+  ...props
+}: React.ComponentPropsWithRef<"div">) {
+  return (
+    <div
+      className={cn("w-full flex flex-col gap-2 px-6 md:px-12", className)}
+      {...props}
+    >
+      <ButtonGroup className="flex w-full flex-col">
+        <Label className="py-1.5 px-0 text-xs font-bold ">Search</Label>
+        <div className="flex w-full gap-2">
+          <ButtonGroup className="flex flex-1">
+            <InputGroup className="md:h-10 relative flex w-full" data-disabled>
+              <InputGroupInput
+                name="Query"
+                placeholder="Search for anime, movies..."
+                disabled
+              />
+              <InputGroupAddon align="inline-start">
+                <SearchIcon />
+              </InputGroupAddon>
+            </InputGroup>
+          </ButtonGroup>
+          <div className="gap-2 w-fit items-stretch flex">
+            <Button className="md:size-10" disabled>
+              <SlidersVerticalIcon />
+            </Button>
+            <Button className="md:size-10" disabled>
+              <Trash2Icon />
+            </Button>
+          </div>
+        </div>
+      </ButtonGroup>
+    </div>
+  );
+}
+
+function CatalogResultSkeleton({
+  amount = 24,
+  className,
+  ...props
+}: React.ComponentPropsWithRef<"div"> & { amount?: number }) {
+  return (
+    <div className={cn("space-y-6 px-6 md:px-12", className)} {...props}>
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-hidden min-w-0 px-0 block">
+        {Array.from({ length: amount }).map((_, index) => (
+          <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export {
+  CatalogProvider,
+  CatalogSearch,
+  CatalogResult,
+  CatalogSearchSkeleton,
+  CatalogResultSkeleton,
+  useCatalog,
+};

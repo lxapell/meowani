@@ -47,7 +47,7 @@ export function AnimeCards({ animes, label = "Trending Now" }: AnimeProps) {
             return (
               <CarouselItem
                 key={anime.id}
-                className="basis-1/3 sm:basis-1/4 md:basis-1/5 pl-4 min-w-0 shrink-0 grow-0"
+                className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6 pl-4 min-w-0 shrink-0 grow-0"
               >
                 <Link href={href} className="group relative block w-full">
                   <Card className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
@@ -136,7 +136,7 @@ export function AnimeCardsSkeleton({
           {Array.from({ length: count }).map((_, index) => (
             <div
               key={index}
-              className="basis-1/3 sm:basis-1/4 md:basis-1/5 pl-4 min-w-0 shrink-0 grow-0"
+              className="basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6 pl-4 min-w-0 shrink-0 grow-0"
             >
               <div className="relative w-full">
                 <Skeleton className="aspect-[2/3] w-full rounded-xl" />

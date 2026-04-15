@@ -55,7 +55,7 @@ export function AnimeBanner() {
                       className="h-5 font-bold md:h-6 md:px-3.5 md:text-base"
                       asChild
                     >
-                      <Link href="/catalog?format=TV">TV</Link>
+                      <Link href="/browse?format=TV">TV</Link>
                     </Badge>
 
                     {/* Status */}
@@ -63,7 +63,7 @@ export function AnimeBanner() {
                       className="h-5 font-bold md:h-6 md:px-3.5 md:text-base"
                       asChild
                     >
-                      <Link href="/catalog?status=RELEASING">RELEASING</Link>
+                      <Link href="/browse?status=RELEASING">RELEASING</Link>
                     </Badge>
 
                     {/* Season */}
@@ -71,7 +71,7 @@ export function AnimeBanner() {
                       className="hidden h-5 font-bold md:h-6 md:px-3.5 md:text-base lg:inline-flex capitalize"
                       asChild
                     >
-                      <Link href="/catalog?season=WINTER%26year=2026">
+                      <Link href="/browse?season=WINTER%26year=2026">
                         WINTER
                       </Link>
                     </Badge>
@@ -81,7 +81,7 @@ export function AnimeBanner() {
                       className="hidden font-bold h-5 md:h-6 md:px-3.5 md:text-base lg:inline-flex"
                       asChild
                     >
-                      <Link href="/catalog?sort=SCORE_DESC">61%</Link>
+                      <Link href="/browse?sort=SCORE_DESC">61%</Link>
                     </Badge>
                   </div>
 
@@ -99,35 +99,35 @@ export function AnimeBanner() {
                       className="hidden h-7 text-nowrap md:inline-flex"
                       asChild
                     >
-                      <Link href="/catalog?genre=Action">Action</Link>
+                      <Link href="/browse?genre=Action">Action</Link>
                     </Badge>
                     <Badge
                       variant="secondary"
                       className="hidden h-7 text-nowrap md:inline-flex"
                       asChild
                     >
-                      <Link href="/catalog?genre=Comedy">Comedy</Link>
+                      <Link href="/browse?genre=Comedy">Comedy</Link>
                     </Badge>
                     <Badge
                       variant="secondary"
                       className="hidden h-7 text-nowrap md:inline-flex"
                       asChild
                     >
-                      <Link href="/catalog?genre=Drama">Drama</Link>
+                      <Link href="/browse?genre=Drama">Drama</Link>
                     </Badge>
                     <Badge
                       variant="secondary"
                       className="hidden h-7 text-nowrap md:inline-flex"
                       asChild
                     >
-                      <Link href="/catalog?genre=Fantasy">Fantasy</Link>
+                      <Link href="/browse?genre=Fantasy">Fantasy</Link>
                     </Badge>
                     <Badge
                       variant="secondary"
                       className="hidden h-7 text-nowrap md:inline-flex"
                       asChild
                     >
-                      <Link href="/catalog?genre=Sci-Fi">Sci-Fi</Link>
+                      <Link href="/browse?genre=Sci-Fi">Sci-Fi</Link>
                     </Badge>
                   </div>
 

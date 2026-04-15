@@ -49,7 +49,7 @@ export default function DynamicBreadcrumb() {
 
           const watchIndex = segments.indexOf("watch");
           if (watchIndex !== -1 && segment === segments[watchIndex + 1]) {
-            href = `/anime/${segment}`;
+            href = `/library/anime/${segment}`;
             try {
               const slug = new TitleSlug(segment);
               const { title } = slug.toTitle();
