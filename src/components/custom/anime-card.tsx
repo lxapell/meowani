@@ -9,6 +9,7 @@ import { PlayIcon, TvIcon } from "lucide-react";
 import { cn } from "@/lib/shadcn/utils";
 import Link from "next/link";
 import Image from "next/image";
+import { getShimmerDataURL } from "@/utils/placeholder";
 
 interface AnimeCardProps extends React.ComponentPropsWithRef<typeof Link> {
   anime: {
@@ -19,6 +20,7 @@ interface AnimeCardProps extends React.ComponentPropsWithRef<typeof Link> {
     genre: string[];
     type: string;
     episodes?: number;
+    color?: string;
   };
   className?: string;
 }
@@ -30,6 +32,8 @@ export function AnimeCard({ anime, className, ...props }: AnimeCardProps) {
         <Image
           src={anime.image}
           alt={anime.title}
+          placeholder="blur"
+          blurDataURL={getShimmerDataURL(anime.color || "#8bdfea")}
           fill
           sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"

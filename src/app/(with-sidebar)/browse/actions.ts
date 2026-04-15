@@ -66,7 +66,6 @@ export async function fetchCatalog({
     }
   });
 
-  console.log(filters.Studio?.value);
   let query;
   if (filters.Studio?.value) {
     const variables = {
@@ -78,7 +77,7 @@ export async function fetchCatalog({
       query,
       variables,
     );
-    console.log(map(raw.Studio?.media?.nodes!));
+    // console.log(map(raw.Studio?.media?.nodes!));
     return {
       pageInfo: raw.Studio!.media!.pageInfo,
       media: map(raw.Studio?.media?.nodes!),
@@ -86,7 +85,7 @@ export async function fetchCatalog({
   } else {
     query = advancedsearch;
     const raw = await anilistRequest<AdvancedSearchQuery>(query, baseVariables);
-    console.log(map(raw.Page?.media!));
+    // console.log(map(raw.Page?.media!));
     return { pageInfo: raw.Page?.pageInfo, media: map(raw.Page?.media!) };
   }
 }
@@ -113,5 +112,6 @@ const map = (data: any[]) =>
       genre: anime.genres as string[],
       episodes: anime.episodes as number,
       studios: anime.studios.nodes.map((studio: Studio) => studio.name),
+      color: anime.coverImage.color as string,
     };
   });

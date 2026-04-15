@@ -226,6 +226,11 @@ export const animeInfo = gpl`
         native
         userPreferred
       }
+      coverImage {
+        large
+        extraLarge
+        color
+      }
       description
       bannerImage
       episodes

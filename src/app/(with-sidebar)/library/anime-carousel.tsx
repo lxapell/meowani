@@ -112,5 +112,6 @@ const map = (data: any[]) =>
         status.slice(1).toLowerCase()) as string,
       genre: anime.genres as string[],
       episodes: anime.episodes as number,
+      color: anime.coverImage.color as string,
     };
   });

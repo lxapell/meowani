@@ -32,5 +32,7 @@ export interface PageData {
     genre: string[];
     type: string;
     episodes: number;
+    studios: string[];
+    color: string;
   };
 }

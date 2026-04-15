@@ -26,6 +26,7 @@ import {
 
 import { InfoIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getShimmerDataURL } from "@/utils/placeholder";
 
 interface SpotlightProps {
   items: ISpotlight[];
@@ -58,6 +59,8 @@ export function Spotlight({ items }: SpotlightProps) {
                   <Image
                     src={item.banner}
                     alt="slide"
+                    placeholder="blur"
+                    blurDataURL={getShimmerDataURL("#8bdfea")}
                     fill
                     className="object-cover"
                   />
