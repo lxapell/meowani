@@ -5,6 +5,7 @@ import type { FilterState, Normalized, PageData } from "@/types/catalog";
 import { useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import { useInView } from "react-intersection-observer";
+import { useQueryState, parseAsString, parseAsArrayOf } from "nuqs";
 
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
@@ -69,119 +70,68 @@ interface Data {
   label: string;
   data: Normalized[];
   type: "single" | "multiple";
-  defaultValue: null | [];
+  defaultValue: any;
 }
 
-type CatalogContextValue = {
-  filters: FilterState;
-  updateFilter: <K extends keyof FilterState>(
-    key: K,
-    value: FilterState[K],
-  ) => void;
-  clearFilters: () => void;
-  data: InfiniteData<{ pageInfo: any; media: any[] }> | undefined;
-  isLoading: boolean;
-  isError: boolean;
-  fetchNextPage: () => void;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
-};
+const FiltersStateContext = React.createContext<FilterState | null>(null);
 
-const CatalogContext = React.createContext<CatalogContextValue | null>(null);
+type TDispatchContext = ReturnType<typeof useCatalogFilters>["setters"];
+const FiltersDispatchContext = React.createContext<TDispatchContext | null>(
+  null,
+);
 
-function useCatalog() {
-  const ctx = React.useContext(CatalogContext);
-  if (!ctx) throw new Error("useCatalog must be used within CatalogProvider");
+function CatalogFiltersProvider({
+  children,
+  initialFilters,
+  ...props
+}: React.ComponentProps<"div"> & { initialFilters: FilterState }) {
+  const { filters, setters } = useCatalogFilters(initialFilters);
+
+  const stateValue = React.useMemo(() => filters, [filters]);
+  const dispatchValue = React.useMemo(() => setters, [setters]);
+
+  return (
+    <FiltersStateContext.Provider value={stateValue}>
+      <FiltersDispatchContext.Provider value={dispatchValue} {...props}>
+        {children}
+      </FiltersDispatchContext.Provider>
+    </FiltersStateContext.Provider>
+  );
+}
+
+function useFiltersState() {
+  const ctx = React.useContext(FiltersStateContext);
+  if (!ctx)
+    throw new Error(
+      "useFiltersState must be used within a CatalogFiltersProvider",
+    );
   return ctx;
 }
 
-function CatalogProvider({
-  initialFilters: initialFiltersProps,
-  children,
-  ...props
-}: React.ComponentProps<"div"> & {
-  initialFilters: FilterState;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [filters, setFilters] =
-    React.useState<FilterState>(initialFiltersProps);
-  const [isPending, startTransition] = React.useTransition();
+function useFiltersDispatch() {
+  const ctx = React.useContext(FiltersDispatchContext);
+  if (!ctx)
+    throw new Error(
+      "useFiltersDispatch must be used within a CatalogFiltersProvider",
+    );
+  return ctx;
+}
 
-  const updateFilter = React.useCallback(
-    <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
-      startTransition(() => {
-        setFilters((prev) => ({ ...prev, [key]: value }));
-      });
-    },
-    [],
-  );
+function useCatalogData(filters: FilterState) {
+  const serializedFilters = JSON.stringify(filters);
 
-  const clearFilters = React.useCallback(() => {
-    startTransition(() => {
-      setFilters(initialFilters);
-    });
-  }, [initialFilters]);
-
-  React.useEffect(() => {
-    const params = filtersToURLParams(filters);
-    const url = params.toString() ? `${pathname}?${params}` : pathname;
-    router.replace(url, { scroll: false });
-  }, [filters, pathname, router]);
-
-  const serializedFilters = React.useMemo(
-    () => JSON.stringify(filters),
-    [filters],
-  );
-
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isError,
-  } = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: ["catalog", serializedFilters],
-    queryFn: ({ pageParam }) =>
+    queryFn: ({ pageParam = 1 }) =>
       fetchCatalog({ pageParam: pageParam as number, filters }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
-      lastPage?.pageInfo?.hasNextPage
-        ? lastPage?.pageInfo?.currentPage! + 1
+      lastPage.pageInfo?.hasNextPage
+        ? lastPage.pageInfo?.currentPage! + 1
         : undefined,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
-
-  const value = React.useMemo(
-    () => ({
-      filters,
-      updateFilter,
-      clearFilters,
-      data,
-      isLoading,
-      isError,
-      hasNextPage,
-      fetchNextPage,
-      isFetchingNextPage,
-    }),
-    [
-      filters,
-      updateFilter,
-      clearFilters,
-      data,
-      isLoading,
-      isError,
-      hasNextPage,
-      fetchNextPage,
-      isFetchingNextPage,
-    ],
-  );
-
-  return (
-    <CatalogContext.Provider value={value} {...props}>
-      {children}
-    </CatalogContext.Provider>
-  );
 }
 
 type ComboboxKeys = Exclude<
@@ -189,32 +139,58 @@ type ComboboxKeys = Exclude<
   "Query" | "Min Duration" | "Max Duration" | "Min Episodes" | "Max Episodes"
 >;
 
-const CatalogSearch = React.memo(function CatalogSearch() {
-  const { filters, updateFilter, clearFilters } = useCatalog();
+function CatalogSearch() {
+  const filters = useFiltersState();
+  const dispatch = useFiltersDispatch();
+  const [isPending, startTransition] = React.useTransition();
 
   const [searchDraft, setSearchDraft] = React.useState(filters.Query);
+  const deferredSearch = React.useDeferredValue(searchDraft);
 
-  const debouncedCommitSearch = useDebouncedCallback((value: string) => {
-    updateFilter("Query", value);
-  }, 500);
+  React.useEffect(() => {
+    if (deferredSearch !== filters.Query) {
+      dispatch.setQuery(deferredSearch);
+    }
+  }, [deferredSearch, filters.Query, dispatch]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setSearchDraft(val);
-    debouncedCommitSearch(val);
   };
 
-  React.useEffect(() => {
-    setSearchDraft(filters.Query);
-  }, [filters.Query]);
-
-  const handleChange = (key: string, value: any) => {
-    updateFilter(key as keyof FilterState, value);
+  const handleChange = (key: keyof typeof dispatch, value: any) => {
+    startTransition(() => {
+      (dispatch[key] as Function)(value);
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    updateFilter(name as keyof FilterState, value);
+    startTransition(() => {
+      if (name === "Min Duration") dispatch.setMinDuration(value);
+      else if (name === "Max Duration") dispatch.setMaxDuration(value);
+      else if (name === "Min Episodes") dispatch.setMinEpisodes(value);
+      else if (name === "Max Episodes") dispatch.setMaxEpisodes(value);
+    });
+  };
+
+  const handleClearAll = () => {
+    startTransition(() => {
+      dispatch.setQuery("");
+      dispatch.setGenres([]);
+      dispatch.setTags([]);
+      dispatch.setFormats([]);
+      dispatch.setYear(null);
+      dispatch.setSeason(null);
+      dispatch.setStatus(null);
+      dispatch.setSortBy(null);
+      dispatch.setStudio(null);
+      dispatch.setMinDuration("");
+      dispatch.setMaxDuration("");
+      dispatch.setMinEpisodes("");
+      dispatch.setMaxEpisodes("");
+    });
+    setSearchDraft("");
   };
 
   return (
@@ -227,7 +203,7 @@ const CatalogSearch = React.memo(function CatalogSearch() {
               <InputGroup className="md:h-10 relative flex w-full">
                 <InputGroupInput
                   name="Query"
-                  value={filters.Query}
+                  value={searchDraft}
                   onChange={handleSearchChange}
                   placeholder="Search for anime, movies..."
                 />
@@ -242,7 +218,7 @@ const CatalogSearch = React.memo(function CatalogSearch() {
                   <SlidersVerticalIcon />
                 </Button>
               </CollapsibleTrigger>
-              <Button className="md:size-10" onClick={clearFilters}>
+              <Button className="md:size-10" onClick={handleClearAll}>
                 <Trash2Icon />
               </Button>
             </div>
@@ -250,97 +226,21 @@ const CatalogSearch = React.memo(function CatalogSearch() {
         </ButtonGroup>
         <CollapsibleContent>
           <ComboboxGroup className="grid grid-cols-2 md:grid-cols-6 gap-2">
-            {staticCatalogData.map((data) => {
-              const virtualizerRef = React.useRef<ReturnType<
-                typeof useVirtualizer<HTMLDivElement, Element>
-              > | null>(null);
-              const virtualized =
-                data.label === "Tags" || data.label === "Studio";
+            {staticCatalogData.map((data) => (
+              <MemoizedCombobox
+                key={data.label}
+                data={data as Data}
+                value={filters[data.label as ComboboxKeys] ?? data.defaultValue}
+                onChange={(value) => {
+                  const setterKey =
+                    data.label === "Sort by"
+                      ? "setSortBy"
+                      : (`set${data.label}` as keyof typeof dispatch);
+                  handleChange(setterKey, value);
+                }}
+              />
+            ))}
 
-              return (
-                <Combobox
-                  key={data.label}
-                  virtualized={virtualized}
-                  multiple={data.type === "multiple"}
-                  autoHighlight
-                  items={data.data}
-                  onValueChange={(value) => handleChange(data.label, value)}
-                  value={
-                    filters[data.label as ComboboxKeys] ?? data.defaultValue
-                  }
-                  onItemHighlighted={(item, { reason, index }) => {
-                    const virtualizer = virtualizerRef.current;
-                    if (!item || !virtualizer) return;
-                    const isStart = index === 0;
-                    const isEnd = index === virtualizer.options.count - 1;
-                    const shouldScroll =
-                      reason === "none" ||
-                      (reason === "keyboard" && (isStart || isEnd));
-
-                    if (shouldScroll) {
-                      queueMicrotask(() => {
-                        virtualizer.scrollToIndex(index, {
-                          align: isEnd ? "start" : "end",
-                        });
-                      });
-                    }
-                  }}
-                >
-                  <div className="flex flex-col relative">
-                    <ComboboxLabel className="px-0 font-bold">
-                      {data.label}
-                    </ComboboxLabel>
-                    <ComboboxTrigger
-                      aria-placeholder={data.label}
-                      render={
-                        <Button
-                          variant="outline"
-                          className="justify-between font-normal"
-                        >
-                          <div className="w-full text-start truncate">
-                            <ComboboxValue placeholder="Any" />
-                          </div>
-                          <ChevronsUpDownIcon />
-                        </Button>
-                      }
-                    />
-                  </div>
-                  <ComboboxContent className="">
-                    <ComboboxInput
-                      showTrigger={false}
-                      placeholder="Search"
-                      showClear
-                      autoComplete="on"
-                    >
-                      <InputGroupAddon>
-                        <SearchIcon />
-                      </InputGroupAddon>
-                    </ComboboxInput>
-                    <ComboboxEmpty className="p-5">
-                      No results found.
-                    </ComboboxEmpty>
-                    {virtualized ? (
-                      <ComboboxList>
-                        <VirtualizedComboboxList
-                          overscan={5}
-                          virtualizerRef={virtualizerRef}
-                        />
-                      </ComboboxList>
-                    ) : (
-                      <ComboboxList>
-                        {(item: Normalized) => (
-                          <ComboboxItem key={item.value} value={item}>
-                            <div className="truncate line-clamp-1">
-                              {item.label}
-                            </div>
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    )}
-                  </ComboboxContent>
-                </Combobox>
-              );
-            })}
             <FieldGroup className="grid grid-cols-2 col-span-2 gap-2">
               <Field className="gap-0">
                 <FieldLabel
@@ -377,6 +277,7 @@ const CatalogSearch = React.memo(function CatalogSearch() {
                 />
               </Field>
             </FieldGroup>
+
             <FieldGroup className="grid grid-cols-2 col-span-2 gap-2">
               <Field className="gap-0">
                 <FieldLabel
@@ -418,9 +319,101 @@ const CatalogSearch = React.memo(function CatalogSearch() {
       </Collapsible>
     </>
   );
-});
+}
+
+const MemoizedCombobox = React.memo(
+  ({
+    data,
+    value,
+    onChange,
+  }: {
+    data: Data;
+    value: any;
+    onChange: (value: any) => void;
+  }) => {
+    const virtualizerRef = React.useRef<ReturnType<
+      typeof useVirtualizer<HTMLDivElement, Element>
+    > | null>(null);
+    const virtualized = data.label === "Tags" || data.label === "Studio";
+
+    return (
+      <Combobox
+        key={data.label}
+        virtualized={virtualized}
+        multiple={data.type === "multiple"}
+        autoHighlight
+        items={data.data}
+        onValueChange={onChange}
+        value={value}
+        onItemHighlighted={(item, { reason, index }) => {
+          const virtualizer = virtualizerRef.current;
+          if (!item || !virtualizer) return;
+          const isStart = index === 0;
+          const isEnd = index === virtualizer.options.count - 1;
+          const shouldScroll =
+            reason === "none" || (reason === "keyboard" && (isStart || isEnd));
+
+          if (shouldScroll) {
+            queueMicrotask(() => {
+              virtualizer.scrollToIndex(index, {
+                align: isEnd ? "start" : "end",
+              });
+            });
+          }
+        }}
+      >
+        <div className="flex flex-col relative">
+          <ComboboxLabel className="px-0 font-bold">{data.label}</ComboboxLabel>
+          <ComboboxTrigger
+            aria-placeholder={data.label}
+            render={
+              <Button variant="outline" className="justify-between font-normal">
+                <div className="w-full text-start truncate">
+                  <ComboboxValue placeholder="Any" />
+                </div>
+                <ChevronsUpDownIcon />
+              </Button>
+            }
+          />
+        </div>
+        <ComboboxContent className="">
+          <ComboboxInput
+            showTrigger={false}
+            placeholder="Search"
+            showClear
+            autoComplete="on"
+          >
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+          </ComboboxInput>
+          <ComboboxEmpty className="p-5">No results found.</ComboboxEmpty>
+          {virtualized ? (
+            <ComboboxList>
+              <VirtualizedComboboxList
+                overscan={5}
+                virtualizerRef={virtualizerRef}
+              />
+            </ComboboxList>
+          ) : (
+            <ComboboxList>
+              {(item: Normalized) => (
+                <ComboboxItem key={item.value} value={item}>
+                  <div className="truncate line-clamp-1">{item.label}</div>
+                </ComboboxItem>
+              )}
+            </ComboboxList>
+          )}
+        </ComboboxContent>
+      </Combobox>
+    );
+  },
+  (prev, next) => prev.value === next.value && prev.data === next.data,
+);
+MemoizedCombobox.displayName = "MemoizedCombobox";
 
 const CatalogResult = React.memo(function CatalogResult() {
+  const filters = useFiltersState();
   const {
     data,
     isLoading,
@@ -428,7 +421,7 @@ const CatalogResult = React.memo(function CatalogResult() {
     fetchNextPage,
     isError,
     isFetchingNextPage,
-  } = useCatalog();
+  } = useCatalogData(filters);
   const { ref, inView } = useInView();
 
   React.useEffect(() => {
@@ -537,11 +530,194 @@ function CatalogResultSkeleton({
   );
 }
 
+function useCatalogFilters(defaultFilters: FilterState) {
+  const [query, setQuery] = useQueryState(
+    "q",
+    parseAsString.withDefault(defaultFilters.Query),
+  );
+
+  const [genreValues, setGenreValues] = useQueryState(
+    "genres",
+    parseAsArrayOf(parseAsString).withDefault(
+      defaultFilters.Genres.map((genre) => genre.value),
+    ),
+  );
+  const [tagValues, setTagValues] = useQueryState(
+    "tags",
+    parseAsArrayOf(parseAsString).withDefault(
+      defaultFilters.Tags.map((tag) => tag.value),
+    ),
+  );
+  const [formatValues, setFormatValues] = useQueryState(
+    "formats",
+    parseAsArrayOf(parseAsString).withDefault(
+      defaultFilters.Formats.map((format) => format.value),
+    ),
+  );
+
+  const [year, setYear] = useQueryState(
+    "year",
+    parseAsString.withDefault(defaultFilters.Year?.value ?? ""),
+  );
+  const [season, setSeason] = useQueryState(
+    "season",
+    parseAsString.withDefault(defaultFilters.Season?.value ?? ""),
+  );
+  const [status, setStatus] = useQueryState(
+    "status",
+    parseAsString.withDefault(defaultFilters.Status?.value ?? ""),
+  );
+  const [sortBy, setSortBy] = useQueryState(
+    "sort",
+    parseAsString.withDefault(defaultFilters["Sort by"]?.value ?? ""),
+  );
+  const [studio, setStudio] = useQueryState(
+    "studio",
+    parseAsString.withDefault(defaultFilters.Studio?.value ?? ""),
+  );
+
+  const [minDuration, setMinDuration] = useQueryState(
+    "minDuration",
+    parseAsString.withDefault(defaultFilters["Min Duration"]),
+  );
+  const [maxDuration, setMaxDuration] = useQueryState(
+    "maxDuration",
+    parseAsString.withDefault(defaultFilters["Max Duration"]),
+  );
+  const [minEpisodes, setMinEpisodes] = useQueryState(
+    "minEpisodes",
+    parseAsString.withDefault(defaultFilters["Min Episodes"]),
+  );
+  const [maxEpisodes, setMaxEpisodes] = useQueryState(
+    "maxEpisodes",
+    parseAsString.withDefault(defaultFilters["Max Episodes"]),
+  );
+
+  const findItem = React.useCallback(
+    (data: Normalized[], value: string) =>
+      data.find((item) => item.value === value) ?? null,
+    [],
+  );
+
+  const filters: FilterState = React.useMemo(
+    () => ({
+      Query: query,
+      Genres: genreValues
+        .map((v) =>
+          findItem(
+            staticCatalogData.find((d) => d.label === "Genres")!.data,
+            v,
+          ),
+        )
+        .filter(Boolean) as Normalized[],
+      Tags: tagValues
+        .map((v) =>
+          findItem(staticCatalogData.find((d) => d.label === "Tags")!.data, v),
+        )
+        .filter(Boolean) as Normalized[],
+      Formats: formatValues
+        .map((v) =>
+          findItem(
+            staticCatalogData.find((d) => d.label === "Formats")!.data,
+            v,
+          ),
+        )
+        .filter(Boolean) as Normalized[],
+      Year: year
+        ? findItem(
+            staticCatalogData.find((d) => d.label === "Year")!.data,
+            year,
+          )
+        : null,
+      Season: season
+        ? findItem(
+            staticCatalogData.find((d) => d.label === "Season")!.data,
+            season,
+          )
+        : null,
+      Status: status
+        ? findItem(
+            staticCatalogData.find((d) => d.label === "Status")!.data,
+            status,
+          )
+        : null,
+      "Sort by": sortBy
+        ? findItem(
+            staticCatalogData.find((d) => d.label === "Sort by")!.data,
+            sortBy,
+          )
+        : null,
+      Studio: studio
+        ? findItem(
+            staticCatalogData.find((d) => d.label === "Studio")!.data,
+            studio,
+          )
+        : null,
+      "Min Duration": minDuration,
+      "Max Duration": maxDuration,
+      "Min Episodes": minEpisodes,
+      "Max Episodes": maxEpisodes,
+    }),
+    [
+      query,
+      genreValues,
+      tagValues,
+      formatValues,
+      year,
+      season,
+      status,
+      sortBy,
+      studio,
+      minDuration,
+      maxDuration,
+      minEpisodes,
+      maxEpisodes,
+      findItem,
+    ],
+  );
+
+  const setters = React.useMemo(
+    () => ({
+      setQuery,
+      setGenres: (items: Normalized[]) =>
+        setGenreValues(items.map((i) => i.value)),
+      setTags: (items: Normalized[]) => setTagValues(items.map((i) => i.value)),
+      setFormats: (items: Normalized[]) =>
+        setFormatValues(items.map((i) => i.value)),
+      setYear: (item: Normalized | null) => setYear(item?.value ?? ""),
+      setSeason: (item: Normalized | null) => setSeason(item?.value ?? ""),
+      setStatus: (item: Normalized | null) => setStatus(item?.value ?? ""),
+      setSortBy: (item: Normalized | null) => setSortBy(item?.value ?? ""),
+      setStudio: (item: Normalized | null) => setStudio(item?.value ?? ""),
+      setMinDuration,
+      setMaxDuration,
+      setMinEpisodes,
+      setMaxEpisodes,
+    }),
+    [
+      setQuery,
+      setGenreValues,
+      setTagValues,
+      setFormatValues,
+      setSeason,
+      setStatus,
+      setSortBy,
+      setStudio,
+      setMinDuration,
+      setMaxDuration,
+      setMinEpisodes,
+      setMaxEpisodes,
+    ],
+  );
+
+  return { filters, setters };
+}
+
 export {
-  CatalogProvider,
+  CatalogFiltersProvider,
   CatalogSearch,
   CatalogResult,
   CatalogSearchSkeleton,
   CatalogResultSkeleton,
-  useCatalog,
+  useCatalogData,
 };

@@ -3,9 +3,10 @@ import { Suspense } from "react";
 import type { FilterState } from "@/types/catalog";
 import { fetchCatalog } from "./actions";
 import {
-  CatalogProvider,
+  CatalogFiltersProvider,
   CatalogSearch,
   CatalogResult,
+  CatalogResultSkeleton,
 } from "@/components/custom/catalog-search";
 import {
   URLParamsToFilters,
@@ -46,10 +47,12 @@ export default async function BrowsePage({
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="min-w-0 flex flex-1 shrink flex-col bg-background overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh md:pt-16">
-        <CatalogProvider initialFilters={initialFilters}>
+        <CatalogFiltersProvider initialFilters={initialFilters}>
           <CatalogSearch />
-          <CatalogResult />
-        </CatalogProvider>
+          <Suspense fallback={<CatalogResultSkeleton />}>
+            <CatalogResult />
+          </Suspense>
+        </CatalogFiltersProvider>
       </div>
     </HydrationBoundary>
   );

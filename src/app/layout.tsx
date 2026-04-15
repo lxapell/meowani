@@ -9,6 +9,7 @@ import { cn } from "@/lib/shadcn/utils";
 import { SerwistProvider } from "./serwist";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -90,10 +91,12 @@ export default function RootLayout({
       <head />
       <body className="min-h-full flex flex-col">
         <SerwistProvider swUrl="/serwist/sw.js">
-          <TooltipProvider>
-            {children}
-            {/*<BackNavigationFix />*/}
-          </TooltipProvider>
+          <NuqsAdapter>
+            <TooltipProvider>
+              {children}
+              {/*<BackNavigationFix />*/}
+            </TooltipProvider>
+          </NuqsAdapter>
         </SerwistProvider>
         <Analytics />
         <Toaster />

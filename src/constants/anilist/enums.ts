@@ -1,5 +1,5 @@
 import { MediaStatus } from "@/types/anilist-types";
-import { FilterState } from "@/types/catalog";
+import { FilterState, Normalized } from "@/types/catalog";
 import { normalize } from "@/utils/catalog/helpers";
 
 export const statusEnums = [
@@ -1520,6 +1520,12 @@ for (let y = start; y >= end; y--) {
 }
 export const yearEnums = years.map(String);
 
+interface Data {
+  label: string;
+  data: Normalized[];
+  type: "single" | "multiple";
+  defaultValue: any;
+}
 export const staticCatalogData = [
   {
     label: "Genres",
@@ -1573,7 +1579,7 @@ export const staticCatalogData = [
     type: "single",
     defaultValue: null,
   },
-];
+] as Data[];
 export const initialFilters: FilterState = {
   Genres: [],
   Tags: [],
