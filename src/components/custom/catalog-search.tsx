@@ -1,25 +1,21 @@
 "use client";
 
 import * as React from "react";
-import type { FilterState, Normalized, PageData } from "@/types/catalog";
-import { useInfiniteQuery, InfiniteData } from "@tanstack/react-query";
-import { useDebouncedCallback } from "use-debounce";
+import type { FilterState, Normalized } from "@/types/catalog";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useQueryState, parseAsString, parseAsArrayOf } from "nuqs";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   Collapsible,
   CollapsibleContent,
@@ -29,17 +25,13 @@ import {
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
+  ComboboxGroup,
   ComboboxInput,
   ComboboxItem,
-  ComboboxList,
-  ComboboxChip,
-  ComboboxChips,
-  ComboboxChipsInput,
-  ComboboxGroup,
-  useComboboxAnchor,
-  ComboboxValue,
-  ComboboxTrigger,
   ComboboxLabel,
+  ComboboxList,
+  ComboboxTrigger,
+  ComboboxValue,
 } from "@/components/ui/combobox";
 import {
   Field,
@@ -47,23 +39,18 @@ import {
   FieldLabel,
   FieldError,
 } from "@/components/ui/field";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { AnimeCard, AnimeCardSkeleton } from "@/components/custom/anime-card";
 import { VirtualizedComboboxList } from "@/components/ui/virtualized-list";
+import { EndOfContent } from "@/components/custom/end-of-content";
+
 import {
   ChevronsUpDownIcon,
   SearchIcon,
   SlidersVerticalIcon,
   Trash2Icon,
 } from "lucide-react";
-import { initialFilters, staticCatalogData } from "@/constants/anilist/enums";
-import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
-import { filtersToURLParams } from "@/utils/catalog/helpers";
+import { staticCatalogData } from "@/constants/anilist/enums";
 import { fetchCatalog } from "@/app/(with-sidebar)/browse/actions";
-import { AnimeCard, AnimeCardSkeleton } from "./anime-card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { EndOfContent } from "@/components/custom/end-of-content";
 import { cn } from "@/lib/shadcn/utils";
 
 interface Data {

@@ -63,7 +63,7 @@ export function AnimeCards({ animes, label = "Trending Now" }: AnimeProps) {
                     {/*Play Button*/}
                     <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 scale-75 group-hover:scale-100">
-                        <PlayIcon />
+                        <PlayIcon fill="currentColor" />
                       </div>
                     </div>
 

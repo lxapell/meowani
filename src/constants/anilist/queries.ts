@@ -10,7 +10,7 @@ export const trending = gpl`
         lastPage
         hasNextPage
       }
-      media(sort: TRENDING_DESC, type: ANIME) {
+      media(sort: TRENDING_DESC, type: ANIME, genre_not_in: ["Hentai"]) {
         id
         idMal
         title {
@@ -69,7 +69,7 @@ export const top100anime = gpl`
         lastPage
         hasNextPage
       }
-      media(sort: SCORE_DESC, type: ANIME) {
+      media(sort: SCORE_DESC, type: ANIME, genre_not_in: ["Hentai"]) {
         id
         idMal
         title {
@@ -121,7 +121,7 @@ export const popular = gpl`
         lastPage
         hasNextPage
       }
-      media(sort: POPULARITY_DESC, type: ANIME) {
+      media(sort: POPULARITY_DESC, type: ANIME, genre_not_in: ["Hentai"]) {
         id
         idMal
         title {
@@ -173,7 +173,7 @@ export const seasonal = gpl`
         lastPage
         hasNextPage
       }
-      media(season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, type: ANIME) {
+      media(season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, type: ANIME, genre_not_in: ["Hentai"]) {
         id
         idMal
         title {
@@ -405,6 +405,7 @@ export const advancedsearch = gpl`
         duration_lesser: $durationLesser,
         duration_greater: $durationGreater,
         genre_in: $genres,
+        genre_not_in: ["Hentai"],
         tag_in: $tags,
         sort: $sort,
       ) {
@@ -558,7 +559,7 @@ export const schedule = gpl`
         lastPage
         hasNextPage
       }
-      airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
+      airingSchedules(airingAt_greater: $from, airingAt_lesser: $to, media_genre_not_in: ["Hentai"]) {
         episode
         timeUntilAiring
         airingAt
