@@ -668,7 +668,8 @@ function Relations({ items }: RelationsProps) {
             const href = `/library/anime/${item.id}`;
             const anime = {
               ...item,
-              status: mapType(item.relationType),
+              type: undefined,
+              status: undefined,
               genre: item.genres,
               episodes: item.episodes || item.chapters,
             };

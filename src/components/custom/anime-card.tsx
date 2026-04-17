@@ -13,12 +13,13 @@ import { getShimmerDataURL } from "@/utils/placeholder";
 
 interface AnimeCardProps extends React.ComponentPropsWithRef<typeof Link> {
   anime: {
+    relationType?: string;
     id?: string;
-    status: string;
+    status?: string;
     image: string;
     title: string;
     genre: string[];
-    type: string;
+    type?: string;
     episodes?: number;
     color?: string;
   };
@@ -67,22 +68,41 @@ export function AnimeCard({ anime, className, ...props }: AnimeCardProps) {
       {/* Info Below */}
       <div className="mt-2 space-y-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <TvIcon className="size-3 text-muted-foreground" />
-            <span className="text-[10px] text-muted-foreground">
-              {anime.type}
-            </span>
-          </div>
-          <Badge
-            variant="outline"
-            className="bg-primary text-primary-foreground text-[8px] h-4 px-1.5"
-          >
-            {anime.status}
-          </Badge>
+          {anime.type && (
+            <div className="flex items-center gap-1">
+              <TvIcon className="size-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground">
+                {anime.type}
+              </span>
+            </div>
+          )}
+          {anime.status && (
+            <Badge
+              variant="outline"
+              className="bg-primary text-primary-foreground text-[8px] h-4 px-1.5"
+            >
+              {anime.status}
+            </Badge>
+          )}
         </div>
         <h3 className="line-clamp-2 text-xs font-semibold text-foreground/90 group-hover:text-foreground">
           {anime.title}
         </h3>
+        <div className="flex items-center justify-between">
+          {anime.relationType && (
+            <Badge
+              variant="outline"
+              className="bg-primary text-primary-foreground text-[8px] h-4 px-1.5"
+            >
+              {anime.relationType}
+            </Badge>
+          )}
+          {anime.episodes && (
+            <span className="text-[10px] text-muted-foreground">
+              {anime.episodes}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );
