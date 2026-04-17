@@ -52,13 +52,15 @@ export function AnimeCard({ anime, className, ...props }: AnimeCardProps) {
           <p className="line-clamp-2 text-xs leading-snug text-white/90">
             {anime.title}
           </p>
-          <div className="mt-1.5 flex flex-wrap gap-1">
-            {anime.genre.map((genre) => (
-              <Badge key={genre} className="">
-                {genre}
-              </Badge>
-            ))}
-          </div>
+          {anime.genre && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {anime.genre.map((genre) => (
+                <Badge key={genre} className="">
+                  {genre}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
       </Card>
 

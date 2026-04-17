@@ -1,3 +1,7 @@
+"use client";
+
+import * as React from "react";
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -33,6 +37,56 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { AnimeCard } from "@/components/custom/anime-card";
+
+const test = [
+  {
+    relationType: "PREQUEL",
+    id: "146066",
+    title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 3rd Season",
+    type: "TV",
+    image:
+      "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx146066-zzKl6P6OeEjy.jpg",
+    color: "#bbd6f1",
+    episodes: 13,
+    chapters: undefined,
+    status: "FINISHED",
+    genres: [],
+  },
+  {
+    relationType: "SOURCE",
+    id: "115166",
+    title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e: 2-nensei-hen",
+    type: "NOVEL",
+    image:
+      "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx115166-eBK5EqkUTplf.jpg",
+    color: "#50bbe4",
+    episodes: undefined,
+    chapters: 130,
+    status: "FINISHED",
+    genres: [],
+  },
+  {
+    relationType: "ALTERNATIVE",
+    id: "141044",
+    title: "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e: 2-nensei-hen",
+    type: "MANGA",
+    image:
+      "https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx141044-bBPhRIc0J88X.jpg",
+    color: "#781a50",
+    episodes: undefined,
+    chapters: 27,
+    status: "FINISHED",
+    genres: [],
+  },
+];
 
 export function AnimeInfoBanner({
   className,
@@ -155,7 +209,7 @@ export function AnimeInfoBanner({
                 <div className="flex md:hidden flex-wrap items-center justify-center gap-2">
                   <Badge
                     variant="outline"
-                    className="h-7 bg-secondary text-secondary-foreground"
+                    className="h-7 border-cyan-500/20 bg-cyan-500/10 text-cyan-500"
                   >
                     <StarIcon fill="currentColor" />
                     7.9
@@ -209,27 +263,27 @@ export function AnimeInfoTabs({
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
   return (
     <Tabs
-      className={cn("px-4 md:px-10 xl:px-14", className)}
+      className={cn("px-4 md:px-10 xl:px-14 gap-4 sm:gap-6", className)}
       defaultValue="overview"
       orientation="horizontal"
       {...props}
     >
-      <TabsList className="group-data-horizontal/tabs:h-10 h-10 bg-white/3 border ring-ring">
+      <TabsList className="group-data-horizontal/tabs:h-10 h-10 bg-white/3 border ring-ring w-fit p-1 gap-0.5 sm:p-1.5">
         <TabsTrigger
           value="overview"
-          className="text-primary-foreground/60 hover:text-primary-foreground dark:hover:text-primary-foreground data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground data-active:border-transparent dark:data-active:border-transparent"
+          className="text-primary-foreground/60 hover:text-primary-foreground dark:hover:text-primary-foreground data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground data-active:border-transparent dark:data-active:border-transparenti px-3.5 py-1.5 sm:px-6 sm:py-2 text-xs sm:text-sm font-semibold transition-colors duration-300 ease-in-out"
         >
           Overview
         </TabsTrigger>
         <TabsTrigger
           value="relations"
-          className="text-primary-foreground/60 hover:text-primary-foreground dark:hover:text-primary-foreground data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground data-active:border-transparent dark:data-active:border-transparent"
+          className="text-primary-foreground/60 hover:text-primary-foreground dark:hover:text-primary-foreground data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground data-active:border-transparent dark:data-active:border-transparenti px-3.5 py-1.5 sm:px-6 sm:py-2 text-xs sm:text-sm font-semibold transition-colors duration-300 ease-in-out"
         >
           Relations
         </TabsTrigger>
         <TabsTrigger
           value="characters"
-          className="text-primary-foreground/60 hover:text-primary-foreground dark:hover:text-primary-foreground data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground data-active:border-transparent dark:data-active:border-transparent"
+          className="text-primary-foreground/60 hover:text-primary-foreground dark:hover:text-primary-foreground data-active:bg-primary data-active:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground data-active:border-transparent dark:data-active:border-transparenti px-3.5 py-1.5 sm:px-6 sm:py-2 text-xs sm:text-sm font-semibold transition-colors duration-300 ease-in-out"
         >
           Characters
         </TabsTrigger>
@@ -549,9 +603,100 @@ export function AnimeInfoTabs({
             </aside>
           </div>
         </TabsContent>
-        <TabsContent value="relations">CHeese</TabsContent>
+        <TabsContent value="relations">
+          <div className="space-y-6">
+            <Relations items={test} />
+          </div>
+        </TabsContent>
         <TabsContent value="characters">Grape</TabsContent>
       </div>
     </Tabs>
   );
 }
+
+interface RelationsProps {
+  items: {
+    relationType: string;
+    id: string;
+    status: string;
+    image: string;
+    title: string;
+    genres: string[];
+    type: string;
+    chapters?: number;
+    episodes?: number;
+    color?: string;
+  }[];
+}
+
+function Relations({ items }: RelationsProps) {
+  const relations = React.useMemo(() => {
+    const uniqueRelations = Array.from(
+      new Set(items.map((item) => item.relationType)),
+    );
+    return ["All", ...uniqueRelations];
+  }, [items]);
+
+  const [activeFilter, setActiveFilter] = React.useState("All");
+
+  const filteredItems = React.useMemo(() => {
+    if (activeFilter === "All") return items;
+    return items.filter((item) => item.relationType === activeFilter);
+  }, [items, activeFilter]);
+
+  return (
+    <>
+      <div className="flex flex-wrap gap-2 items-center">
+        {relations.map((type) => (
+          <Button
+            key={type}
+            variant={activeFilter === type ? "default" : "outline"}
+            data-active={activeFilter === type}
+            onClick={() => setActiveFilter(type)}
+            className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 data-[active=false]:bg-white/3 data-[active=false]:text-foreground/60 size-fit"
+          >
+            {type}
+          </Button>
+        ))}
+      </div>
+      <Carousel
+        opts={{ align: "center", dragFree: true }}
+        className="w-full mt-3"
+      >
+        <CarouselContent className="min-w-0">
+          {filteredItems.map((item) => {
+            const href = `/library/anime/${item.id}`;
+            const anime = {
+              ...item,
+              status: mapType(item.relationType),
+              genre: item.genres,
+              episodes: item.episodes || item.chapters,
+            };
+
+            return (
+              <CarouselItem
+                key={item.id}
+                className="basis-1/4 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
+              >
+                <AnimeCard anime={anime} href={href} />
+              </CarouselItem>
+            );
+          })}
+        </CarouselContent>
+        <div className="flex justify-end gap-2 px-6 lg:px-12 mt-4">
+          <CarouselPrevious className="static translate-y-0" />
+          <CarouselNext className="static translate-y-0" />
+        </div>
+      </Carousel>
+    </>
+  );
+}
+
+const mapType = (type: string) => {
+  switch (type.toLowerCase()) {
+    case "alternative":
+      return "ALT";
+    default:
+      return type;
+  }
+};

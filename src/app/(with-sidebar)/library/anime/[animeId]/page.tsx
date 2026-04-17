@@ -1,4 +1,5 @@
 import { AnimeInfoBanner, AnimeInfoTabs } from "@/components/custom/anime-info";
+import { EndOfContent } from "@/components/custom/end-of-content";
 
 import { anilistRequest } from "@/lib/anilist/client";
 import { animeInfo } from "@/constants/anilist/queries";
@@ -24,9 +25,10 @@ import { animeInfo } from "@/constants/anilist/queries";
 
 export default function Page() {
   return (
-    <div className="flex flex-1 flex-col pt-0 gap-5 overflow-auto">
+    <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
       <AnimeInfoBanner />
       <AnimeInfoTabs />
+      <EndOfContent />
     </div>
   );
 }
