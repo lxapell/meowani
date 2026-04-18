@@ -52,6 +52,7 @@ import {
 import { staticCatalogData } from "@/constants/anilist/enums";
 import { fetchCatalog } from "@/app/(with-sidebar)/browse/actions";
 import { cn } from "@/lib/shadcn/utils";
+import Link from "next/link";
 
 interface Data {
   label: string;
@@ -444,7 +445,9 @@ const CatalogResult = React.memo(function CatalogResult() {
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
         {medias.map((media) => {
           const href = `/library/anime/${media.id}`;
-          return <AnimeCard key={media.id} href={href} anime={media} />;
+          return (
+            <AnimeCard key={media.id} href={href} as={Link} anime={media} />
+          );
         })}
       </div>
       {isFetchingNextPage && (

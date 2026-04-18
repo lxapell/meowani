@@ -15,6 +15,7 @@ interface AnimeProps {
     episodes: number;
   }[];
   label?: string;
+  href?: string;
 }
 
 const AnimeCards = dynamic(
@@ -26,6 +27,7 @@ const AnimeCards = dynamic(
 export default function AnimeCardsClient({
   animes,
   label = "Trending Now",
+  href,
 }: AnimeProps) {
-  return <AnimeCards animes={animes} label={label} />;
+  return <AnimeCards animes={animes} label={label} href={href} />;
 }

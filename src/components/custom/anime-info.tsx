@@ -45,6 +45,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { AnimeCard } from "@/components/custom/anime-card";
+import { mapSimple } from "@/utils/mapper";
 
 const test = [
   {
@@ -604,11 +605,11 @@ export function AnimeInfoTabs({
           </div>
         </TabsContent>
         <TabsContent value="relations">
-          <div className="space-y-6">
-            <Relations items={test} />
-          </div>
+          <Relations items={mapSimple(test)} />
         </TabsContent>
-        <TabsContent value="characters">Grape</TabsContent>
+        <TabsContent value="characters">
+          <Characters items={mapChar(testChar)} />
+        </TabsContent>
       </div>
     </Tabs>
   );
@@ -616,20 +617,24 @@ export function AnimeInfoTabs({
 
 interface RelationsProps {
   items: {
-    relationType: string;
+    relationType?: string;
     id: string;
-    status: string;
-    image: string;
+    status?: string;
+    image?: string;
     title: string;
-    genres: string[];
-    type: string;
-    chapters?: number;
-    episodes?: number;
+    genres?: string[];
+    type?: string;
+    chapters?: number | string;
+    episodes?: number | string;
     color?: string;
   }[];
 }
 
-function Relations({ items }: RelationsProps) {
+function Relations({
+  items,
+  className,
+  ...props
+}: Omit<React.ComponentPropsWithoutRef<"div">, "children"> & RelationsProps) {
   const relations = React.useMemo(() => {
     const uniqueRelations = Array.from(
       new Set(items.map((item) => item.relationType)),
@@ -645,14 +650,14 @@ function Relations({ items }: RelationsProps) {
   }, [items, activeFilter]);
 
   return (
-    <>
+    <div className={cn("space-y-6", className)} {...props}>
       <div className="flex flex-wrap gap-2 items-center">
         {relations.map((type) => (
           <Button
             key={type}
             variant={activeFilter === type ? "default" : "outline"}
             data-active={activeFilter === type}
-            onClick={() => setActiveFilter(type)}
+            onClick={() => setActiveFilter(type!)}
             className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 data-[active=false]:bg-white/3 data-[active=false]:text-foreground/60 size-fit"
           >
             {type}
@@ -668,18 +673,16 @@ function Relations({ items }: RelationsProps) {
             const href = `/library/anime/${item.id}`;
             const anime = {
               ...item,
-              type: undefined,
+              relationType: mapType(item.relationType!),
               status: undefined,
-              genre: item.genres,
-              episodes: item.episodes || item.chapters,
             };
 
             return (
               <CarouselItem
                 key={item.id}
-                className="basis-1/4 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
+                className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
               >
-                <AnimeCard anime={anime} href={href} />
+                <AnimeCard anime={anime} href={href} as={Link} />
               </CarouselItem>
             );
           })}
@@ -689,7 +692,7 @@ function Relations({ items }: RelationsProps) {
           <CarouselNext className="static translate-y-0" />
         </div>
       </Carousel>
-    </>
+    </div>
   );
 }
 
@@ -701,3 +704,827 @@ const mapType = (type: string) => {
       return type;
   }
 };
+
+export interface ICharactersProps {
+  items: {
+    id: number | string;
+    role: string;
+    name: string;
+    image: string;
+    voiceActor: {
+      id: number | string;
+      name: string;
+      image: string;
+    };
+  }[];
+}
+
+export function Characters({
+  items,
+  className,
+  ...props
+}: Omit<React.ComponentPropsWithoutRef<"div">, "children"> & ICharactersProps) {
+  return (
+    <div className={cn("space-y-6", className)}>
+      <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
+        <CarouselContent className="min-w-0">
+          {items.map((item) => {
+            const anime = {
+              ...item,
+              status: item.role,
+              title: item.name,
+              id: item.id as string,
+            };
+
+            return (
+              <CarouselItem
+                key={item.id}
+                className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
+              >
+                <AnimeCard anime={anime} />
+              </CarouselItem>
+            );
+          })}
+        </CarouselContent>
+        <div className="flex justify-end gap-2 px-6 lg:px-12 mt-4">
+          <CarouselPrevious className="static translate-y-0" />
+          <CarouselNext className="static translate-y-0" />
+        </div>
+      </Carousel>
+    </div>
+  );
+}
+
+const mapChar = (chars: any[]) => {
+  return chars.map((char) => {
+    return {
+      id: char.id,
+      role: char.role,
+      name: char.node?.name?.full,
+      image: char.node?.image?.large,
+    };
+  });
+};
+
+const testChar = [
+  {
+    id: 570003,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Rokusuke",
+        last: "Kouenji",
+        full: "Rokusuke Kouenji",
+        native: "\u9ad8\u5186\u5bfa\u516d\u52a9",
+        userPreferred: "Rokusuke Kouenji",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b158988-P28e8SU3WpGK.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 116425,
+          name: {
+            first: "Toshiki",
+            middle: null,
+            last: "Iwasawa",
+            full: "Toshiki Iwasawa",
+            native: "\u5ca9\u6fa4\u4fca\u6a39",
+            userPreferred: "Toshiki Iwasawa",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n116425-PAq9OC2StE1n.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 117629,
+          name: {
+            first: "Christopher",
+            middle: null,
+            last: "Wehkamp",
+            full: "Christopher Wehkamp",
+            native: null,
+            userPreferred: "Christopher Wehkamp",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n117629-w22t54KeomD3.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 501617,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Kazuomi",
+        last: "Housen",
+        full: "Kazuomi Housen",
+        native: "\u5b9d\u6cc9\u548c\u81e3",
+        userPreferred: "Kazuomi Housen",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b159626-KQ7EjBs0Rq3c.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 191128,
+          name: {
+            first: "Hiroya",
+            middle: null,
+            last: "Egashira",
+            full: "Hiroya Egashira",
+            native: "\u6c5f\u982d\u5b8f\u54c9",
+            userPreferred: "Hiroya Egashira",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n191128-QvdPhpQFWULM.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 275354,
+          name: {
+            first: "Bradley",
+            middle: null,
+            last: "Gareth",
+            full: "Bradley Gareth",
+            native: null,
+            userPreferred: "Bradley Gareth",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n275354-5fOOWqkqsBqD.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 548468,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Kakeru",
+        last: "Ryuuen",
+        full: "Kakeru Ryuuen",
+        native: "\u9f8d\u5712\u7fd4",
+        userPreferred: "Kakeru Ryuuen",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b159627-kWwSUA1XR1Kx.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 126794,
+          name: {
+            first: "Masaaki",
+            middle: null,
+            last: "Mizunaka",
+            full: "Masaaki Mizunaka",
+            native: "\u6c34\u4e2d\u96c5\u7ae0",
+            userPreferred: "Masaaki Mizunaka",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n126794-tZzYeLEQbsrj.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 95312,
+          name: {
+            first: "Eric",
+            middle: null,
+            last: "Vale",
+            full: "Eric Vale",
+            native: null,
+            userPreferred: "Eric Vale",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n95312-lixmVhwE8AXE.png",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 501613,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Takuya",
+        last: "Yagami",
+        full: "Takuya Yagami",
+        native: "\u516b\u795e\u62d3\u4e5f",
+        userPreferred: "Takuya Yagami",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b159628-1TgwXeP2VrXp.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 138019,
+          name: {
+            first: "Shinnosuke",
+            middle: null,
+            last: "Tokudome",
+            full: "Shinnosuke Tokudome",
+            native: "\u5fb3\u7559\u614e\u4e43\u4f51",
+            userPreferred: "Shinnosuke Tokudome",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n138019-ThPPMU8dqpnH.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 360824,
+          name: {
+            first: "Jack",
+            middle: null,
+            last: "Broadbent",
+            full: "Jack Broadbent",
+            native: null,
+            userPreferred: "Jack Broadbent",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n360824-SxojaaLe9G6J.png",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 501616,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Ichika",
+        last: "Amasawa",
+        full: "Ichika Amasawa",
+        native: "\u5929\u6ca2\u4e00\u590f",
+        userPreferred: "Ichika Amasawa",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b159629-yQnBvQZUPY3o.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 298582,
+          name: {
+            first: "Momoko",
+            middle: null,
+            last: "Seto",
+            full: "Momoko Seto",
+            native: "\u702c\u6238\u6843\u5b50",
+            userPreferred: "Momoko Seto",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n298582-wQG1c3x4Mej8.jpg",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 104526,
+          name: {
+            first: "Tia",
+            middle: null,
+            last: "Ballard",
+            full: "Tia Ballard",
+            native: null,
+            userPreferred: "Tia Ballard",
+          },
+          image: {
+            large: "https://s4.anilist.co/file/anilistcdn/staff/large/9526.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 565891,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Haruka",
+        last: "Hasebe",
+        full: "Haruka Hasebe",
+        native: "\u9577\u8c37\u90e8\u6ce2\u7460\u52a0",
+        userPreferred: "Haruka Hasebe",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b163517-pBRJeR0pkw0Z.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 101997,
+          name: {
+            first: "Yuiko",
+            middle: null,
+            last: "Tatsumi",
+            full: "Yuiko Tatsumi",
+            native: "\u5dfd\u60a0\u8863\u5b50",
+            userPreferred: "Yuiko Tatsumi",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n101997-AUljb27RuBmm.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 119696,
+          name: {
+            first: "Alex",
+            middle: null,
+            last: "Moore",
+            full: "Alex Moore",
+            native: null,
+            userPreferred: "Alex Moore",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/24696-mYojLQWADaE6.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 565881,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Hiyori",
+        last: "Shiina",
+        full: "Hiyori Shiina",
+        native: "\u690e\u540d\u3072\u3088\u308a",
+        userPreferred: "Hiyori Shiina",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b163518-xnSqZflOp9Wm.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 119331,
+          name: {
+            first: "Rie",
+            middle: null,
+            last: "Takahashi",
+            full: "Rie Takahashi",
+            native: "\u9ad8\u6a4b\u674e\u4f9d",
+            userPreferred: "Rie Takahashi",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n119331-5dPuMCxu4RWf.jpg",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 276413,
+          name: {
+            first: "Veronica",
+            middle: null,
+            last: "Laux",
+            full: "Veronica Laux",
+            native: null,
+            userPreferred: "Veronica Laux",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n276413-0oKjjPM5Gcrb.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 565889,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Maya",
+        last: "Satou",
+        full: "Maya Satou",
+        native: "\u4f50\u85e4\u9ebb\u8036",
+        userPreferred: "Maya Satou",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b163519-as1ccGaDehxI.jpg",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 118806,
+          name: {
+            first: "Lynn",
+            middle: null,
+            last: "",
+            full: "Lynn",
+            native: "Lynn",
+            userPreferred: "Lynn",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n118806-AlHvdje5aHje.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 120245,
+          name: {
+            first: "Michelle",
+            middle: null,
+            last: "Rojas",
+            full: "Michelle Rojas",
+            native: null,
+            userPreferred: "Michelle Rojas",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n120245-caA11LwLmwZR.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 501614,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Riku",
+        last: "Utomiya",
+        full: "Riku Utomiya",
+        native: "\u5b87\u90fd\u5bae\u9678",
+        userPreferred: "Riku Utomiya",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b171746-sMFYmfcMBvN7.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 158510,
+          name: {
+            first: "Shougo",
+            middle: null,
+            last: "Sakata",
+            full: "Shougo Sakata",
+            native: "\u5742\u7530\u5c06\u543e",
+            userPreferred: "Shougo Sakata",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n158510-QDmd7dD9Rg89.jpg",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 319546,
+          name: {
+            first: "Ryan",
+            middle: null,
+            last: "Negr\u00f3n",
+            full: "Ryan Negr\u00f3n",
+            native: null,
+            userPreferred: "Ryan Negr\u00f3n",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n319546-ln1FV5Q6rMum.png",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 501615,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Sakurako",
+        last: "Tsubaki",
+        full: "Sakurako Tsubaki",
+        native: "\u693f\u685c\u5b50",
+        userPreferred: "Sakurako Tsubaki",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b171747-4d7ct8VhjXyr.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 139844,
+          name: {
+            first: "Iori",
+            middle: null,
+            last: "Saeki",
+            full: "Iori Saeki",
+            native: "\u4f50\u4f2f\u4f0a\u7e54",
+            userPreferred: "Iori Saeki",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n139844-zjqS38xT2FK4.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 113057,
+          name: {
+            first: "Morgan",
+            middle: null,
+            last: "Laur\u00e9",
+            full: "Morgan Laur\u00e9",
+            native: null,
+            userPreferred: "Morgan Laur\u00e9",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/18057.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 501612,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Tsubasa",
+        last: "Nanase",
+        full: "Tsubasa Nanase",
+        native: "\u4e03\u702c\u7ffc",
+        userPreferred: "Tsubasa Nanase",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b171748-gAlTRa7d78vP.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 153559,
+          name: {
+            first: "Minako",
+            middle: null,
+            last: "Satou",
+            full: "Minako Satou",
+            native: "\u4f50\u85e4\u672a\u5948\u5b50",
+            userPreferred: "Minako Satou",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n153559-38enHG3BWVgX.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 317523,
+          name: {
+            first: "Reshel",
+            middle: null,
+            last: "Mae",
+            full: "Reshel Mae",
+            native: null,
+            userPreferred: "Reshel Mae",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n317523-p34y2aLop1m4.png",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 565883,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Teruhiko",
+        last: "Yukimura",
+        full: "Teruhiko Yukimura",
+        native: "\u5e78\u6751\u8f1d\u5f66",
+        userPreferred: "Teruhiko Yukimura",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b173450-3W4X5drCuO21.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 249687,
+          name: {
+            first: "Tsubasa",
+            middle: null,
+            last: "Gouden",
+            full: "Tsubasa Gouden",
+            native: "\u90f7\u7530\u7ffc",
+            userPreferred: "Tsubasa Gouden",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n249687-D3BgeAM71rfJ.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 96047,
+          name: {
+            first: "Jessie James",
+            middle: null,
+            last: "Grelle",
+            full: "Jessie James Grelle",
+            native: null,
+            userPreferred: "Jessie James Grelle",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n96047-E9nBWn3YL0Tn.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 569583,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Mio",
+        last: "Ibuki",
+        full: "Mio Ibuki",
+        native: "\u4f0a\u5439\u6faa",
+        userPreferred: "Mio Ibuki",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b174781-jzyPHUz3JBwi.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 105071,
+          name: {
+            first: "Mikako",
+            middle: null,
+            last: "Komatsu",
+            full: "Mikako Komatsu",
+            native: "\u5c0f\u677e\u672a\u53ef\u5b50",
+            userPreferred: "Mikako Komatsu",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n105071-Hcj0X2gcliPq.png",
+          },
+        },
+      },
+      {
+        voiceActor: {
+          id: 95891,
+          name: {
+            first: "Jamie",
+            middle: null,
+            last: "Marchi",
+            full: "Jamie Marchi",
+            native: null,
+            userPreferred: "Jamie Marchi",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n95891-QG8dyefPjUIz.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 569587,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Nazuna",
+        last: "Asahina",
+        full: "Nazuna Asahina",
+        native: "\u671d\u6bd4\u5948\u306a\u305a\u306a",
+        userPreferred: "Nazuna Asahina",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b189728-hkfJGlmYbBmx.png",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 116517,
+          name: {
+            first: "Sora",
+            middle: null,
+            last: "Amamiya",
+            full: "Sora Amamiya",
+            native: "\u96e8\u5bae\u5929",
+            userPreferred: "Sora Amamiya",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/n116517-NQh6ewlCwzBN.jpg",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: 565887,
+    role: "SUPPORTING",
+    node: {
+      name: {
+        first: "Chiaki",
+        last: "Matsushita",
+        full: "Chiaki Matsushita",
+        native: "\u677e\u4e0b\u5343\u79cb",
+        userPreferred: "Chiaki Matsushita",
+      },
+      image: {
+        large:
+          "https://s4.anilist.co/file/anilistcdn/character/large/b191401-QIpXOM9iZoG2.jpg",
+      },
+    },
+    voiceActorRoles: [
+      {
+        voiceActor: {
+          id: 118922,
+          name: {
+            first: "Masumi",
+            middle: null,
+            last: "Tazawa",
+            full: "Masumi Tazawa",
+            native: "\u7530\u6fa4\u8309\u7d14",
+            userPreferred: "Masumi Tazawa",
+          },
+          image: {
+            large:
+              "https://s4.anilist.co/file/anilistcdn/staff/large/23922-Slv15f8EbFOz.png",
+          },
+        },
+      },
+    ],
+  },
+];

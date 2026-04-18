@@ -11,27 +11,36 @@ import Link from "next/link";
 import Image from "next/image";
 import { getShimmerDataURL } from "@/utils/placeholder";
 
-interface AnimeCardProps extends React.ComponentPropsWithRef<typeof Link> {
+interface IAnimeCardProps {
   anime: {
     relationType?: string;
     id?: string;
     status?: string;
-    image: string;
+    image?: string;
     title: string;
-    genre: string[];
+    genres?: string[];
     type?: string;
-    episodes?: number;
+    episodes?: number | string;
+    chapters?: number | string;
     color?: string;
   };
   className?: string;
 }
 
-export function AnimeCard({ anime, className, ...props }: AnimeCardProps) {
+export function AnimeCard({
+  anime,
+  className,
+  as: Component = "div",
+  ...props
+}: IAnimeCardProps & { as?: "div" | typeof Link } & Partial<
+    React.ComponentPropsWithRef<typeof Link>
+  >) {
+  const Tag = Component as any;
   return (
-    <Link {...props} className={cn("group relative block w-full", className)}>
+    <Tag {...props} className={cn("group relative block w-full", className)}>
       <Card className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
         <Image
-          src={anime.image}
+          src={anime.image || getShimmerDataURL(anime.color || "#8bdfea")}
           alt={anime.title}
           placeholder="blur"
           blurDataURL={getShimmerDataURL(anime.color || "#8bdfea")}
@@ -39,30 +48,34 @@ export function AnimeCard({ anime, className, ...props }: AnimeCardProps) {
           sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/40" />
+        {Component === Link ? (
+          <>
+            <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/40" />
 
-        {/*Play Button*/}
-        <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 scale-75 group-hover:scale-100">
-            <PlayIcon fill="currentColor" />
-          </div>
-        </div>
-
-        {/* Hover Info */}
-        <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-linear-to-t from black/90 via-black/60 to-transparent p-3 pt-16 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <p className="line-clamp-2 text-xs leading-snug text-white/90">
-            {anime.title}
-          </p>
-          {anime.genre && (
-            <div className="mt-1.5 flex flex-wrap gap-1">
-              {anime.genre.map((genre) => (
-                <Badge key={genre} className="">
-                  {genre}
-                </Badge>
-              ))}
+            {/*Play Button*/}
+            <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 scale-75 group-hover:scale-100">
+                <PlayIcon fill="currentColor" />
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Hover Info */}
+            <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-linear-to-t from black/90 via-black/60 to-transparent p-3 pt-16 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <p className="line-clamp-2 text-xs leading-snug text-white/90">
+                {anime.title}
+              </p>
+              {anime.genres && (
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {anime.genres.map((genre) => (
+                    <Badge key={genre} className="">
+                      {genre}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        ) : null}
       </Card>
 
       {/* Info Below */}
@@ -97,14 +110,18 @@ export function AnimeCard({ anime, className, ...props }: AnimeCardProps) {
               {anime.relationType}
             </Badge>
           )}
-          {anime.episodes && (
+          {anime.episodes ? (
             <span className="text-[10px] text-muted-foreground">
-              {anime.episodes}
+              {anime.episodes} EPS
             </span>
-          )}
+          ) : anime.chapters ? (
+            <span className="text-[10px] text-muted-foreground">
+              {anime.chapters} CHS
+            </span>
+          ) : null}
         </div>
       </div>
-    </Link>
+    </Tag>
   );
 }
 

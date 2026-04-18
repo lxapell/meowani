@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { PlayIcon, TvIcon } from "lucide-react";
+import { MoveRightIcon, PlayIcon, TvIcon } from "lucide-react";
 
 interface AnimeProps {
   animes: {
@@ -28,16 +28,30 @@ interface AnimeProps {
     episodes: number;
   }[];
   label?: string;
+  href?: string;
 }
 
-export function AnimeCards({ animes, label = "Trending Now" }: AnimeProps) {
+export function AnimeCards({
+  animes,
+  label = "Trending Now",
+  href,
+}: AnimeProps) {
   return (
     <section className="w-full min-w-0 py-4 md:py-8 pt-0 md:pt-0">
       <Label className="flex items-center gap-3 px-6 lg:px-12 mb-4">
-        <div className="h-6 w-0.75 rounded-full bg-foreground shadow-[0_0_12px_rgba(255,255,255,0.6)] md:h-8 md:w-1" />
+        <div className="h-6 w-0.75 rounded-full bg-primary-foreground shadow-[0_0_12px_rgba(255,255,255,0.6)] md:h-8 md:w-1" />
         <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl transition-colors">
           {label}
         </h2>
+        {href && (
+          <Link
+            href={href || "#"}
+            className="ml-auto flex items-center gap-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/60 uppercase"
+          >
+            View all
+            <MoveRightIcon />
+          </Link>
+        )}
       </Label>
       <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
         <CarouselContent className="min-w-0 -ml-4 px-6 lg:px-12">

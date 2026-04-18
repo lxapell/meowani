@@ -17,7 +17,7 @@ import type {
   Studio,
   AdvancedStudioSearchQuery,
 } from "@/types/anilist-types";
-import { mapStatus } from "@/utils/mapper";
+import { mapSimple, mapStatus } from "@/utils/mapper";
 import { Maybe } from "graphql/jsutils/Maybe";
 import { Variable } from "lucide-react";
 
@@ -80,38 +80,12 @@ export async function fetchCatalog({
     // console.log(map(raw.Studio?.media?.nodes!));
     return {
       pageInfo: raw.Studio!.media!.pageInfo,
-      media: map(raw.Studio?.media?.nodes!),
+      media: mapSimple(raw.Studio?.media?.nodes!),
     };
   } else {
     query = advancedsearch;
     const raw = await anilistRequest<AdvancedSearchQuery>(query, baseVariables);
     // console.log(map(raw.Page?.media!));
-    return { pageInfo: raw.Page?.pageInfo, media: map(raw.Page?.media!) };
+    return { pageInfo: raw.Page?.pageInfo, media: mapSimple(raw.Page?.media!) };
   }
 }
-
-const map = (data: any[]) =>
-  data.map((anime) => {
-    const id = anime.title.english
-      ? `${anime.title.english
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "")}-${anime.id}`
-      : `${anime.title.romaji
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "")}-${anime.id}`;
-    const status = mapStatus(anime.status);
-    return {
-      id,
-      title: (anime.title.english || anime.title.romaji) as string,
-      image: anime.coverImage.large as string,
-      type: anime.format as string,
-      status: (status[0].toUpperCase() +
-        status.slice(1).toLowerCase()) as string,
-      genre: anime.genres as string[],
-      episodes: anime.episodes as number,
-      studios: anime.studios.nodes.map((studio: Studio) => studio.name),
-      color: anime.coverImage.color as string,
-    };
-  });

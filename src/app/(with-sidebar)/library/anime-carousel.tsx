@@ -24,7 +24,9 @@ export async function TrendingComponent() {
     });
     const mapped = map(raw?.Page?.media);
 
-    return <AnimeCardsClient animes={mapped} />;
+    return (
+      <AnimeCardsClient animes={mapped} href="/browse?sort=TRENDING_DESC" />
+    );
   } catch (error) {
     console.error("[TrendingFetch] Error fetching trending:", error);
     return <AnimeCardsEmpty />;
@@ -45,7 +47,13 @@ export async function SeasonalComponent() {
     });
     const mapped = map(raw.Page.media);
 
-    return <AnimeCardsClient animes={mapped} label={label} />;
+    return (
+      <AnimeCardsClient
+        animes={mapped}
+        label={label}
+        href={`/browse?season=${season}&year=${year}`}
+      />
+    );
   } catch (error) {
     console.error("[SeasonalFetch] Error fetching seasonal:", error);
     return <AnimeCardsEmpty label={label} />;
@@ -63,7 +71,13 @@ export async function PopularComponent() {
     });
     const mapped = map(raw.Page.media);
 
-    return <AnimeCardsClient animes={mapped} label={label} />;
+    return (
+      <AnimeCardsClient
+        animes={mapped}
+        label={label}
+        href="/browse?sort=POPULARITY_DESC"
+      />
+    );
   } catch (error) {
     console.error("[PopularFetch] Error fetching popular:", error);
     return <AnimeCardsEmpty label={label} />;
@@ -84,7 +98,13 @@ export async function UpcomingComponent() {
     });
     const mapped = map(raw.Page.media);
 
-    return <AnimeCardsClient animes={mapped} label={label} />;
+    return (
+      <AnimeCardsClient
+        animes={mapped}
+        label={label}
+        href={`/browse?season=${season}&year=${year}`}
+      />
+    );
   } catch (error) {
     console.error("[UpcomingFetch] Error fetching upcoming:", error);
     return <AnimeCardsEmpty label={label} />;
