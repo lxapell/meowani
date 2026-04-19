@@ -23,7 +23,7 @@ interface AnimeProps {
     status: string;
     image: string;
     title: string;
-    genre: string[];
+    genres: string[];
     type: string;
     episodes: number;
   }[];
@@ -86,13 +86,15 @@ export function AnimeCards({
                       <p className="line-clamp-2 text-xs leading-snug text-white/90">
                         {anime.title}
                       </p>
-                      <div className="mt-1.5 flex flex-wrap gap-1">
-                        {anime.genre.map((genre) => (
-                          <Badge key={genre} className="">
-                            {genre}
-                          </Badge>
-                        ))}
-                      </div>
+                      {anime.genres && (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          {anime.genres?.map((genre) => (
+                            <Badge key={genre} className="">
+                              {genre}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </Card>
 

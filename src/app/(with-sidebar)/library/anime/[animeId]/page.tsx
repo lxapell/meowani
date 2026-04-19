@@ -1,8 +1,20 @@
-import { AnimeInfoBanner, AnimeInfoTabs } from "@/components/custom/anime-info";
+import {
+  AnimeInfoBanner,
+  AnimeInfoTabs,
+  Characters,
+} from "@/components/custom/anime-info";
 import { EndOfContent } from "@/components/custom/end-of-content";
 
 import { anilistRequest } from "@/lib/anilist/client";
 import { animeInfo } from "@/constants/anilist/queries";
+import { getAnimeInfo } from "./actions";
+import { notFound } from "next/navigation";
+import { ExternalLink } from "lucide-react";
+import { formatYearMonth, TitleSlug } from "@/utils/formatter";
+import { MediaEdge, Studio } from "@/types/anilist-types";
+import { mapStatus, mapSimple } from "@/utils/mapper";
+import { recommendedRules } from "graphql";
+import { AnimeCards } from "@/components/custom/anime-carousel";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
 // const mapped = raw.Media.characters.edges.map((character) => {
@@ -23,12 +35,124 @@ import { animeInfo } from "@/constants/anilist/queries";
 // });
 // console.log(mapped);
 
-export default function Page() {
-  return (
-    <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-      <AnimeInfoBanner />
-      <AnimeInfoTabs />
-      <EndOfContent />
-    </div>
-  );
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ animeId: string }>;
+}) {
+  const { animeId } = await params;
+  const id = animeId.split("-").pop();
+
+  try {
+    const anime = await getAnimeInfo(id!);
+    if (!anime) notFound();
+    const animeInfo = mapAdvanced(anime.Media);
+
+    return (
+      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
+        <AnimeInfoBanner data={animeInfo} />
+        <AnimeInfoTabs data={animeInfo} />
+        <AnimeCards
+          animes={animeInfo.recommendations}
+          label="Recommendations"
+        />
+        <EndOfContent />
+      </div>
+    );
+  } catch (error) {
+    console.log(error);
+    return <div>{"error"}</div>;
+  }
 }
+
+const mapAdvanced = (data: any) => {
+  return {
+    ...data,
+    title: { eng: data.title?.english, romaji: data.title?.romaji },
+    image: data.coverImage?.large,
+    color: data.coverImage?.color,
+    type: data.format,
+    score: data.averageScore,
+    year: data.seasonYear,
+    studios: data.studios?.nodes?.map((studio: Studio) => studio.name),
+    nextEpisode: {
+      airing: data.nextAiringEpisode?.airingAt,
+      episode: data.nextAiringEpisode?.episode,
+    },
+    releaseDate:
+      data.startDate.year && data.startDate.month
+        ? formatYearMonth(data.startDate.year, data.startDate.month)
+        : null,
+    endDate:
+      data.endDate.year && data.endDate.month
+        ? formatYearMonth(data.endDate.year, data.endDate.month)
+        : null,
+    trailer: {
+      url: data.trailer?.id
+        ? `https://youtube.com/watch?v=${data.trailer?.id}`
+        : null,
+      thumbnail: data.trailer?.thumbnail,
+    },
+    tags: data.tags
+      .filter((tag: { isAdult: boolean; name: string }) => !tag.isAdult)
+      .map((tag: { isAdult: boolean; name: string }) => tag.name),
+    status: data.status ? mapStatus(data.status) : null,
+    characters: data.characters?.edges ? mapChar(data.characters?.edges) : null,
+    relations: data.relations?.edges
+      ? mapRelations(data.relations?.edges)
+      : null,
+    recommendations: data.recommendations?.nodes
+      ? mapSimple(data.recommendations?.nodes)
+      : null,
+  };
+};
+
+const mapChar = (chars: any[]) => {
+  return chars.map((char) => {
+    return {
+      id: char.id,
+      role: char.role,
+      name: char.node?.name?.full,
+      image: char.node?.image?.large,
+    };
+  });
+};
+
+const mapRelations = (relations: any[]) => {
+  return relations.map((relation) => {
+    const node = relation.node;
+    const title = node.title.english || node.title.romaji;
+    const id = TitleSlug.fromTitle(title, node.id).slug;
+
+    return {
+      relationType: relation.relationType,
+      id,
+      title,
+      type: node.format,
+      status: mapStatus(node.status),
+      image: node.coverImage?.large,
+      color: node.coverImage?.color,
+      episodes: node.episodes,
+      chapters: node.chapters,
+      media: node.type,
+    };
+  });
+};
+
+const mapRecommendations = (recommendations: any[]) => {
+  return recommendations.map((recommendation) => {
+    const media = recommendation.mediaRecommendation;
+    return {};
+  });
+};
+
+// relationType?: string;
+// id: string;
+// status?: string;
+// image?: string;
+// title: string;
+// genres?: string[];
+// type?: string;
+// chapters?: number | string;
+// episodes?: number | string;
+// color?: string;

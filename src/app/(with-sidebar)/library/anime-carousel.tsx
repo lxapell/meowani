@@ -130,7 +130,7 @@ const map = (data: any[]) =>
       type: anime.format as string,
       status: (status[0].toUpperCase() +
         status.slice(1).toLowerCase()) as string,
-      genre: anime.genres as string[],
+      genres: anime.genres as string[],
       episodes: anime.episodes as number,
       color: anime.coverImage.color as string,
     };

@@ -233,10 +233,19 @@ export const animeInfo = gpl`
       }
       description
       bannerImage
+      synonyms
+      externalLinks {
+        site
+        url
+      }
       episodes
       status
       duration
       genres
+      tags {
+        isAdult
+        name
+      }
       source
       type
       format
@@ -291,6 +300,7 @@ export const animeInfo = gpl`
             episodes
             chapters
             status
+            type
           }
         }
       }

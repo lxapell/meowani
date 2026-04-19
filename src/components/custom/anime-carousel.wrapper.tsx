@@ -10,7 +10,7 @@ interface AnimeProps {
     status: string;
     image: string;
     title: string;
-    genre: string[];
+    genres: string[];
     type: string;
     episodes: number;
   }[];
