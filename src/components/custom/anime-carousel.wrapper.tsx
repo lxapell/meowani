@@ -16,6 +16,7 @@ interface AnimeProps {
   }[];
   label?: string;
   href?: string;
+  paddingX?: string;
 }
 
 const AnimeCards = dynamic(
@@ -24,10 +25,6 @@ const AnimeCards = dynamic(
   { ssr: false, loading: () => <AnimeCardsSkeleton /> },
 );
 
-export default function AnimeCardsClient({
-  animes,
-  label = "Trending Now",
-  href,
-}: AnimeProps) {
-  return <AnimeCards animes={animes} label={label} href={href} />;
+export default function AnimeCardsClient({ ...props }: AnimeProps) {
+  return <AnimeCards {...props} />;
 }

@@ -649,7 +649,7 @@ function Relations({
             );
           })}
         </CarouselContent>
-        <div className="flex justify-end gap-2 px-6 lg:px-12 mt-4">
+        <div className="flex justify-end gap-2 mt-4">
           <CarouselPrevious className="static translate-y-0" />
           <CarouselNext className="static translate-y-0" />
         </div>
@@ -703,7 +703,7 @@ export function Characters({
             );
           })}
         </CarouselContent>
-        <div className="flex justify-end gap-2 px-6 lg:px-12 mt-4">
+        <div className="flex justify-end gap-2 mt-4">
           <CarouselPrevious className="static translate-y-0" />
           <CarouselNext className="static translate-y-0" />
         </div>

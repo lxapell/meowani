@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { MoveRightIcon, PlayIcon, TvIcon } from "lucide-react";
+import { cn } from "@/lib/shadcn/utils";
 
 interface AnimeProps {
   animes: {
@@ -29,16 +30,20 @@ interface AnimeProps {
   }[];
   label?: string;
   href?: string;
+  paddingX?: string;
 }
 
 export function AnimeCards({
   animes,
   label = "Trending Now",
+  paddingX,
   href,
 }: AnimeProps) {
   return (
     <section className="w-full min-w-0 py-4 md:py-8 pt-0 md:pt-0">
-      <Label className="flex items-center gap-3 px-6 lg:px-12 mb-4">
+      <Label
+        className={cn("flex items-center gap-3 px-6 lg:px-12 mb-4", paddingX)}
+      >
         <div className="h-6 w-0.75 rounded-full bg-primary-foreground shadow-[0_0_12px_rgba(255,255,255,0.6)] md:h-8 md:w-1" />
         <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl transition-colors">
           {label}
@@ -54,7 +59,9 @@ export function AnimeCards({
         )}
       </Label>
       <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
-        <CarouselContent className="min-w-0 -ml-4 px-6 lg:px-12">
+        <CarouselContent
+          className={cn("min-w-0 -ml-4 mr-4 px-6 lg:px-12", paddingX)}
+        >
           {animes.map((anime) => {
             const href = `/library/anime/${anime.id}`;
 
@@ -123,7 +130,9 @@ export function AnimeCards({
             );
           })}
         </CarouselContent>
-        <div className="flex justify-end gap-2 px-6 lg:px-12 mt-4">
+        <div
+          className={cn("flex justify-end gap-2 px-6 lg:px-12 mt-4", paddingX)}
+        >
           <CarouselPrevious className="static translate-y-0" />
           <CarouselNext className="static translate-y-0" />
         </div>
@@ -135,20 +144,24 @@ export function AnimeCards({
 interface SkeletonProps {
   label?: string;
   count?: number;
+  paddingX?: string;
 }
 
 export function AnimeCardsSkeleton({
   label = "Trending Now",
   count = 10,
+  paddingX,
 }: SkeletonProps) {
   return (
     <section className="w-full min-w-0 py-4 md:py-8 pt-0 md:pt-0">
-      <Label className="flex items-center gap-3 px-6 lg:px-12 mb-4">
+      <Label
+        className={cn("flex items-center gap-3 px-6 lg:px-12 mb-4", paddingX)}
+      >
         <div className="h-6 w-0.75 rounded-full bg-foreground shadow-[0_0_12px_rgba(255,255,255,0.6)] md:h-8 md:w-1" />
         <Skeleton className="h-6 w-32 md:h-8 md:w-40" />
       </Label>
       <div className="w-full">
-        <div className="min-w-0 -ml-4 px-6 lg:px-12 flex gap-0">
+        <div className={cn("min-w-0 -ml-4 px-6 lg:px-12 flex gap-0", paddingX)}>
           {Array.from({ length: count }).map((_, index) => (
             <div
               key={index}
@@ -178,21 +191,25 @@ export function AnimeCardsSkeleton({
 interface EmptyProps {
   label?: string;
   message?: string;
+  paddingX?: string;
 }
 
 export function AnimeCardsEmpty({
   label = "Trending Now",
   message = "No Anime Found",
+  paddingX,
 }: EmptyProps) {
   return (
     <section className="w-full min-w-0 py-4 md:py-8 pt-0 md:pt-0">
-      <Label className="flex items-center gap-3 px-6 lg:px-12 mb-4">
+      <Label
+        className={cn("flex items-center gap-3 px-6 lg:px-12 mb-4", paddingX)}
+      >
         <div className="h-6 w-0.75 rounded-full bg-foreground shadow-[0_0_12px_rgba(255,255,255,0.6)] md:h-8 md:w-1" />
         <h2 className="text-xl font-bold tracking-tight text-foreground md:text-2xl transition-colors">
           {label}
         </h2>
       </Label>
-      <div className="px-6 lg:px-12">
+      <div className={cn("px-6 lg:px-12", paddingX)}>
         <div className="flex items-center justify-center min-h-[200px] md:min-h-[280px] rounded-xl bg-muted/20 border border-dashed border-muted-foreground/25">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">{message}</p>
