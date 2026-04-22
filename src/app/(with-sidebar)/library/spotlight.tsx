@@ -9,6 +9,7 @@ export async function SpotlightComponent() {
       next: { revalidate: 86400 },
     });
     const { results } = await raw.json();
+    console.log(raw);
 
     const formatted = await Promise.all(
       results.map(async (item: ISpotlight) => {

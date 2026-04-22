@@ -3,7 +3,8 @@ import AnimeCardsClient from "@/components/custom/anime-carousel.wrapper";
 import { anilistRequest } from "@/lib/anilist/client";
 import { trending, seasonal, popular } from "@/constants/anilist/queries";
 import { AnimeSeason } from "@/utils/current-season";
-import { mapStatus } from "@/utils/mapper";
+import { mapSimple, mapStatus } from "@/utils/mapper";
+import SpotlightClient from "@/components/custom/spotlight.wrapper";
 
 interface IAnilistQuery {
   Page: {
@@ -108,6 +109,21 @@ export async function UpcomingComponent() {
   } catch (error) {
     console.error("[UpcomingFetch] Error fetching upcoming:", error);
     return <AnimeCardsEmpty label={label} />;
+  }
+}
+
+export async function SpotlightComponent() {
+  try {
+    const raw: IAnilistQuery = await anilistRequest(trending, {
+      page: 1,
+      perPage: 9,
+    });
+    const mapped = mapSimple(raw?.Page?.media);
+
+    return <SpotlightClient items={mapped} />;
+  } catch (error) {
+    console.error("[SpotlightFormatter] Error processing spotlight", error);
+    return <>Banana</>;
   }
 }
 

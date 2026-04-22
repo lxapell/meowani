@@ -574,16 +574,16 @@ function Overview({
 
 interface RelationsProps {
   items: {
-    relationType?: string;
+    relationType: string | null;
     id: string;
-    status?: string;
-    image?: string;
+    status: string | null;
+    image: string | null;
     title: string;
-    genres?: string[];
-    type?: string;
-    chapters?: number | string;
-    episodes?: number | string;
-    color?: string;
+    genres: string[] | [] | null;
+    type: string | null;
+    chapters: number | string | null;
+    episodes: number | string | null;
+    color: string | null;
     media: "ANIME" | "MANGA";
   }[];
 }
@@ -632,7 +632,7 @@ function Relations({
             const anime = {
               ...item,
               relationType: mapType(item.relationType!),
-              status: undefined,
+              status: null,
             };
 
             return (
@@ -691,6 +691,12 @@ export function Characters({
               status: item.role,
               title: item.name,
               id: item.id as string,
+              genres: null,
+              color: null,
+              episodes: null,
+              chapters: null,
+              relationType: null,
+              type: null,
             };
 
             return (

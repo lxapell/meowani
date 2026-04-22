@@ -18,8 +18,6 @@ import type {
   AdvancedStudioSearchQuery,
 } from "@/types/anilist-types";
 import { mapSimple, mapStatus } from "@/utils/mapper";
-import { Maybe } from "graphql/jsutils/Maybe";
-import { Variable } from "lucide-react";
 
 export async function fetchCatalog({
   pageParam = 1,

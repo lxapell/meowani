@@ -73,6 +73,21 @@ export async function GET(request: NextRequest) {
       });
     }
     const contentType = response.headers.get("content-type") || "image/jpeg";
+    const isSVG =
+      contentType.includes("image/svg+xml") ||
+      imageUrl.toLowerCase().includes(".svg");
+
+    if (isSVG) {
+      const svgBuffer = Buffer.from(await response.arrayBuffer());
+      return new NextResponse(svgBuffer, {
+        status: 200,
+        headers: {
+          "Content-Type": "image/svg+xml",
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
+
     const buffer = Buffer.from(await response.arrayBuffer());
 
     let pipeline = sharp(buffer);

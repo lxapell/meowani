@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { SpotlightComponent } from "./spotlight";
 import { SpotlightSkeleton } from "@/components/custom/spotlight";
 import { EndOfContent } from "@/components/custom/end-of-content";
 import {
@@ -12,6 +11,7 @@ import {
   SeasonalComponent,
   PopularComponent,
   UpcomingComponent,
+  SpotlightComponent,
 } from "./anime-carousel";
 
 const test = [

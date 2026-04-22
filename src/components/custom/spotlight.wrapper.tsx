@@ -1,6 +1,6 @@
 "use client";
 
-import type { ISpotlight } from "@/types/library";
+import type { ISimpleAnimeData } from "@/utils/mapper";
 import * as React from "react";
 import dynamic from "next/dynamic";
 
@@ -15,7 +15,7 @@ const Spotlight = dynamic(
 );
 
 interface SpotlightProps {
-  items: ISpotlight[];
+  items: ISimpleAnimeData[];
 }
 
 export default function SpotlightClient({ items }: SpotlightProps) {

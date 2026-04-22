@@ -15,17 +15,20 @@ export type TStatus =
   | "OTHER";
 
 export interface ISimpleAnimeData {
-  relationType?: MediaRelation;
-  id: string;
-  title: string;
-  image?: string;
-  color?: string;
-  type?: MediaFormat;
-  status?: TStatus;
-  genres?: string[];
-  episodes?: number | string;
-  chapters?: number | string;
-  studios?: string[];
+  rank?: number;
+  description?: string;
+  relationType: string | null;
+  id: string | null;
+  title: string | null;
+  image: string | null;
+  banner?: string;
+  color: string | null;
+  type: string | null;
+  status: TStatus | null;
+  genres: string[] | [] | null;
+  episodes: number | string | null;
+  chapters: number | string | null;
+  studios: string[] | [] | null;
 }
 
 export const mapStatus = (status: MediaStatus): TStatus => {
@@ -51,8 +54,19 @@ export const capitalize = (text: string): string => {
   return text[0].toUpperCase() + text.slice(1).toUpperCase();
 };
 
+export const mapMediaType = (type: MediaFormat): string => {
+  switch (type) {
+    case "ONE_SHOT":
+      return "MANGA";
+    case "TV_SHORT":
+      return "SHORT";
+    default:
+      return type;
+  }
+};
+
 export const mapSimple = (data: any[]): ISimpleAnimeData[] =>
-  data.map((anime) => {
+  data.map((anime, index) => {
     let animeData;
     if (anime.mediaRecommendation) {
       animeData = anime.mediaRecommendation;
@@ -73,19 +87,28 @@ export const mapSimple = (data: any[]): ISimpleAnimeData[] =>
       ? mapRelationType(animeData.relationType)
       : mapRelationType(anime.relationType);
 
+    const type = animeData.format
+      ? mapMediaType(animeData.format)
+      : animeData.type
+        ? mapMediaType(animeData.type)
+        : null;
+
     return {
-      relationType: relationType || undefined,
+      relationType: relationType || null,
+      rank: index + 1,
       id,
       title,
-      image: animeData.coverImage?.large || animeData.image || undefined,
-      type: animeData.format || animeData.type || undefined,
-      status: status ? (capitalize(status) as TStatus) : undefined,
-      genres: animeData.genres || undefined,
-      episodes: animeData.episodes || undefined,
-      chapters: animeData.chapters || undefined,
+      image: animeData.coverImage?.large || animeData.image,
+      banner: animeData.bannerImage,
+      type,
+      status: status ? (capitalize(status) as TStatus) : null,
+      genres: animeData.genres,
+      episodes: animeData.episodes,
+      chapters: animeData.chapters,
       studios: animeData.studios
         ? animeData.studios.nodes?.map((studio: Studio) => studio.name)
-        : undefined,
-      color: animeData.coverImage?.color || animeData.color || undefined,
+        : null,
+      color: animeData.coverImage?.color || animeData.color,
+      description: animeData.description,
     };
   });

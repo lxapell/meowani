@@ -13,16 +13,16 @@ import { getShimmerDataURL } from "@/utils/placeholder";
 
 interface IAnimeCardProps {
   anime: {
-    relationType?: string;
-    id?: string;
-    status?: string;
-    image?: string;
-    title: string;
-    genres?: string[];
-    type?: string;
-    episodes?: number | string;
-    chapters?: number | string;
-    color?: string;
+    relationType: string | null;
+    id: string | null;
+    status: string | null;
+    image: string | null;
+    title: string | null;
+    genres: string[] | [] | null;
+    type: string | null;
+    episodes: number | string | null;
+    chapters: number | string | null;
+    color: string | null;
   };
   className?: string;
 }
@@ -41,7 +41,7 @@ export function AnimeCard({
       <Card className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-foreground/5 ring-1 ring-foreground/6 transition-all duration-300 group-hover:ring-foreground/20 group-hover:shadow-xl group-hover:shadow-black/30">
         <Image
           src={anime.image || getShimmerDataURL(anime.color || "#8bdfea")}
-          alt={anime.title}
+          alt={anime.title || "No Title"}
           placeholder="blur"
           blurDataURL={getShimmerDataURL(anime.color || "#8bdfea")}
           fill

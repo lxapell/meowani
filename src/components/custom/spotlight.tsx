@@ -1,6 +1,6 @@
 "use client";
 
-import type { ISpotlight } from "@/types/library";
+import type { ISimpleAnimeData } from "@/utils/mapper";
 import * as React from "react";
 import Autoplay from "embla-carousel-autoplay";
 
@@ -29,7 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getShimmerDataURL } from "@/utils/placeholder";
 
 interface SpotlightProps {
-  items: ISpotlight[];
+  items: ISimpleAnimeData[];
 }
 
 export function Spotlight({ items }: SpotlightProps) {
@@ -48,7 +48,7 @@ export function Spotlight({ items }: SpotlightProps) {
       className="pb-4 md:pb-8 aspect-video"
     >
       <CarouselContent className="-ml-1 border-none">
-        {items.map((item: ISpotlight) => (
+        {items.map((item: ISimpleAnimeData) => (
           <CarouselItem
             key={item.id}
             className="rounded-none border-none pl-0 w-full max-w-full relative overflow-hidden"
@@ -57,10 +57,14 @@ export function Spotlight({ items }: SpotlightProps) {
               <Card className="rounded-none overflow-hidden p-0">
                 <div className="relative aspect-video">
                   <Image
-                    src={item.banner}
-                    alt="slide"
+                    src={
+                      item.banner ||
+                      item.image ||
+                      getShimmerDataURL(item.color || "#8bdfea")
+                    }
+                    alt={item.title || "No Title"}
                     placeholder="blur"
-                    blurDataURL={getShimmerDataURL("#8bdfea")}
+                    blurDataURL={getShimmerDataURL(item.color || "#8bdfea")}
                     fill
                     className="object-cover"
                   />
