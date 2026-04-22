@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.100.156"],
   cacheComponents: true,
   images: {
+    loader: "custom",
+    loaderFile: "./src/lib/image-loader.ts",
     remotePatterns: [
       {
         protocol: "https",
