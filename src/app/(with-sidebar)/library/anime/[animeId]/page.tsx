@@ -14,7 +14,10 @@ import { formatYearMonth, TitleSlug } from "@/utils/formatter";
 import { MediaEdge, Studio } from "@/types/anilist-types";
 import { mapStatus, mapSimple } from "@/utils/mapper";
 import { recommendedRules } from "graphql";
-import { AnimeCards } from "@/components/custom/anime-carousel";
+import {
+  AnimeCards,
+  AnimeCardsEmpty,
+} from "@/components/custom/anime-carousel";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
 // const mapped = raw.Media.characters.edges.map((character) => {
@@ -52,11 +55,18 @@ export default async function Page({
       <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
         <AnimeInfoBanner data={animeInfo} />
         <AnimeInfoTabs data={animeInfo} />
-        <AnimeCards
-          animes={animeInfo.recommendations}
-          label="Recommendations"
-          paddingX="px-4 md:px-10 xl:px-14"
-        />
+        {animeInfo.recommendations?.length > 0 ? (
+          <AnimeCards
+            animes={animeInfo.recommendations}
+            label="Recommendations"
+            paddingX="px-1.5 md:px-10 xl:px-14"
+          />
+        ) : (
+          <AnimeCardsEmpty
+            label="Recommendations"
+            paddingX="px-1.5 md:px-10 xl:px-14"
+          />
+        )}
         <EndOfContent />
       </div>
     );

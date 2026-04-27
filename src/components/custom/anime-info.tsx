@@ -171,7 +171,7 @@ export function AnimeInfoBanner({
                         className="hidden h-7 text-nowrap md:inline-flex"
                         asChild
                       >
-                        <Link href={`/browse?genre=${genre}`}>{genre}</Link>
+                        <Link href={`/browse?genres=${genre}`}>{genre}</Link>
                       </Badge>
                     ))}
                   </div>
@@ -240,7 +240,7 @@ export function AnimeInfoTabs({
 }: { data: any } & React.ComponentProps<typeof TabsPrimitive.Root>) {
   return (
     <Tabs
-      className={cn("px-4 md:px-10 xl:px-14 gap-4 sm:gap-6", className)}
+      className={cn("px-1.5 md:px-10 xl:px-14 gap-4 sm:gap-6", className)}
       defaultValue="overview"
       orientation="horizontal"
       {...props}
@@ -310,6 +310,7 @@ function Overview({
     ? new DateFormatter(items.nextEpisode.airing)
     : null;
   const synopsis = truncateHTML(items.description, 150);
+  const [tagExpanded, setTagExpanded] = React.useState(false);
   return (
     <div
       className={cn(
@@ -352,7 +353,7 @@ function Overview({
           <ItemActions className="ml-auto">
             <Button
               variant="outline"
-              className="flex items-center h-fit gap-2 rounded-md border border-white/15 px-3 py-1.5 text-xs font-medium text-foreground/90 transition-all duration-200"
+              className="flex items-center h-fit gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs font-medium text-foreground/90 transition-all duration-200"
               disabled={
                 items.trailer.url === null || items.trailer.url === undefined
               }
@@ -545,24 +546,31 @@ function Overview({
                 </p>
                 {items.tags && (
                   <div className="flex flex-wrap gap-1.5">
-                    {items.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="outline"
-                        className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
-                        asChild
-                      >
-                        <Link href={`/browse?genres=${tag}`}>{tag}</Link>
-                      </Badge>
-                    ))}
+                    {(tagExpanded ? items.tags : items.tags.slice(0, 10)).map(
+                      (tag) => (
+                        <Badge
+                          key={tag}
+                          variant="outline"
+                          className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                          asChild
+                        >
+                          <Link href={`/browse?tags=${tag}`}>{tag}</Link>
+                        </Badge>
+                      ),
+                    )}
                   </div>
                 )}
-                <Button
-                  variant="ghost"
-                  className="mt-2 text-[10px] font-medium tracking-widest text-foreground/40 uppercase transition p-0 size-fit"
-                >
-                  +8 more
-                </Button>
+                {items.tags.length > 10 && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => setTagExpanded(!tagExpanded)}
+                    className="mt-2 text-[10px] font-medium tracking-widest text-foreground/40 uppercase transition p-0 size-fit"
+                  >
+                    {tagExpanded
+                      ? "Show less"
+                      : `+${items.tags.length - 10} more`}
+                  </Button>
+                )}
               </div>
             </ItemContent>
           </Item>

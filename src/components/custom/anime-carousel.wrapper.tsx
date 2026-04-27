@@ -22,7 +22,7 @@ interface AnimeProps {
 const AnimeCards = dynamic(
   () =>
     import("@/components/custom/anime-carousel").then((mod) => mod.AnimeCards),
-  { ssr: false, loading: () => <AnimeCardsSkeleton /> },
+  { ssr: false, loading: () => <AnimeCardsSkeleton paddingX="px-1.5" /> },
 );
 
 export default function AnimeCardsClient({ ...props }: AnimeProps) {
