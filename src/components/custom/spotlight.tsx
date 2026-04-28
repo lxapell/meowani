@@ -24,9 +24,17 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 
-import { InfoIcon } from "lucide-react";
+import { AlertTriangle, InfoIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getShimmerDataURL } from "@/utils/placeholder";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemHeader,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 
 interface SpotlightProps {
   items: ISimpleAnimeData[];
@@ -137,7 +145,7 @@ export function SpotlightSkeleton() {
         <CarouselItem className="rounded-none border-none pl-0 w-full relative">
           <div className="w-full max-w-full">
             <Card className="rounded-none overflow-hidden p-0">
-              <div className="relative w-full aspect-video" />{" "}
+              <div className="relative w-full aspect-video" />
               <div className="absolute inset-0 flex flex-col gap-4 justify-end max-h-auto pb-4 md:pb-10">
                 <CardHeader className="px-4 md:px-10">
                   <CardAction className="ml-4">
@@ -157,6 +165,33 @@ export function SpotlightSkeleton() {
           </div>
         </CarouselItem>
       </CarouselContent>
+    </Carousel>
+  );
+}
+
+export function SpotlightEmpty() {
+  return (
+    <Carousel className="md:mt-15 pb-4 md:pb-8 px-1.5 md:px-6 lg:px-12 xl:px-14">
+      <Item
+        variant="outline"
+        className="border-amber-500/20 bg-yellow-500/10 px-3 py-1.5 text-sm text-foreground/80"
+      >
+        <ItemMedia variant="icon">
+          <AlertTriangle />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="font-medium text-foreground">
+            Spotlight Unavailable
+          </ItemTitle>
+          <ItemDescription>
+            Oops looks like there won't be any spotlight in the meantime.
+          </ItemDescription>
+          {/*<span className="font-medium text-foreground">Episode</span>
+          <span>airing</span>
+          <span className="text-foreground/30">•</span>
+          <span className="text-foreground/50"></span>*/}
+        </ItemContent>
+      </Item>
     </Carousel>
   );
 }

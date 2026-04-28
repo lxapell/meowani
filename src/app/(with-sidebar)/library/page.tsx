@@ -30,13 +30,20 @@ export default function LibraryPage() {
         <SpotlightComponent />
       </React.Suspense>
       {/*<ScrollBar />*/}
-      <React.Suspense fallback={<AnimeCardsSkeleton paddingX="px-1.5" />}>
+      <React.Suspense
+        fallback={
+          <AnimeCardsSkeleton paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14" />
+        }
+      >
         <TrendingComponent />
       </React.Suspense>
 
       <React.Suspense
         fallback={
-          <AnimeCardsSkeleton paddingX="px-1.5" label="Popular This Season" />
+          <AnimeCardsSkeleton
+            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+            label="Popular This Season"
+          />
         }
       >
         <SeasonalComponent />
@@ -44,7 +51,10 @@ export default function LibraryPage() {
 
       <React.Suspense
         fallback={
-          <AnimeCardsSkeleton paddingX="px-1.5" label="All Time Popular" />
+          <AnimeCardsSkeleton
+            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+            label="All Time Popular"
+          />
         }
       >
         <PopularComponent />
@@ -52,7 +62,10 @@ export default function LibraryPage() {
 
       <React.Suspense
         fallback={
-          <AnimeCardsSkeleton paddingX="px-1.5" label="Upcoming Anime" />
+          <AnimeCardsSkeleton
+            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+            label="Upcoming Anime"
+          />
         }
       >
         <UpcomingComponent />

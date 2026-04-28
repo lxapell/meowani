@@ -9,7 +9,7 @@ import { anilistRequest } from "@/lib/anilist/client";
 import { animeInfo } from "@/constants/anilist/queries";
 import { getAnimeInfo } from "./actions";
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { AlertTriangle, ExternalLink } from "lucide-react";
 import { formatYearMonth, TitleSlug } from "@/utils/formatter";
 import { MediaEdge, Studio } from "@/types/anilist-types";
 import { mapStatus, mapSimple } from "@/utils/mapper";
@@ -18,6 +18,13 @@ import {
   AnimeCards,
   AnimeCardsEmpty,
 } from "@/components/custom/anime-carousel";
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
 // const mapped = raw.Media.characters.edges.map((character) => {
@@ -73,7 +80,26 @@ export default async function Page({
   } catch (error) {
     console.log(error);
     return (
-      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto"></div>
+      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
+        <div className="md:mt-15 px-1.5 md:px-6 lg:px-12 xl:px-14">
+          <Item
+            variant="outline"
+            className="border-amber-500/20 bg-yellow-500/10 px-3 py-1.5 text-sm text-foreground/80"
+          >
+            <ItemMedia variant="icon">
+              <AlertTriangle />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle className="font-medium text-foreground">
+                Anime Info Unavailable
+              </ItemTitle>
+              <ItemDescription>
+                Oops looks like there won't be any anime info in the meantime.
+              </ItemDescription>
+            </ItemContent>
+          </Item>
+        </div>
+      </div>
     );
   }
 }

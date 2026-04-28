@@ -5,6 +5,7 @@ import { trending, seasonal, popular } from "@/constants/anilist/queries";
 import { AnimeSeason } from "@/utils/current-season";
 import { mapSimple, mapStatus } from "@/utils/mapper";
 import SpotlightClient from "@/components/custom/spotlight.wrapper";
+import { SpotlightEmpty } from "@/components/custom/spotlight";
 
 interface IAnilistQuery {
   Page: {
@@ -14,6 +15,15 @@ interface IAnilistQuery {
 }
 
 export const revalidate = 86400;
+
+function EmptyFallback(label?: string) {
+  return (
+    <AnimeCardsEmpty
+      paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+      label={label}
+    />
+  );
+}
 
 export async function TrendingComponent() {
   "use cache";
@@ -27,14 +37,14 @@ export async function TrendingComponent() {
 
     return (
       <AnimeCardsClient
-        paddingX="px-1.5"
+        paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
         animes={mapped}
         href="/browse?sort=TRENDING_DESC"
       />
     );
   } catch (error) {
     console.error("[TrendingFetch] Error fetching trending:", error);
-    return <AnimeCardsEmpty paddingX="px-1.5" />;
+    return <AnimeCardsEmpty paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14" />;
   }
 }
 
@@ -56,13 +66,18 @@ export async function SeasonalComponent() {
       <AnimeCardsClient
         animes={mapped}
         label={label}
-        paddingX="px-1.5"
+        paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
         href={`/browse?season=${season}&year=${year}`}
       />
     );
   } catch (error) {
     console.error("[SeasonalFetch] Error fetching seasonal:", error);
-    return <AnimeCardsEmpty paddingX="px-1.5" label={label} />;
+    return (
+      <AnimeCardsEmpty
+        paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+        label={label}
+      />
+    );
   }
 }
 
@@ -80,14 +95,19 @@ export async function PopularComponent() {
     return (
       <AnimeCardsClient
         animes={mapped}
-        paddingX="px-1.5"
+        paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
         label={label}
         href="/browse?sort=POPULARITY_DESC"
       />
     );
   } catch (error) {
     console.error("[PopularFetch] Error fetching popular:", error);
-    return <AnimeCardsEmpty paddingX="px-1.5" label={label} />;
+    return (
+      <AnimeCardsEmpty
+        paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+        label={label}
+      />
+    );
   }
 }
 
@@ -109,13 +129,18 @@ export async function UpcomingComponent() {
       <AnimeCardsClient
         animes={mapped}
         label={label}
-        paddingX="px-1.5"
+        paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
         href={`/browse?season=${season}&year=${year}`}
       />
     );
   } catch (error) {
     console.error("[UpcomingFetch] Error fetching upcoming:", error);
-    return <AnimeCardsEmpty paddingX="px-1.5" label={label} />;
+    return (
+      <AnimeCardsEmpty
+        paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+        label={label}
+      />
+    );
   }
 }
 
@@ -130,7 +155,7 @@ export async function SpotlightComponent() {
     return <SpotlightClient items={mapped} />;
   } catch (error) {
     console.error("[SpotlightFormatter] Error processing spotlight", error);
-    return <>Banana</>;
+    return <SpotlightEmpty />;
   }
 }
 
