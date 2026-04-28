@@ -59,12 +59,12 @@ export default async function Page({
           <AnimeCards
             animes={animeInfo.recommendations}
             label="Recommendations"
-            paddingX="px-1.5 md:px-10 xl:px-14"
+            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
           />
         ) : (
           <AnimeCardsEmpty
             label="Recommendations"
-            paddingX="px-1.5 md:px-10 xl:px-14"
+            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
           />
         )}
         <EndOfContent />
@@ -72,7 +72,9 @@ export default async function Page({
     );
   } catch (error) {
     console.log(error);
-    return <div>{"error"}</div>;
+    return (
+      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto"></div>
+    );
   }
 }
 

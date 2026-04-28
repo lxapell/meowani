@@ -183,7 +183,7 @@ function CatalogSearch() {
 
   return (
     <>
-      <Collapsible className="w-full flex flex-col gap-2 px-6 md:px-12">
+      <Collapsible className="w-full flex flex-col gap-2 px-6 lg:px-12">
         <ButtonGroup className="flex w-full flex-col">
           <Label className="py-1.5 px-0 text-xs font-bold ">Search</Label>
           <div className="flex w-full gap-2">
@@ -441,7 +441,7 @@ const CatalogResult = React.memo(function CatalogResult() {
   }
 
   return (
-    <div className="space-y-6 px-1.5 md:px-12">
+    <div className="space-y-6 px-1.5 md:px-6 lg:px-12">
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
         {medias.map((media) => {
           const href = `/library/anime/${media.id}`;
@@ -472,7 +472,7 @@ function CatalogSearchSkeleton({
 }: React.ComponentPropsWithRef<"div">) {
   return (
     <div
-      className={cn("w-full flex flex-col gap-2 px-6 md:px-12", className)}
+      className={cn("w-full flex flex-col gap-2 px-6 lg:px-12", className)}
       {...props}
     >
       <ButtonGroup className="flex w-full flex-col">
@@ -510,7 +510,10 @@ function CatalogResultSkeleton({
   ...props
 }: React.ComponentPropsWithRef<"div"> & { amount?: number }) {
   return (
-    <div className={cn("space-y-6 px-1.5 md:px-12", className)} {...props}>
+    <div
+      className={cn("space-y-6 px-1.5 md:px-6 lg:px-12", className)}
+      {...props}
+    >
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-hidden min-w-0 px-0 block">
         {Array.from({ length: amount }).map((_, index) => (
           <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />

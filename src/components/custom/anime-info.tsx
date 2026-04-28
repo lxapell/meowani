@@ -240,7 +240,10 @@ export function AnimeInfoTabs({
 }: { data: any } & React.ComponentProps<typeof TabsPrimitive.Root>) {
   return (
     <Tabs
-      className={cn("px-1.5 md:px-10 xl:px-14 gap-4 sm:gap-6", className)}
+      className={cn(
+        "px-1.5 md:px-6 lg:px-12 xl:px-14 gap-4 sm:gap-6",
+        className,
+      )}
       defaultValue="overview"
       orientation="horizontal"
       {...props}
