@@ -2,6 +2,13 @@ import * as React from "react"
 
 import { cn } from "@/lib/shadcn/utils"
 
+/**
+ * Styled textarea component that forwards native textarea props and merges additional classes.
+ *
+ * @param className - Additional CSS class names appended to the component's default styling
+ * @param props - Standard HTML textarea attributes and event handlers to apply to the element
+ * @returns A JSX `textarea` element with the component's default styling and provided props
+ */
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
     <textarea

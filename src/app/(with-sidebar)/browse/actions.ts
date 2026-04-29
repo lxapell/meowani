@@ -19,6 +19,13 @@ import type {
 } from "@/types/anilist-types";
 import { mapSimple, mapStatus } from "@/utils/mapper";
 
+/**
+ * Fetches a paginated anime catalog from AniList using the provided filter state; if a studio filter is present, performs a studio-specific search.
+ *
+ * @param pageParam - Page number to request (1-based)
+ * @param filters - UI filter state used to construct AniList search variables
+ * @returns An object `{ pageInfo, media }` where `pageInfo` is AniList pagination information and `media` is an array of simplified media entries matching the filters
+ */
 export async function fetchCatalog({
   pageParam = 1,
   filters,

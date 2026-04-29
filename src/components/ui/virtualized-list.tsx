@@ -28,6 +28,14 @@ interface Item {
   value: string;
 }
 
+/**
+ * Render a scrollable virtualized list of filtered combobox items.
+ *
+ * @param itemHeight - Estimated height (in pixels) used to size each item for virtualization.
+ * @param overscan - Number of additional items to render before/after the visible viewport to reduce visual popping.
+ * @param virtualizerRef - Optional ref that will be set to the created virtualizer instance so callers can access its API.
+ * @returns The rendered list container element, or `null` when there are no filtered items.
+ */
 export function VirtualizedComboboxList({
   itemHeight = 32,
   overscan = 20,

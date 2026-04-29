@@ -2,6 +2,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { HomeIcon } from "lucide-react";
 
+/**
+ * Render a full-screen 404 "Page not found" UI with a link to the home page.
+ *
+ * @returns A JSX element that displays a centered "404" heading, a "Page not found" subheading,
+ * and an outlined "Go Home" button linking to `/`.
+ */
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col item-s-center justify-center px-4 text-center">

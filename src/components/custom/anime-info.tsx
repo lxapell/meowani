@@ -83,6 +83,12 @@ interface IAnimeInfoBannerProps {
   };
 }
 
+/**
+ * Render a responsive anime information hero/banner with background imagery, a cover modal, metadata badges (episodes/type/status/season/score), genres, and action controls.
+ *
+ * @param data - The banner data object containing images, color, titles, numeric/string metadata (episodes, type, status, season, score), and required `genres: string[]`. Used to populate images, badges, titles, genre links, and action targets.
+ * @returns A React element representing the anime info banner section.
+ */
 export function AnimeInfoBanner({
   data,
   className,
@@ -295,6 +301,13 @@ export function AnimeInfoBanner({
   );
 }
 
+/**
+ * Renders a tabbed interface with Overview, Relations, and Characters panels for a given anime.
+ *
+ * @param data - Anime data used to populate the panels. Must include `relations` and `characters` arrays and any fields consumed by the Overview panel (e.g., synopsis, nextEpisode, studios, tags, externalLinks).
+ * @param className - Optional additional CSS classes applied to the root Tabs container.
+ * @returns A React element containing a Tabs control with Overview, Relations, and Characters content derived from `data`.
+ */
 export function AnimeInfoTabs({
   data,
   className,
@@ -366,6 +379,12 @@ interface IOverviewProps {
   };
 }
 
+/**
+ * Renders the overview panel for an anime, including airing info, metadata, synopsis, studios, synonyms, genres, external tracking links, and tags.
+ *
+ * @param items - Anime overview data. Expected fields used: `id`, `description`, `type`, `releaseDate`, `endDate`, `nextEpisode` (with `airing` and `episode`), `trailer` (with `url`), `studios`, `synonyms`, `genres`, `externalLinks` (array of `{ url, site }`), and `tags` (string[]).
+ * @returns The rendered overview JSX element for the provided anime data.
+ */
 function Overview({
   items,
   className,
@@ -661,6 +680,16 @@ interface RelationsProps {
   }[];
 }
 
+/**
+ * Render a filterable carousel of related media grouped by relation type.
+ *
+ * Renders a row of filter buttons derived from the provided items' `relationType`
+ * (with an "All" option) and a draggable carousel of `AnimeCard` tiles for the
+ * currently selected relation group.
+ *
+ * @param items - Array of relation entries to display. Each entry should include at least `id` and `relationType`; `media` is used to determine the card wrapper element.
+ * @returns A React element containing relation-type filter controls and a carousel of related entries.
+ */
 function Relations({
   items,
   className,
@@ -749,6 +778,15 @@ export interface ICharactersProps {
   }[];
 }
 
+/**
+ * Renders a horizontal carousel of character cards.
+ *
+ * Each character in `items` is converted into an `AnimeCard`-compatible shape (the character's `name` becomes the card title, `role` becomes the card status, and `id` is used as the card id) and displayed as a carousel cell.
+ *
+ * @param items - Array of character entries to render.
+ * @param className - Optional additional CSS classes applied to the wrapper.
+ * @returns A React element containing a carousel of character cards.
+ */
 export function Characters({
   items,
   className,

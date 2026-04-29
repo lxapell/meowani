@@ -16,6 +16,12 @@ interface IAnilistQuery {
 
 export const revalidate = 86400;
 
+/**
+ * Render an `AnimeCardsEmpty` fallback with fixed responsive horizontal padding and an optional label.
+ *
+ * @param label - Optional text displayed by the empty state component
+ * @returns An `AnimeCardsEmpty` element configured with responsive `paddingX` classes and the provided `label`
+ */
 function EmptyFallback(label?: string) {
   return (
     <AnimeCardsEmpty
@@ -25,6 +31,13 @@ function EmptyFallback(label?: string) {
   );
 }
 
+/**
+ * Render a carousel of the top trending anime.
+ *
+ * Fetches the top 10 trending titles from AniList, maps them into card data, and renders an `AnimeCardsClient` carousel. If fetching or mapping fails, logs the error and renders an `AnimeCardsEmpty` fallback with the same horizontal padding.
+ *
+ * @returns A JSX element containing the trending anime cards or an empty fallback component on error.
+ */
 export async function TrendingComponent() {
   "use cache";
 
@@ -48,6 +61,15 @@ export async function TrendingComponent() {
   }
 }
 
+/**
+ * Render a carousel of popular anime for the current season.
+ *
+ * Fetches seasonal anime for the current season and year, maps results into
+ * card data, and renders an AnimeCardsClient configured with a season-specific
+ * browse link. If fetching or mapping fails, renders an AnimeCardsEmpty fallback.
+ *
+ * @returns A JSX element displaying seasonal anime cards or an empty fallback component on error.
+ */
 export async function SeasonalComponent() {
   "use cache";
 
@@ -81,6 +103,13 @@ export async function SeasonalComponent() {
   }
 }
 
+/**
+ * Render a carousel of all-time popular anime.
+ *
+ * Attempts to fetch the all-time popular anime list from AniList and render an anime cards client; if fetching or mapping fails, renders an empty fallback with the "All Time Popular" label.
+ *
+ * @returns A JSX element containing the populated anime cards client for all-time popular titles, or an empty fallback component when an error occurs.
+ */
 export async function PopularComponent() {
   "use cache";
 
@@ -111,6 +140,11 @@ export async function PopularComponent() {
   }
 }
 
+/**
+ * Renders an anime cards carousel for the upcoming season.
+ *
+ * @returns A JSX element containing the carousel populated with upcoming-season anime; returns an empty fallback component if fetching or mapping fails.
+ */
 export async function UpcomingComponent() {
   "use cache";
 
@@ -144,6 +178,13 @@ export async function UpcomingComponent() {
   }
 }
 
+/**
+ * Renders a spotlight carousel populated with trending anime.
+ *
+ * Attempts to fetch up to 9 trending anime, map them for the spotlight UI, and return the spotlight client component. If fetching or mapping fails, returns an empty spotlight component.
+ *
+ * @returns A JSX element containing the spotlight carousel with up to 9 mapped trending anime items, or a fallback empty spotlight component on error.
+ */
 export async function SpotlightComponent() {
   try {
     const raw: IAnilistQuery = await anilistRequest(trending, {

@@ -27,6 +27,17 @@ interface IAnimeCardProps {
   className?: string;
 }
 
+/**
+ * Render an anime poster card with image, metadata, and an optional link-style hover overlay.
+ *
+ * Displays the cover image (with shimmer fallback), title, type/status/relation badges, and episodes or chapters count.
+ * When rendered as a Next.js `Link` (`as={Link}`), the card adds a dark overlay, a centered play button, and a bottom hover panel showing the title and genre badges.
+ *
+ * @param anime - The anime data used to populate the card (title, image, color, genres, type, status, relationType, episodes, chapters, etc.)
+ * @param className - Optional additional CSS class names applied to the root element
+ * @param as - Element or component to render as the root tag; defaults to `"div"`. When passing `Link`, hover overlay features are enabled.
+ * @returns A JSX element representing the anime card UI
+ */
 export function AnimeCard({
   anime,
   className,
@@ -125,6 +136,16 @@ export function AnimeCard({
   );
 }
 
+/**
+ * Renders a skeleton placeholder that matches the layout of `AnimeCard`.
+ *
+ * Renders markup replicating the poster aspect ratio and the metadata rows below,
+ * suitable for use while anime data is loading.
+ *
+ * @param className - Optional additional class names to apply to the outer wrapper.
+ * @param props - Additional `div` element props are forwarded to the outer wrapper.
+ * @returns A JSX element containing the card skeleton layout.
+ */
 export function AnimeCardSkeleton({
   className,
   ...props

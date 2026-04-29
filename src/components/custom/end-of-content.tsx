@@ -2,6 +2,14 @@ import * as React from "react";
 
 import { cn } from "@/lib/shadcn/utils";
 
+/**
+ * Renders a centered "End" indicator with decorative horizontal dividers on both sides.
+ *
+ * The root element has `role="status"` and `aria-label="End of content"` for assistive
+ * technologies. Additional `div` props (such as `className`) can be passed through.
+ *
+ * @returns A `div` element containing the centered "End" label flanked by decorative border spans.
+ */
 export function EndOfContent({ className }: React.ComponentProps<"div">) {
   return (
     <div

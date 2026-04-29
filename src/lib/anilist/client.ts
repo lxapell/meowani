@@ -14,9 +14,12 @@ const base = new GraphQLClient("https://graphql.anilist.co", {
 });
 
 /**
- * @param query {*} - GraphQL query string
- * @param variables - The qury variable objects
- * @param taken - Optional OAuth token for authenticated requests
+ * Send a GraphQL request to the AniList API and return the parsed response data.
+ *
+ * @param query - A GraphQL query as a string or a `DocumentNode`
+ * @param variables - Optional map of GraphQL variables for the query
+ * @param token - Optional OAuth bearer token to authenticate the request
+ * @returns The response `data` from AniList, typed as `T`
  */
 export async function anilistRequest<T>(
   query: string | DocumentNode,

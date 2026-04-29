@@ -155,6 +155,12 @@ const data = {
   ],
 };
 
+/**
+ * Render the application's collapsible sidebar with header, main navigation, filter sections, footer, and collapse rail.
+ *
+ * @param props - Props forwarded to the underlying `Sidebar` component
+ * @returns The configured `Sidebar` React element used for app navigation
+ */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>

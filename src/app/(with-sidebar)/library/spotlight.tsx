@@ -3,6 +3,13 @@ import type { ISpotlight } from "@/types/library";
 import SpotlightClient from "@/components/custom/spotlight.wrapper";
 import { SOURCE_API } from "@/constants/api";
 
+/**
+ * Fetches HiAnime spotlight entries, replaces each item's final ID segment with the corresponding AniList ID, and renders the SpotlightClient with the updated items.
+ *
+ * On error, logs the failure and returns a fallback fragment containing "Banana".
+ *
+ * @returns The rendered SpotlightClient component populated with the formatted spotlight items, or a fallback fragment on error.
+ */
 export async function SpotlightComponent() {
   try {
     const raw = await fetch(SOURCE_API.HIANIME.SPOTLIGHT, {
@@ -29,6 +36,14 @@ export async function SpotlightComponent() {
   }
 }
 
+/**
+ * Fetches canonical external IDs for a spotlight item from the HiAnime info endpoint.
+ *
+ * Retrieves the MyAnimeList ID and AniList ID for the given spotlight `id`.
+ *
+ * @param id - The spotlight item identifier used to query the HiAnime info API
+ * @returns An object containing `malID` (MyAnimeList ID) and `alID` (AniList ID)
+ */
 async function getItem(id: string) {
   const req = await fetch(`${SOURCE_API.HIANIME.INFO}id=${id}`, {
     next: { revalidate: 86400 },

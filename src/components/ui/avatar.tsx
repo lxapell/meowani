@@ -6,6 +6,13 @@ import { Avatar as AvatarPrimitive } from "radix-ui";
 import { cn } from "@/lib/shadcn/utils";
 import { getImageProps } from "next/image";
 
+/**
+ * Renders a styled Avatar wrapper around Radix's AvatarPrimitive.Root, applying size metadata and merged utility classes.
+ *
+ * @param className - Optional additional CSS classes to merge with the component's default styling.
+ * @param size - Visual size variant for the avatar; one of `"default"`, `"sm"`, or `"lg"`. Affects rendered sizing classes and the `data-size` attribute.
+ * @returns A React element that wraps `AvatarPrimitive.Root` with standardized styling, `data-slot="avatar"`, `data-size`, and any forwarded props.
+ */
 function Avatar({
   className,
   size = "default",
@@ -26,6 +33,17 @@ function Avatar({
   );
 }
 
+/**
+ * Renders an avatar image, using Next.js image optimization when a `src` is provided.
+ *
+ * When `src` is falsy, forwards the original props to `AvatarPrimitive.Image`. When `src` is truthy,
+ * computes sizing (uses numeric `width` and `height` if both are present; otherwise uses `{ fill: true, sizes: "32px" }`),
+ * obtains optimized props via `getImageProps`, and renders `AvatarPrimitive.Image` with those optimized props.
+ *
+ * @param className - Additional CSS classes applied to the image container.
+ * @param props - All other `AvatarPrimitive.Image` props. If `src` is provided, it will be passed to the image optimizer along with `alt`, `width`, and `height` (when available).
+ * @returns An `AvatarPrimitive.Image` element; optimized Next.js image props are applied when `src` is present, otherwise the original props are forwarded.
+ */
 function AvatarImage({
   className,
   ...props
@@ -69,6 +87,13 @@ function AvatarImage({
   );
 }
 
+/**
+ * Renders a styled fallback element for an Avatar when the image is unavailable.
+ *
+ * Applies standardized sizing and muted fallback styling and forwards any received props to the underlying primitive.
+ *
+ * @returns A React element representing the avatar fallback
+ */
 function AvatarFallback({
   className,
   ...props
@@ -85,6 +110,16 @@ function AvatarFallback({
   );
 }
 
+/**
+ * Renders a circular badge positioned at the avatar's bottom-right corner.
+ *
+ * The element uses size-aware utility classes (adjusting dimensions and hiding nested SVGs at the small size)
+ * and merges any `className` passed in with its internal styling.
+ *
+ * @param className - Additional CSS classes to merge onto the badge container
+ * @param props - All other standard `span` props forwarded to the badge element
+ * @returns The rendered `<span>` used as an avatar badge overlay
+ */
 function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
@@ -101,6 +136,14 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
   );
 }
 
+/**
+ * Groups avatar elements into an overlapping layout with consistent ring styling.
+ *
+ * Renders a container div with `data-slot="avatar-group"` that applies horizontal overlap, applies ring styling to contained avatar slots, and merges any additional `className` or other div props.
+ *
+ * @param className - Additional CSS classes to merge into the container
+ * @returns The container div element used to group avatars
+ */
 function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -114,6 +157,12 @@ function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/**
+ * Renders a count indicator for an AvatarGroup with size-dependent sizing, nested SVG sizing rules, and ring styling.
+ *
+ * @param className - Additional CSS classes to merge with the component's default styles.
+ * @returns A div element used as the avatar group count indicator.
+ */
 function AvatarGroupCount({
   className,
   ...props

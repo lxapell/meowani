@@ -20,6 +20,13 @@ interface PageResponse {
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Fetches all studios from the AniList GraphQL API by iterating through paginated results.
+ *
+ * The function pages through results until no more pages are available, applying short delays and periodic longer pauses to avoid exceeding rate limits. Retrieved items include each studio's `id`, `name`, and `isAnimationStudio` fields.
+ *
+ * @returns An array of `Studio` objects retrieved from AniList (each with `id`, `name`, and `isAnimationStudio`).
+ */
 async function fetchAllStudios(): Promise<Studio[]> {
   const studios: Studio[] = [];
   let page = 1;
@@ -69,6 +76,12 @@ async function fetchAllStudios(): Promise<Studio[]> {
   return studios;
 }
 
+/**
+ * Fetches all studios from AniList, filters for animation studios, and writes a sorted
+ * list of `{ id, name }` objects to `data/animation-studios.json` in the current working directory.
+ *
+ * Ensures the target directory exists and logs progress and completion.
+ */
 async function main() {
   console.log("Fetching all animation studios...");
   const studios = await fetchAllStudios();

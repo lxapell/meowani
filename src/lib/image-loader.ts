@@ -4,12 +4,13 @@ interface ImageLoaderProps {
   quality?: number;
 }
 
-/*
- * @param {Object} props
- * @param {string} props.src
- * @param {number} props.width
- * @param {number} [props.quality]
- * @returns {string}
+/**
+ * Builds a proxied image URL for the application's image transformation endpoint.
+ *
+ * @param src - Source path or absolute URL. If `src` starts with `/`, it is prefixed with the origin `https://alpha.meowani.site`.
+ * @param width - Desired output width (used as the `w` query parameter).
+ * @param quality - Optional image quality value; when provided it is added as the `q` query parameter.
+ * @returns A `/~/image` path containing `url`, `w`, and optionally `q` query parameters that reference the transformed image.
  */
 export default function customImageLoader({
   src,

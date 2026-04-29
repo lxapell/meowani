@@ -5,6 +5,17 @@ import {
 } from "@/constants/anilist/enums";
 import type { FilterState, Normalized } from "@/types/catalog";
 
+/**
+ * Normalize various catalog item shapes into a consistent `{ id, label, value }` object.
+ *
+ * @param item - A value to normalize: a string, a studio-like object (`{ id, name }`), or a generic option object (may contain `id`, `name`, `normal`, `query`).
+ * @param index - Index used to generate a fallback `id` when `item` has no `id`.
+ * @param type - Optional hint; when `"studio"` treats `item` as a studio object and uses its `id` and `name`.
+ * @returns An object with:
+ *  - `id`: the item's `id` if present, otherwise `index + 1`;
+ *  - `label`: `item.normal` if present, otherwise `item.name` (or the string value when `item` is a string);
+ *  - `value`: `item.query` if present, otherwise `item.name` (or the string value when `item` is a string).
+ */
 export function normalize(
   item: string | any,
   index: number,
@@ -23,6 +34,19 @@ export function normalize(
   };
 }
 
+/**
+ * Populate a FilterState object from URL query parameters.
+ *
+ * Reads supported query keys from `params` and maps them into a new FilterState based on `initialFilters`:
+ * - `q` → Query (string)
+ * - `genres`, `tags`, `formats` → comma-separated lists matched against the corresponding static catalog entries; stored as arrays of catalog options
+ * - `year`, `season`, `status`, `sort` → matched by `value` to the corresponding catalog option or set to `null` if not found
+ * - `studio` → parsed as integer and matched by `id` to the "Studio" catalog option or set to `null` if not found
+ * - `minDuration`, `maxDuration`, `minEpisodes`, `maxEpisodes` → stored as string values (empty string if absent)
+ *
+ * @param params - URLSearchParams instance containing query parameters to convert
+ * @returns A FilterState populated from the provided query parameters
+ */
 export function URLParamsToFilters(params: URLSearchParams): FilterState {
   const filters = { ...initialFilters };
 
@@ -93,6 +117,18 @@ export function URLParamsToFilters(params: URLSearchParams): FilterState {
   return filters;
 }
 
+/**
+ * Serialize a FilterState into URL search parameters.
+ *
+ * Produces a URLSearchParams object containing only populated filter fields:
+ * - `Query` → `q`
+ * - multi-select arrays (`Genres`, `Tags`, `Formats`) → comma-separated `value`s in `genres`, `tags`, `formats`
+ * - single selects (`Year`, `Season`, `Status`, `Sort by`, `Studio`) → their `.value` in `year`, `season`, `status`, `sort`, `studio`
+ * - numeric/string range fields (`Min Duration`, `Max Duration`, `Min Episodes`, `Max Episodes`) → `minDuration`, `maxDuration`, `minEpisodes`, `maxEpisodes`
+ *
+ * @param filters - The filter state to serialize.
+ * @returns A URLSearchParams instance representing the serialized filters.
+ */
 export function filtersToURLParams(filters: FilterState): URLSearchParams {
   const params = new URLSearchParams();
   if (filters.Query) params.set("q", filters.Query);

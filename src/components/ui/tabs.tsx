@@ -6,6 +6,13 @@ import { Tabs as TabsPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/shadcn/utils"
 
+/**
+ * Wraps the Radix Tabs root with standardized layout classes and orientation metadata.
+ *
+ * @param className - Additional CSS class names to merge with the component's base classes
+ * @param orientation - Layout orientation for the tabs; either `"horizontal"` or `"vertical"`
+ * @returns A configured `TabsPrimitive.Root` element with merged class names and `data-orientation`/`data-slot` attributes
+ */
 function Tabs({
   className,
   orientation = "horizontal",
@@ -39,6 +46,13 @@ const tabsListVariants = cva(
   }
 )
 
+/**
+ * Renders a styled tabs list element with variant-driven classes.
+ *
+ * @param className - Additional class names to merge with the component's base and variant classes.
+ * @param variant - Visual style variant for the tabs list; `"default"` applies a muted background, `"line"` uses a transparent background and line-style appearance.
+ * @returns A Radix `Tabs.List` element with computed variant classes and all other props forwarded.
+ */
 function TabsList({
   className,
   variant = "default",
@@ -55,6 +69,13 @@ function TabsList({
   )
 }
 
+/**
+ * Renders a styled tab trigger that adapts its layout and appearance based on orientation, variant, and interaction states.
+ *
+ * @param className - Additional class names to merge with the component's computed classes.
+ * @param props - Props forwarded to `TabsPrimitive.Trigger`.
+ * @returns The configured `TabsPrimitive.Trigger` element with variant- and state-aware styling.
+ */
 function TabsTrigger({
   className,
   ...props
@@ -74,6 +95,11 @@ function TabsTrigger({
   )
 }
 
+/**
+ * Renders a tab panel container with base layout and typography classes.
+ *
+ * @returns A `TabsPrimitive.Content` element with `flex-1 text-sm outline-none` plus any provided `className` and forwarded props.
+ */
 function TabsContent({
   className,
   ...props

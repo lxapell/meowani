@@ -15,6 +15,13 @@ import {
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
+/**
+ * Renders a breadcrumb navigation built from the current Next.js pathname.
+ *
+ * The component splits the pathname into segments, excludes segments equal to `"anime"` and `"watch"`, and maps the remaining segments to breadcrumb items. Each segment is converted to a human-friendly label by capitalizing hyphen-separated words; if a segment immediately follows an `"anime"` or `"watch"` segment, the component attempts to derive a title using `TitleSlug(...).toTitle()` and silently falls back to the default label on error. Intermediate items are rendered as links with progressively built `href`s; the final segment is rendered as the current page label (non-link).
+ *
+ * @returns The breadcrumb JSX element representing the current pathname, with linkable intermediate segments and a non-link final segment.
+ */
 export default function DynamicBreadcrumb() {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);

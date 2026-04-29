@@ -19,6 +19,12 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
+/**
+ * Next.js server component that derives initial catalog filters from route search params, prefetches catalog data into a TanStack QueryClient, hydrates that cache for the client, and renders the browse UI.
+ *
+ * @param searchParams - A promise that resolves to the route's query parameters (string or string[] values) used to construct the initial filters.
+ * @returns The browse page element with prefetched and hydrated catalog data and UI providers (filters, search, and results).
+ */
 export default async function BrowsePage({
   searchParams,
 }: {

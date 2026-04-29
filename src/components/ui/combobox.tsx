@@ -15,10 +15,23 @@ import { ChevronDownIcon, XIcon, CheckIcon } from "lucide-react"
 
 const Combobox = ComboboxPrimitive.Root
 
+/**
+ * Render the combobox's selected value container.
+ *
+ * @returns The `ComboboxPrimitive.Value` element with `data-slot="combobox-value"` and all forwarded props.
+ */
 function ComboboxValue({ ...props }: ComboboxPrimitive.Value.Props) {
   return <ComboboxPrimitive.Value data-slot="combobox-value" {...props} />
 }
 
+/**
+ * Renders a styled combobox trigger that displays provided children and a down-chevron icon.
+ *
+ * @param className - Additional class names to merge with internal trigger styles.
+ * @param children - Content rendered inside the trigger (e.g., a label or selected value).
+ * @param props - Remaining props forwarded to the underlying `ComboboxPrimitive.Trigger`.
+ * @returns The rendered trigger element for the combobox.
+ */
 function ComboboxTrigger({
   className,
   children,
@@ -36,6 +49,14 @@ function ComboboxTrigger({
   )
 }
 
+/**
+ * Renders a styled combobox clear control containing an `X` icon.
+ *
+ * Forwards all received props to the underlying `ComboboxPrimitive.Clear`, merges `className`, and uses an `InputGroupButton` (variant "ghost", size "icon-xs") as the visual button via the primitive's `render` prop.
+ *
+ * @param props - Props forwarded to `ComboboxPrimitive.Clear`
+ * @returns The rendered combobox clear element
+ */
 function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
   return (
     <ComboboxPrimitive.Clear
@@ -49,6 +70,18 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
   )
 }
 
+/**
+ * Renders a composed combobox input group with an optional trigger and clear control.
+ *
+ * Composes an InputGroup containing the underlying ComboboxPrimitive.Input, an inline addon that
+ * conditionally renders a trigger button and/or a clear control, and any additional children.
+ *
+ * @param className - Additional class names applied to the outer InputGroup container
+ * @param disabled - If true, disables the input and action buttons
+ * @param showTrigger - When true, renders the trigger control (defaults to `true`)
+ * @param showClear - When true, renders the clear control (defaults to `false`)
+ * @returns The rendered input group element for use inside a Combobox
+ */
 function ComboboxInput({
   className,
   children,
@@ -86,6 +119,14 @@ function ComboboxInput({
   )
 }
 
+/**
+ * Renders the combobox popup content inside a positioned portal.
+ *
+ * The popup is placed using positioning props (`side`, `sideOffset`, `align`, `alignOffset`) and accepts additional popup properties via `props`.
+ *
+ * @param anchor - Optional DOM element used as the positioning anchor; when provided the popup renders in "chips" mode (sets `data-chips`).
+ * @returns The positioned popup element used as the combobox content.
+ */
 function ComboboxContent({
   className,
   side = "bottom",
@@ -123,6 +164,13 @@ function ComboboxContent({
   )
 }
 
+/**
+ * Render a styled combobox list container used to display selectable options.
+ *
+ * @param className - Additional CSS classes to merge with the component's default styling
+ * @param props - Remaining props forwarded to the underlying `ComboboxPrimitive.List`
+ * @returns The rendered combobox list element with default layout, scroll constraints, `data-slot="combobox-list"`, and any forwarded props
+ */
 function ComboboxList({ className, ...props }: ComboboxPrimitive.List.Props) {
   return (
     <ComboboxPrimitive.List
@@ -136,6 +184,13 @@ function ComboboxList({ className, ...props }: ComboboxPrimitive.List.Props) {
   )
 }
 
+/**
+ * Renders a styled combobox option element with a check indicator.
+ *
+ * The component forwards all native item props to the underlying primitive, applies layout and state classes, and renders a non-interactive check icon as the selection indicator.
+ *
+ * @returns The rendered combobox item element
+ */
 function ComboboxItem({
   className,
   children,
@@ -162,6 +217,13 @@ function ComboboxItem({
   )
 }
 
+/**
+ * Renders a styled combobox group container.
+ *
+ * Adds `data-slot="combobox-group"`, merges the provided `className`, and forwards all other props to the underlying group element.
+ *
+ * @returns The rendered combobox group element with applied attributes and forwarded props.
+ */
 function ComboboxGroup({ className, ...props }: ComboboxPrimitive.Group.Props) {
   return (
     <ComboboxPrimitive.Group
@@ -172,6 +234,14 @@ function ComboboxGroup({ className, ...props }: ComboboxPrimitive.Group.Props) {
   )
 }
 
+/**
+ * Renders a styled group label for Combobox option groups.
+ *
+ * Applies default padding, small text size, and muted foreground color, and forwards
+ * any additional props to the rendered label element.
+ *
+ * @returns The rendered group label element.
+ */
 function ComboboxLabel({
   className,
   ...props
@@ -185,12 +255,27 @@ function ComboboxLabel({
   )
 }
 
+/**
+ * Render a Combobox Collection wrapper that marks the element with `data-slot="combobox-collection"`.
+ *
+ * @returns The Collection element used to group combobox items
+ */
 function ComboboxCollection({ ...props }: ComboboxPrimitive.Collection.Props) {
   return (
     <ComboboxPrimitive.Collection data-slot="combobox-collection" {...props} />
   )
 }
 
+/**
+ * Renders the combobox empty-state element, hidden by default and shown when the parent combobox content is empty.
+ *
+ * The element receives `data-slot="combobox-empty"` and default classes that hide it until the surrounding
+ * `combobox-content` indicates an empty state (`group-data-empty/combobox-content:flex`).
+ *
+ * @param className - Additional class names to merge with the default styling.
+ * @param props - Additional props forwarded to the underlying `ComboboxPrimitive.Empty` element.
+ * @returns A React element representing the combobox empty state.
+ */
 function ComboboxEmpty({ className, ...props }: ComboboxPrimitive.Empty.Props) {
   return (
     <ComboboxPrimitive.Empty
@@ -204,6 +289,11 @@ function ComboboxEmpty({ className, ...props }: ComboboxPrimitive.Empty.Props) {
   )
 }
 
+/**
+ * Renders a horizontal separator for the combobox list with default spacing and border styles.
+ *
+ * @returns The `ComboboxPrimitive.Separator` element with combobox-specific classes and forwarded props.
+ */
 function ComboboxSeparator({
   className,
   ...props
@@ -217,6 +307,12 @@ function ComboboxSeparator({
   )
 }
 
+/**
+ * Provides a styled chips container for selected combobox values.
+ *
+ * @param className - Additional class names to apply to the chips container
+ * @returns The rendered Combobox chips container element
+ */
 function ComboboxChips({
   className,
   ...props
@@ -234,6 +330,12 @@ function ComboboxChips({
   )
 }
 
+/**
+ * Renders a styled combobox selection chip that optionally includes a remove control.
+ *
+ * @param showRemove - When `true`, includes a remove button inside the chip; when `false`, omits the remove control.
+ * @returns The rendered chip element, including its children and an optional remove button.
+ */
 function ComboboxChip({
   className,
   children,
@@ -265,6 +367,15 @@ function ComboboxChip({
   )
 }
 
+/**
+ * Input element for editing/adding chips inside a Combobox chips collection.
+ *
+ * Merges any provided `className` with the component's base classes and sets
+ * `data-slot="combobox-chip-input"` so it can be targeted by styling.
+ *
+ * @param className - Additional CSS classes to apply to the input (merged with defaults)
+ * @returns A configured `ComboboxPrimitive.Input` element for chip entry
+ */
 function ComboboxChipsInput({
   className,
   ...props
@@ -278,6 +389,11 @@ function ComboboxChipsInput({
   )
 }
 
+/**
+ * Creates a ref to be used as the anchor element for Combobox positioning.
+ *
+ * @returns A `RefObject` whose `current` is the anchor `HTMLDivElement` or `null`.
+ */
 function useComboboxAnchor() {
   return React.useRef<HTMLDivElement | null>(null)
 }

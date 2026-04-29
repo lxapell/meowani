@@ -68,6 +68,13 @@ const FiltersDispatchContext = React.createContext<TDispatchContext | null>(
   null,
 );
 
+/**
+ * Provides catalog filter state and setter contexts, initialized from the given filters.
+ *
+ * @param initialFilters - The initial FilterState used to populate the URL-synced filter values.
+ * @param children - React children rendered inside the providers.
+ * @returns A React element that supplies `FiltersStateContext` and `FiltersDispatchContext` to its children. 
+ */
 function CatalogFiltersProvider({
   children,
   initialFilters,
@@ -87,6 +94,12 @@ function CatalogFiltersProvider({
   );
 }
 
+/**
+ * Access the current catalog filter state from the provider-backed context.
+ *
+ * @returns The current `FilterState` provided by `CatalogFiltersProvider`.
+ * @throws Error if called outside of a `CatalogFiltersProvider`.
+ */
 function useFiltersState() {
   const ctx = React.useContext(FiltersStateContext);
   if (!ctx)
@@ -96,6 +109,12 @@ function useFiltersState() {
   return ctx;
 }
 
+/**
+ * Accesses the filters dispatch context provided by CatalogFiltersProvider.
+ *
+ * @returns An object containing setter functions for updating catalog filter state.
+ * @throws If called outside a CatalogFiltersProvider, throws an Error.
+ */
 function useFiltersDispatch() {
   const ctx = React.useContext(FiltersDispatchContext);
   if (!ctx)
@@ -105,6 +124,12 @@ function useFiltersDispatch() {
   return ctx;
 }
 
+/**
+ * Creates and infinite-query-backed data source for catalog pages using the given filter state.
+ *
+ * @param filters - FilterState used to build the query key and passed to the catalog fetcher
+ * @returns The infinite query result for catalog pages, containing paginated `data.pages`, pagination helpers (`fetchNextPage`, `hasNextPage`), and status flags such as `isLoading`, `isError`, and `isFetchingNextPage`
+ */
 function useCatalogData(filters: FilterState) {
   const serializedFilters = JSON.stringify(filters);
 
@@ -127,6 +152,13 @@ type ComboboxKeys = Exclude<
   "Query" | "Min Duration" | "Max Duration" | "Min Episodes" | "Max Episodes"
 >;
 
+/**
+ * Renders the catalog search input and collapsible filter panel and wires user interactions to the catalog filters context.
+ *
+ * Maintains a local search draft (with deferred updates) and exposes comboboxes, numeric range inputs, and a clear-all action that update the shared filter state.
+ *
+ * @returns The catalog search and filter UI as a React element.
+ */
 function CatalogSearch() {
   const filters = useFiltersState();
   const dispatch = useFiltersDispatch();
@@ -466,6 +498,14 @@ const CatalogResult = React.memo(function CatalogResult() {
   );
 });
 
+/**
+ * Renders a disabled skeleton of the catalog search and filter controls.
+ *
+ * The skeleton replicates the search input, filter/collapse trigger, and clear button
+ * layout with disabled inputs and buttons to visually indicate loading.
+ *
+ * @returns A JSX element containing disabled inputs and buttons that match the search/filter UI layout.
+ */
 function CatalogSearchSkeleton({
   className,
   ...props
@@ -504,6 +544,13 @@ function CatalogSearchSkeleton({
   );
 }
 
+/**
+ * Render a grid of anime card skeleton placeholders that match the catalog results layout.
+ *
+ * @param amount - The number of `AnimeCardSkeleton` placeholders to render (default: 24).
+ * @param className - Additional CSS class names applied to the outer container.
+ * @returns A React element containing a responsive grid of `AnimeCardSkeleton` placeholders.
+ */
 function CatalogResultSkeleton({
   amount = 24,
   className,
@@ -523,6 +570,16 @@ function CatalogResultSkeleton({
   );
 }
 
+/**
+ * Synchronizes catalog filter state with URL query parameters and exposes current filters and setters.
+ *
+ * Builds a FilterState derived from URL-bound query parameters (initialized from `defaultFilters`) and returns setter functions that update those URL parameters. Array-valued filters (genres, tags, formats) are stored as repeated query values; single-select filters (year, season, status, sort by, studio) are stored as string values; numeric range fields are stored as strings.
+ *
+ * @param defaultFilters - Initial filter values used when query parameters are not present
+ * @returns An object containing:
+ *  - `filters`: the current FilterState reconstructed from URL parameters and available catalog data
+ *  - `setters`: functions to update each filter field (e.g., `setQuery`, `setGenres`, `setYear`, `setMinDuration`, etc.)
+ */
 function useCatalogFilters(defaultFilters: FilterState) {
   const [query, setQuery] = useQueryState(
     "q",

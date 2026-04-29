@@ -44,7 +44,14 @@ import {
 //     voiceActor: voiceActor,
 //   };
 // });
-// console.log(mapped);
+/**
+ * Render the anime details page for the given route parameter.
+ *
+ * Retrieves anime data by extracting the numeric id from `animeId` (the last hyphen-separated segment), fetches and maps the AniList media into a UI-friendly shape, and returns a page containing the anime banner, tabs, recommendations (or an empty recommendations state), and end-of-content marker. If the anime cannot be found or an error occurs, returns an "Anime Info Unavailable" fallback UI.
+ *
+ * @param params - A promise resolving to an object with `animeId`, a route slug (e.g. `"some-title-12345"`)
+ * @returns The rendered React element for the anime details page or a fallback unavailable-state element
+ */
 
 export default async function Page({
   params,

@@ -1,5 +1,10 @@
 export type Season = "WINTER" | "SPRING" | "SUMMER" | "FALL";
 
+/**
+ * Determine the current anime season and its year from the system date.
+ *
+ * @returns An object with `season` set to one of `"WINTER"`, `"SPRING"`, `"SUMMER"`, or `"FALL"` and `year` set to the corresponding year for that season.
+ */
 export function getCurrentAnimeSeason(): { season: Season; year: number } {
   const now = new Date();
   const month = now.getMonth();
