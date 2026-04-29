@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import DOMPurify from "dompurify";
+import sanitizeHTML from "sanitize-html";
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -385,7 +385,13 @@ function Overview({
   const date = items.nextEpisode.airing
     ? new DateFormatter(items.nextEpisode.airing)
     : null;
-  const synopsis = truncateHTML(items.description, 200);
+  const synopsis = truncateHTML(
+    sanitizeHTML(items.description, {
+      allowedTags: ["i", "b", "em", "strong", "br", "p", "span"],
+      allowedAttributes: {},
+    }),
+    200,
+  );
   const [tagExpanded, setTagExpanded] = React.useState(false);
   return (
     <div

@@ -10,13 +10,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: ".anilist.co",
+        hostname: "**.anilist.co",
         port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: ".noitatnemucod.net",
+        hostname: "**.noitatnemucod.net",
         port: "",
         pathname: "/**",
       },
