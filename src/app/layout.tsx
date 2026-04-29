@@ -6,8 +6,10 @@ import { Geist, Geist_Mono, Montserrat, Sora } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/shadcn/utils";
 
+import { SerwistProvider } from "./serwist";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -58,8 +60,8 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: [{ url: "/assets/logo/favicon.ico", type: "image/x-icon" }],
-    shortcut: [{ url: "/assets/logo/favicon.ico", type: "image/x-icon" }],
+    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
+    shortcut: [{ url: "/favicon.ico", type: "image/x-icon" }],
   },
 };
 
@@ -67,6 +69,12 @@ export const viewport: Viewport = {
   themeColor: "#8bdfea",
 };
 
+/**
+ * Application root layout that wraps page content with global font classes, providers, and analytics.
+ *
+ * @param children - The page content to render within the layout's provider hierarchy.
+ * @returns The top-level HTML element containing the provider-wrapped application UI, analytics, and toast components.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -86,8 +94,16 @@ export default function RootLayout({
         "dark",
       )}
     >
+      <head />
       <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
+        <SerwistProvider swUrl="/serwist/sw.js">
+          <NuqsAdapter>
+            <TooltipProvider>
+              {children}
+              {/*<BackNavigationFix />*/}
+            </TooltipProvider>
+          </NuqsAdapter>
+        </SerwistProvider>
         <Analytics />
         <Toaster />
       </body>
