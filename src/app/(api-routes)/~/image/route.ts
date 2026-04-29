@@ -27,15 +27,15 @@ function isValidUrl(url: string): boolean {
       return false;
     }
 
-    for (const pattern in patterns) {
+    for (const pattern of patterns) {
       const urlPattern = new URLPattern({
-        protocol: (pattern as remotePatterns).protocol,
-        hostname: (pattern as remotePatterns).hostname,
-        port: (pattern as remotePatterns).port,
-        pathname: (pattern as remotePatterns).pathname,
+        protocol: pattern.protocol,
+        hostname: pattern.hostname,
+        port: pattern.port,
+        pathname: pattern.pathname,
       });
 
-      if (urlPattern.test("url")) {
+      if (urlPattern.test(url)) {
         return true;
       }
     }

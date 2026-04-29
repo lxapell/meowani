@@ -57,12 +57,20 @@ async function fetchAllStudios(): Promise<Studio[]> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, variables: { page } }),
     });
+    if (!response.ok) {
+      throw new Error(`AniList request failed: ${response.status}`);
+    }
 
-    const json = (await response.json()) as PageResponse;
+    const json = (await response.json()) as
+      | PageResponse
+      | { errors?: { message: string }[] };
 
-    if (!json.data) {
-      console.error("API Error:", json);
-      break;
+    if (!("data" in json) || !json.data?.Page) {
+      const message =
+        "errors" in json && json.errors?.[0]?.message
+          ? json.errors[0].message
+          : "Unknown AniList API error";
+      throw new Error(message);
     }
 
     studios.push(...json.data.Page.studios);

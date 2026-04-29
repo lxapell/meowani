@@ -63,7 +63,7 @@ export default async function Page({
 
   try {
     const anime = await getAnimeInfo(id!);
-    if (!anime) notFound();
+    if (!anime?.Media) notFound();
     const animeInfo = mapAdvanced(anime.Media);
     // throw new Error("Error test");
 

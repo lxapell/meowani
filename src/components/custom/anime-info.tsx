@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import DOMPurify from "dompurify";
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -50,22 +51,13 @@ import { mapSimple } from "@/utils/mapper";
 import { getShimmerDataURL } from "@/utils/placeholder";
 import { DateFormatter, TitleSlug, truncateHTML } from "@/utils/formatter";
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogMedia,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 
 interface IAnimeInfoBannerProps {
   data: {
@@ -271,7 +263,7 @@ export function AnimeInfoBanner({
                   <ButtonGroup className="inline-flex items-center overflow-hidden">
                     <Button
                       className="md:h-10 md:px-3"
-                      disabled={data.episodes! >= 1}
+                      disabled={!data.episodes || data.episodes < 1}
                       asChild
                     >
                       <Link
@@ -393,7 +385,7 @@ function Overview({
   const date = items.nextEpisode.airing
     ? new DateFormatter(items.nextEpisode.airing)
     : null;
-  const synopsis = truncateHTML(items.description, 150);
+  const synopsis = truncateHTML(items.description, 200);
   const [tagExpanded, setTagExpanded] = React.useState(false);
   return (
     <div

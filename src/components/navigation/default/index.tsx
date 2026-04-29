@@ -77,10 +77,10 @@ const genres = [
 
 const data = {
   user: {
-    name: "Yohan",
-    email: "meowhandev@gmail.com",
+    name: "Guest",
+    email: "example@gmail.com",
     avatar: "/assets/logo/apple-touch-icon.png",
-    isAuth: true,
+    isAuth: false,
   },
   app: {
     name: "MeowAni",

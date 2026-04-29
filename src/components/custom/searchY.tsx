@@ -88,4 +88,48 @@ function SearchProvider({
     },
     [setOpenProp, isOpen],
   );
+
+  const [_query, _setQuery] = React.useState("");
+  const query = queryProp ?? _query;
+  const setQuery = React.useCallback(
+    (value: string) => {
+      if (setQueryProp) {
+        setQueryProp(value);
+      } else {
+        _setQuery(value);
+      }
+    },
+    [setQueryProp],
+  );
+
+  const [_openPopover, _setOpenPopover] = React.useState(false);
+  const openPopover = openPopoverProp ?? _openPopover;
+  const togglePopover = React.useCallback(
+    (value: boolean) => {
+      if (setOpenPopoverProp) {
+        setOpenPopoverProp(value);
+      } else {
+        _setOpenPopover(value);
+      }
+    },
+    [setOpenPopoverProp],
+  );
+
+  return (
+    <SearchContext.Provider
+      value={{
+        state: isOpen ? "expanded" : "collapsed",
+        open: isOpen,
+        setOpen,
+        query,
+        setQuery,
+        openPopover,
+        togglePopover,
+      }}
+    >
+      <div className={className} style={style} {...props}>
+        {children}
+      </div>
+    </SearchContext.Provider>
+  );
 }

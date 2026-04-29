@@ -34,5 +34,5 @@ export interface PageData {
     episodes: number;
     studios: string[];
     color: string;
-  };
+  }[];
 }

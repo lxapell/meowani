@@ -12,7 +12,6 @@ import {
   URLParamsToFilters,
   filtersToURLParams,
 } from "@/utils/catalog/helpers";
-import { initialFilters } from "@/constants/anilist/enums";
 import {
   dehydrate,
   HydrationBoundary,

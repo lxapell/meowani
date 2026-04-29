@@ -19,6 +19,12 @@ import type {
 } from "@/types/anilist-types";
 import { mapSimple, mapStatus } from "@/utils/mapper";
 
+const parseOptionalInt = (value?: string | null) => {
+  if (!value?.trim()) return null;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : null;
+};
+
 /**
  * Fetches a paginated anime catalog from AniList using the provided filter state; if a studio filter is present, performs a studio-specific search.
  *
@@ -46,18 +52,10 @@ export async function fetchCatalog({
     sort: filters["Sort by"]
       ? [filters["Sort by"].value as MediaSort]
       : ["POPULARITY_DESC"],
-    durationGreater: filters["Min Duration"]
-      ? parseInt(filters["Min Duration"])
-      : null,
-    durationLesser: filters["Max Duration"]
-      ? parseInt(filters["Max Duration"])
-      : null,
-    episodesGreater: filters["Min Episodes"]
-      ? parseInt(filters["Min Episodes"])
-      : null,
-    episodesLesser: filters["Max Episodes"]
-      ? parseInt(filters["Max Episodes"])
-      : null,
+    durationGreater: parseOptionalInt(filters["Min Duration"]),
+    durationLesser: parseOptionalInt(filters["Max Duration"]),
+    episodesGreater: parseOptionalInt(filters["Min Episodes"]),
+    episodesLesser: parseOptionalInt(filters["Max Episodes"]),
   } as AdvancedSearchQueryVariables;
 
   Object.keys(baseVariables).forEach((key) => {
@@ -84,13 +82,16 @@ export async function fetchCatalog({
     );
     // console.log(map(raw.Studio?.media?.nodes!));
     return {
-      pageInfo: raw.Studio!.media!.pageInfo,
-      media: mapSimple(raw.Studio?.media?.nodes!),
+      pageInfo: raw.Studio?.media?.pageInfo ?? null,
+      media: mapSimple(raw.Studio?.media?.nodes ?? []),
     };
   } else {
     query = advancedsearch;
     const raw = await anilistRequest<AdvancedSearchQuery>(query, baseVariables);
     // console.log(map(raw.Page?.media!));
-    return { pageInfo: raw.Page?.pageInfo, media: mapSimple(raw.Page?.media!) };
+    return {
+      pageInfo: raw.Page?.pageInfo ?? null,
+      media: mapSimple(raw.Page?.media ?? []),
+    };
   }
 }

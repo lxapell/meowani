@@ -73,7 +73,7 @@ const FiltersDispatchContext = React.createContext<TDispatchContext | null>(
  *
  * @param initialFilters - The initial FilterState used to populate the URL-synced filter values.
  * @param children - React children rendered inside the providers.
- * @returns A React element that supplies `FiltersStateContext` and `FiltersDispatchContext` to its children. 
+ * @returns A React element that supplies `FiltersStateContext` and `FiltersDispatchContext` to its children.
  */
 function CatalogFiltersProvider({
   children,
@@ -139,8 +139,8 @@ function useCatalogData(filters: FilterState) {
       fetchCatalog({ pageParam: pageParam as number, filters }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
-      lastPage.pageInfo?.hasNextPage
-        ? lastPage.pageInfo?.currentPage! + 1
+      lastPage.pageInfo?.hasNextPage && lastPage.pageInfo?.currentPage != null
+        ? lastPage.pageInfo.currentPage + 1
         : undefined,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -483,7 +483,7 @@ const CatalogResult = React.memo(function CatalogResult() {
         })}
       </div>
       {isFetchingNextPage && (
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-hidden min-w-0 px-0 block">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-hidden min-w-0 px-0">
           {Array.from({ length: 48 }).map((_, index) => (
             <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />
           ))}
@@ -493,7 +493,7 @@ const CatalogResult = React.memo(function CatalogResult() {
         ref={ref}
         className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5"
       ></div>
-      {!isFetchingNextPage && <EndOfContent />}
+      {!hasNextPage && !isFetchingNextPage && <EndOfContent />}
     </div>
   );
 });
@@ -561,7 +561,7 @@ function CatalogResultSkeleton({
       className={cn("space-y-6 px-1.5 md:px-6 lg:px-12", className)}
       {...props}
     >
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-hidden min-w-0 px-0 block">
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 overflow-hidden min-w-0 px-0">
         {Array.from({ length: amount }).map((_, index) => (
           <AnimeCardSkeleton key={index} className="basis-0 pl-0 static" />
         ))}
