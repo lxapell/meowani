@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tabs as TabsPrimitive } from "radix-ui";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/shadcn/utils";
 import Link from "next/link";
 import {
@@ -48,6 +49,23 @@ import { AnimeCard } from "@/components/custom/anime-card";
 import { mapSimple } from "@/utils/mapper";
 import { getShimmerDataURL } from "@/utils/placeholder";
 import { DateFormatter, TitleSlug, truncateHTML } from "@/utils/formatter";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 
 interface IAnimeInfoBannerProps {
   data: {
@@ -74,7 +92,11 @@ export function AnimeInfoBanner({
     <section className={cn("w-full", className)} {...props}>
       <div className="relative min-h-[240px] md:min-h-[300px] lg:min-h-[360px] flex items-end">
         <Image
-          src={data.bannerImage || getShimmerDataURL(data.color || "#FFFFFF")}
+          src={
+            data.bannerImage ||
+            data.image ||
+            getShimmerDataURL(data.color || "#FFFFFF")
+          }
           alt={data.title?.eng || "banner"}
           fill
           className="object-cover w-full aspect-video absolute inset-0 z-10"
@@ -82,18 +104,52 @@ export function AnimeInfoBanner({
         <div className="absolute inset-0 z-11 bg-linear-to-t from-background from-20% via-background/80 via-60% to-transparent" />
         <div className="relative pointer-events-auto flex w-full flex-col items-center justify-center gap-6 px-4 pt-16 md:pt-24 md:px-10 xl:px-14 max-w-[1600px] z-20">
           <div className="flex w-full flex-col md:flex-row items-center gap-3 pt-4 md:pt-8 md:gap-5">
-            <Button
-              className="group no-scale pt-0 relative h-[175px] w-[125px] shrink-0 overflow-hidden rounded-xl md:h-[256px] md:w-[180px]"
-              aria-label="View full size image"
-            >
-              <Image
-                src={data.image || getShimmerDataURL(data.color || "8bdfea")}
-                alt={data.title?.eng || "cover"}
-                fill
-                sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
-                className="h-full w-full object-cover"
-              />
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className="group no-scale pt-0 relative h-[175px] w-[125px] shrink-0 overflow-hidden rounded-xl md:h-[256px] md:w-[180px]"
+                  aria-label="View full size image"
+                >
+                  <Image
+                    src={
+                      data.image || getShimmerDataURL(data.color || "8bdfea")
+                    }
+                    alt={data.title?.eng || "cover"}
+                    fill
+                    sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
+                    className="h-full w-full object-cover"
+                  />
+                </Button>
+              </DialogTrigger>
+              <DialogContent
+                showCloseButton={false}
+                className="max-w-[90vw] max-h-[90vh] p-0 border-0 border-none bg-transparent shadow-none w-auto md:w-full"
+              >
+                <DialogClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex rounded-xl h-auto ps-0 pe-0 px-0"
+                  >
+                    <Image
+                      src={
+                        data.image?.replace("/medium/", "/large/") ||
+                        getShimmerDataURL(data.color || "8bdfea")
+                      }
+                      alt={data.title?.eng || "cover"}
+                      className="size-auto md:size-full object-contain rounded-xl"
+                      width={800}
+                      height={1000}
+                    />
+                  </Button>
+                </DialogClose>
+                <VisuallyHidden>
+                  <DialogTitle>Anime cover image</DialogTitle>
+                  <DialogDescription>
+                    The cover image of the current anime
+                  </DialogDescription>
+                </VisuallyHidden>
+              </DialogContent>
+            </Dialog>
 
             {/* Anime Info */}
             <div className="flex w-full flex-col items-start justify-end gap-2 md:gap-4">

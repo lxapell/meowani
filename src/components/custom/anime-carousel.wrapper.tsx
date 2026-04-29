@@ -24,7 +24,9 @@ const AnimeCards = dynamic(
     import("@/components/custom/anime-carousel").then((mod) => mod.AnimeCards),
   {
     ssr: false,
-    //loading: () => <AnimeCardsSkeleton paddingX="px-1.5" />
+    loading: () => (
+      <AnimeCardsSkeleton paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14" />
+    ),
   },
 );
 

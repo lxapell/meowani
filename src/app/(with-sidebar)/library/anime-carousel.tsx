@@ -152,6 +152,7 @@ export async function SpotlightComponent() {
     });
     const mapped = mapSimple(raw?.Page?.media);
 
+    // return <SpotlightEmpty />;
     return <SpotlightClient items={mapped} />;
   } catch (error) {
     console.error("[SpotlightFormatter] Error processing spotlight", error);

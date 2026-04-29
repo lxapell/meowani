@@ -24,7 +24,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 
-import { AlertTriangle, InfoIcon } from "lucide-react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import { InfoIcon, TriangleAlert } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getShimmerDataURL } from "@/utils/placeholder";
 import {
@@ -174,17 +175,17 @@ export function SpotlightEmpty() {
     <Carousel className="md:mt-15 pb-4 md:pb-8 px-1.5 md:px-6 lg:px-12 xl:px-14">
       <Item
         variant="outline"
-        className="border-amber-500/20 bg-yellow-500/10 px-3 py-1.5 text-sm text-foreground/80"
+        className="border-amber-500/90 bg-orange-500/10 px-3 py-1.5 text-sm text-foreground/80"
       >
-        <ItemMedia variant="icon">
-          <AlertTriangle />
+        <ItemMedia variant="icon" className="text-amber-500/90">
+          <ExclamationTriangleIcon />
         </ItemMedia>
         <ItemContent>
           <ItemTitle className="font-medium text-foreground">
             Spotlight Unavailable
           </ItemTitle>
           <ItemDescription>
-            Oops looks like there won't be any spotlight in the meantime.
+            Oops... looks like there won't be any spotlight in the meantime.
           </ItemDescription>
           {/*<span className="font-medium text-foreground">Episode</span>
           <span>airing</span>

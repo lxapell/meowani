@@ -29,14 +29,14 @@ export function NavMain() {
     <SidebarGroup>
       <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuItem>
+        {/*<SidebarMenuItem>
           <SidebarMenuButton tooltip="Home" asChild>
             <Link href="/">
               <HomeIcon />
               Home
             </Link>
           </SidebarMenuButton>
-        </SidebarMenuItem>
+        </SidebarMenuItem>*/}
         <SidebarMenuItem>
           <SidebarMenuButton tooltip="Library" asChild>
             <Link href="/library">
