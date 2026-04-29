@@ -98,6 +98,8 @@ export function AnimeInfoBanner({
             getShimmerDataURL(data.color || "#FFFFFF")
           }
           alt={data.title?.eng || "banner"}
+          placeholder="blur"
+          blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}
           fill
           className="object-cover w-full aspect-video absolute inset-0 z-10"
         />
@@ -115,6 +117,8 @@ export function AnimeInfoBanner({
                       data.image || getShimmerDataURL(data.color || "8bdfea")
                     }
                     alt={data.title?.eng || "cover"}
+                    placeholder="blur"
+                    blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}
                     fill
                     sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
                     className="h-full w-full object-cover"
@@ -135,6 +139,8 @@ export function AnimeInfoBanner({
                         data.image?.replace("/medium/", "/large/") ||
                         getShimmerDataURL(data.color || "8bdfea")
                       }
+                      placeholder="blur"
+                      blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}
                       alt={data.title?.eng || "cover"}
                       className="size-auto md:size-full object-contain rounded-xl"
                       width={800}
