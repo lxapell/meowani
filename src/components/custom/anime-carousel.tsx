@@ -33,6 +33,15 @@ interface AnimeProps {
   paddingX?: string;
 }
 
+/**
+ * Render a labeled carousel of anime cards with hover overlays, genre badges, and per-item metadata.
+ *
+ * @param animes - List of anime items to display. Each item should include `id`, `title`, `image`, `status`, `type`, and optionally `genres` and `episodes`.
+ * @param label - Header label text shown above the carousel (defaults to "Trending Now").
+ * @param href - Optional URL for the "View all" link; when provided a "View all" action is rendered.
+ * @param paddingX - Optional additional padding classes applied to header and carousel container.
+ * @returns The section element containing the carousel and its controls populated with the provided anime items.
+ */
 export function AnimeCards({
   animes,
   label = "Trending Now",
@@ -147,6 +156,19 @@ interface SkeletonProps {
   paddingX?: string;
 }
 
+/**
+ * Renders a skeleton-loading carousel of anime card placeholders.
+ *
+ * Displays a labeled header and a horizontal list of placeholder cards matching the
+ * layout of the main AnimeCards component. Each placeholder includes an image aspect
+ * block and metadata skeleton lines. The number of placeholders and horizontal padding
+ * can be customized.
+ *
+ * @param label - Header label text (default: "Trending Now")
+ * @param count - Number of placeholder items to render (default: 10)
+ * @param paddingX - Optional horizontal padding classes forwarded to the container
+ * @returns A JSX element containing the skeleton carousel UI for loading states
+ */
 export function AnimeCardsSkeleton({
   label = "Trending Now",
   count = 10,
@@ -194,6 +216,16 @@ interface EmptyProps {
   paddingX?: string;
 }
 
+/**
+ * Render an empty-state section for an anime carousel with a labeled header.
+ *
+ * Displays the provided `message` centered inside a dashed, muted container and
+ * renders a header label with optional horizontal padding.
+ *
+ * @param label - Text for the header label
+ * @param message - Centered message shown inside the empty-state container
+ * @param paddingX - Optional additional horizontal padding classes forwarded to the container
+ */
 export function AnimeCardsEmpty({
   label = "Trending Now",
   message = "No Anime Found",

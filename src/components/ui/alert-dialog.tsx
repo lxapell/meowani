@@ -6,12 +6,24 @@ import { AlertDialog as AlertDialogPrimitive } from "radix-ui"
 import { cn } from "@/lib/shadcn/utils"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Wraps Radix's AlertDialog.Root, applying a standardized `data-slot` attribute and forwarding all props.
+ *
+ * @returns A React element for the alert dialog root with `data-slot="alert-dialog"` and all provided props forwarded to the underlying Radix primitive.
+ */
 function AlertDialog({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
 }
 
+/**
+ * Renders the trigger element for an AlertDialog.
+ *
+ * The rendered element includes a data-slot attribute of "alert-dialog-trigger" and forwards all received props to the underlying trigger.
+ *
+ * @returns The trigger element for the alert dialog with passed props applied.
+ */
 function AlertDialogTrigger({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
@@ -20,6 +32,11 @@ function AlertDialogTrigger({
   )
 }
 
+/**
+ * Renders the alert dialog portal element and attaches a `data-slot="alert-dialog-portal"` attribute.
+ *
+ * @returns The alert dialog portal React element with all provided props applied.
+ */
 function AlertDialogPortal({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) {
@@ -28,6 +45,11 @@ function AlertDialogPortal({
   )
 }
 
+/**
+ * Renders the alert dialog overlay with the component's default backdrop, blur and open/close animations.
+ *
+ * @returns A styled overlay element for the alert dialog
+ */
 function AlertDialogOverlay({
   className,
   ...props
@@ -44,6 +66,12 @@ function AlertDialogOverlay({
   )
 }
 
+/**
+ * Renders the alert dialog panel inside a portal with an overlay, applying layout, animation, and size-specific classes.
+ *
+ * @param size - Controls the dialog's max-width and responsive sizing; accepted values are `"default"` and `"sm"`.
+ * @returns The alert dialog content React element (wrapped in its portal and overlay).
+ */
 function AlertDialogContent({
   className,
   size = "default",
@@ -67,6 +95,15 @@ function AlertDialogContent({
   )
 }
 
+/**
+ * Renders a styled header container for the alert dialog.
+ *
+ * Merges provided class names with the component's default grid and responsive layout classes and forwards other div props.
+ *
+ * @param className - Additional CSS class names to apply to the header container
+ * @param props - Remaining div props forwarded to the underlying element
+ * @returns The header element used inside the alert dialog
+ */
 function AlertDialogHeader({
   className,
   ...props
@@ -83,6 +120,12 @@ function AlertDialogHeader({
   )
 }
 
+/**
+ * Renders the footer container for an alert dialog, providing responsive layout for action buttons.
+ *
+ * @param className - Additional class names merged with the component's default layout classes.
+ * @returns A div element serving as the alert dialog footer.
+ */
 function AlertDialogFooter({
   className,
   ...props
@@ -99,6 +142,14 @@ function AlertDialogFooter({
   )
 }
 
+/**
+ * Renders a styled media container used inside an AlertDialog.
+ *
+ * Additional CSS classes and other `div` props are forwarded to the underlying element.
+ *
+ * @param className - Additional CSS classes to merge with the component's defaults
+ * @returns The media container element for inclusion in an alert dialog
+ */
 function AlertDialogMedia({
   className,
   ...props
@@ -115,6 +166,13 @@ function AlertDialogMedia({
   )
 }
 
+/**
+ * Renders the alert dialog title with standardized styling and slot metadata.
+ *
+ * Merges any provided `className` with the component's default typography and responsive layout classes, sets `data-slot="alert-dialog-title"`, and forwards all other props to the Radix `AlertDialogPrimitive.Title`.
+ *
+ * @returns A configured `AlertDialogPrimitive.Title` element for use inside the alert dialog.
+ */
 function AlertDialogTitle({
   className,
   ...props
@@ -131,6 +189,12 @@ function AlertDialogTitle({
   )
 }
 
+/**
+ * Renders a styled description element for an alert dialog.
+ *
+ * @param className - Additional CSS classes to merge with the component's default styles
+ * @returns The AlertDialogPrimitive.Description element with merged classes and a `data-slot="alert-dialog-description"` attribute
+ */
 function AlertDialogDescription({
   className,
   ...props
@@ -147,6 +211,14 @@ function AlertDialogDescription({
   )
 }
 
+/**
+ * Renders a styled action control for an AlertDialog by composing Radix's `Action` inside the project's `Button`.
+ *
+ * @param className - Additional CSS class names applied to the underlying `Action` element
+ * @param variant - Button variant to apply; defaults to `"default"`
+ * @param size - Button size to apply; defaults to `"default"`
+ * @returns The composed React element: a `Button` (asChild) wrapping Radix `AlertDialogPrimitive.Action`
+ */
 function AlertDialogAction({
   className,
   variant = "default",
@@ -165,6 +237,14 @@ function AlertDialogAction({
   )
 }
 
+/**
+ * Renders a styled AlertDialog cancel control by wrapping Radix's Cancel primitive in the project's Button.
+ *
+ * @param className - Additional CSS classes applied to the underlying Cancel element
+ * @param variant - Button visual variant to apply; defaults to `"outline"`
+ * @param size - Button size to apply; defaults to `"default"`
+ * @returns A React element: a Button-styled AlertDialog cancel control that forwards remaining props to Radix's Cancel primitive
+ */
 function AlertDialogCancel({
   className,
   variant = "outline",

@@ -23,6 +23,13 @@ const test = [
   },
 ];
 
+/**
+ * Render the library page layout containing a spotlight and multiple anime sections with skeleton fallbacks.
+ *
+ * Sections included: Spotlight, Trending, Seasonal, Popular, and Upcoming, followed by an end-of-content marker.
+ *
+ * @returns The JSX element representing the library page layout.
+ */
 export default function LibraryPage() {
   return (
     <div className="min-w-0 flex flex-1 shrink flex-col bg-background overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh">

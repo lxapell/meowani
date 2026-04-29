@@ -5,6 +5,12 @@ import { Label as LabelPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/shadcn/utils"
 
+/**
+ * Renders a label element with predefined layout and typography classes, merging any provided `className` and forwarding remaining props to the underlying label primitive.
+ *
+ * @param className - Optional additional CSS class names to merge with the component's default classes.
+ * @returns The rendered label element.
+ */
 function Label({
   className,
   ...props

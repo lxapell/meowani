@@ -24,6 +24,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Render the main sidebar navigation group labeled "Menu".
+ *
+ * @returns The sidebar group JSX element containing menu items for Library, Browse, and Random.
+ */
 export function NavMain() {
   return (
     <SidebarGroup>

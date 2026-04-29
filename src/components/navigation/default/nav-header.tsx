@@ -8,6 +8,15 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
+/**
+ * Render a clickable sidebar header that links to "/" and displays the application's logo and name.
+ *
+ * @param app - Application metadata for the header.
+ * @param app.name - The visible name of the application.
+ * @param app.logo - URL or path to the application's logo image.
+ * @param app.plan - Plan identifier for the application (present in props but not used in rendering).
+ * @returns The JSX element for the sidebar navigation header linking to the root and showing the app logo and name.
+ */
 export function NavHeader({
   app,
 }: {

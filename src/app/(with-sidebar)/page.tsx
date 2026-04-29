@@ -1,6 +1,11 @@
 import { LibraryIcon } from "lucide-react";
 import Image from "next/image";
 
+/**
+ * Renders the Home page layout containing the "MeowAni" title and a call-to-action link.
+ *
+ * @returns The React element for the Home page: a centered container with a card-like main area that displays the "MeowAni" heading and a rounded "Library" link to `/library`.
+ */
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">

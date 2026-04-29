@@ -5,6 +5,13 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/shadcn/utils"
 import { Separator } from "@/components/ui/separator"
 
+/**
+ * Container that groups related items into a vertical list.
+ *
+ * Renders a wrapper `div` with `role="list"` and `data-slot="item-group"`, applies vertical spacing and layout classes, and forwards any additional `div` props to the element.
+ *
+ * @returns The rendered container element for grouping items.
+ */
 function ItemGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -19,6 +26,14 @@ function ItemGroup({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Render a horizontal separator configured for use inside an item group.
+ *
+ * Adds `data-slot="item-separator"`, forces `orientation="horizontal"`, and applies vertical spacing.
+ *
+ * @param className - Additional CSS classes to merge with the default vertical margin
+ * @returns A Separator element configured for grouped items
+ */
 function ItemSeparator({
   className,
   ...props
@@ -55,6 +70,14 @@ const itemVariants = cva(
   }
 )
 
+/**
+ * Render an item container that applies CVA-driven styling and exposes `data-variant` and `data-size` attributes.
+ *
+ * @param variant - Visual variant to apply (`default`, `outline`, `muted`) which alters border/background styling.
+ * @param size - Size variant to apply (`default`, `sm`, `xs`) which adjusts spacing and padding.
+ * @param asChild - If `true`, render `Slot.Root` so the caller can provide the DOM element; otherwise render a `div`.
+ * @returns A React element representing the styled item container.
+ */
 function Item({
   className,
   variant = "default",
@@ -92,6 +115,16 @@ const itemMediaVariants = cva(
   }
 )
 
+/**
+ * Renders a media container for an item (for icons, avatars, or images).
+ *
+ * @param variant - Visual variant that adjusts sizing and background behavior. Supported values:
+ *   - `"default"`: transparent container with default sizing.
+ *   - `"icon"`: ensures contained SVGs receive icon sizing.
+ *   - `"image"`: fixed container sizing and image cover behavior.
+ * @param className - Additional class names merged with the variant classes.
+ * @returns A `div` element with `data-slot="item-media"`, `data-variant` set to `variant`, and classes from `itemMediaVariants`.
+ */
 function ItemMedia({
   className,
   variant = "default",
@@ -107,6 +140,13 @@ function ItemMedia({
   )
 }
 
+/**
+ * Renders the content region of an item with layout and responsive spacing.
+ *
+ * The container uses a vertical flex layout and applies gap spacing that collapses for `group-data-[size=xs]/item`. When placed immediately after another `[data-slot=item-content]`, it does not flex-grow.
+ *
+ * @returns The item content container element.
+ */
 function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -120,6 +160,12 @@ function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Renders a title container for an item with single-line truncation and title typography.
+ *
+ * @param className - Additional class names merged with the component's base styles.
+ * @returns A div element with `data-slot="item-title"` used for item titles.
+ */
 function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -133,6 +179,11 @@ function ItemTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Renders the item description paragraph used inside an Item layout.
+ *
+ * @returns A `<p>` element with `data-slot="item-description"` and styling that clamps text to two lines, applies muted text styles and size adjustments for compact groups, and ensures contained links are underlined with proper hover color.
+ */
 function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
@@ -146,6 +197,13 @@ function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
   )
 }
 
+/**
+ * Renders a container for item action controls.
+ *
+ * The element produced has `data-slot="item-actions"`, applies a horizontal flex layout with centered alignment and spacing between children, merges the provided `className`, and forwards all other props to the underlying element.
+ *
+ * @returns The rendered container element for action controls.
+ */
 function ItemActions({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -156,6 +214,11 @@ function ItemActions({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Renders the header region for an item, arranging children horizontally with space between.
+ *
+ * @returns The header container element for an item (`div` with `data-slot="item-header"`).
+ */
 function ItemHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -169,6 +232,11 @@ function ItemHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Renders the footer area for an item with a horizontal layout and space-between alignment.
+ *
+ * @returns The footer container element with `data-slot="item-footer"` and the component's layout classes applied.
+ */
 function ItemFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

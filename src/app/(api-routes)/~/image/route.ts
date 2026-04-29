@@ -9,6 +9,12 @@ interface remotePatterns {
   pathname?: string;
 }
 
+/**
+ * Determine whether a given image URL is allowed as a remote source.
+ *
+ * @param url - The image URL to validate; may be an absolute URL or a path beginning with `/`
+ * @returns `true` if the URL is allowed according to the configured remotePatterns or is a local path, `false` otherwise.
+ */
 function isValidUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
@@ -40,6 +46,13 @@ function isValidUrl(url: string): boolean {
   }
 }
 
+/**
+ * Serves an optimized image for the requested source URL and width.
+ *
+ * Fetches the source image (allowlisting remote URLs), returns SVGs unchanged, and for raster images produces a resized/converted image according to query parameters (`w`, `q`, `fm`) and client `Accept` headers.
+ *
+ * @returns A NextResponse containing the image bytes and appropriate `Content-Type` and `Cache-Control` headers. May return 400 for missing/invalid parameters, 403 for forbidden remote domains, or 500 for internal processing errors.
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const src = searchParams.get("url");

@@ -41,6 +41,12 @@ interface SpotlightProps {
   items: ISimpleAnimeData[];
 }
 
+/**
+ * Render a looping spotlight carousel of anime items with autoplay, hover pause, and navigation controls.
+ *
+ * @param items - List of anime entries to render as spotlight slides; each item provides image/banner, title, description, rank, and id used for links.
+ * @returns The Spotlight carousel element
+ */
 export function Spotlight({ items }: SpotlightProps) {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true }),
@@ -139,6 +145,11 @@ export function Spotlight({ items }: SpotlightProps) {
   );
 }
 
+/**
+ * Renders a non-interactive skeleton carousel that mimics the Spotlight layout while content is loading.
+ *
+ * @returns A JSX element containing placeholder cards and skeleton blocks matching the Spotlight component's structure.
+ */
 export function SpotlightSkeleton() {
   return (
     <Carousel className="pb-4 md:pb-8">
@@ -170,6 +181,11 @@ export function SpotlightSkeleton() {
   );
 }
 
+/**
+ * Renders a carousel wrapper displaying an outlined "Spotlight Unavailable" empty state.
+ *
+ * @returns A React element containing a single outlined item that informs the user no spotlight entries are available.
+ */
 export function SpotlightEmpty() {
   return (
     <Carousel className="md:mt-15 pb-4 md:pb-8 px-1.5 md:px-6 lg:px-12 xl:px-14">

@@ -24,6 +24,12 @@ type SearchContextProps = {
 
 const SearchContext = React.createContext<SearchContextProps | null>(null);
 
+/**
+ * Accesses the current search context for search UI state and controls.
+ *
+ * @returns The current `SearchContextProps` object.
+ * @throws Error if called outside of a `SearchProvider`.
+ */
 function useSearch() {
   const context = React.useContext(SearchContext);
   if (!context) {
@@ -33,6 +39,21 @@ function useSearch() {
   return context;
 }
 
+/**
+ * Provides search UI state and handlers to descendant components and persists the open/closed state.
+ *
+ * The provider supports controlled and uncontrolled usage for `open`, `query`, and popover visibility.
+ * When the open state changes it calls `onOpenChange` if provided (controlled mode) or updates internal state
+ * (uncontrolled mode), and writes the resulting boolean to the `search_state` cookie with a one-week max-age.
+ *
+ * @param open - Optional controlled open state; when omitted the provider manages open state internally.
+ * @param onOpenChange - Optional callback invoked with the new open state when it changes.
+ * @param query - Optional controlled query string; when omitted the provider may manage query internally.
+ * @param onQueryChange - Optional callback invoked with the new query when it changes.
+ * @param openPopover - Optional controlled popover open state.
+ * @param onOpenPopoverChange - Optional callback invoked when the popover open state changes.
+ * @param children - React children rendered within the provider.
+ */
 function SearchProvider({
   open: openProp,
   onOpenChange: setOpenProp,

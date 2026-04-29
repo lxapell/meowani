@@ -18,6 +18,12 @@ interface SpotlightProps {
   items: ISimpleAnimeData[];
 }
 
+/**
+ * Client-side wrapper that renders the Spotlight component with the provided items.
+ *
+ * @param items - Array of anime items to display in the Spotlight
+ * @returns The Spotlight React element configured with `items`
+ */
 export default function SpotlightClient({ items }: SpotlightProps) {
   return <Spotlight items={items} />;
 }

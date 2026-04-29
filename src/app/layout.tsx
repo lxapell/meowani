@@ -69,6 +69,12 @@ export const viewport: Viewport = {
   themeColor: "#8bdfea",
 };
 
+/**
+ * Application root layout that wraps page content with global font classes, providers, and analytics.
+ *
+ * @param children - The page content to render within the layout's provider hierarchy.
+ * @returns The top-level HTML element containing the provider-wrapped application UI, analytics, and toast components.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

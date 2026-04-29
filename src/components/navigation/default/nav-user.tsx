@@ -28,6 +28,14 @@ import {
   LogInIcon,
 } from "lucide-react";
 
+/**
+ * Render a sidebar user control that shows the user's avatar, name, and email and provides a dropdown with actions.
+ *
+ * The dropdown's placement adapts to sidebar `isMobile`. If `user.isAuth` is true the menu contains Profile, Settings, and Log out; otherwise it contains Log In.
+ *
+ * @param user - User details: `name` (display name), `email`, `avatar` (image URL), and `isAuth` (true when the user is authenticated)
+ * @returns The NavUser component element
+ */
 export function NavUser({
   user,
 }: {

@@ -36,6 +36,13 @@ const Studio = gpl`
   }
 `;
 
+/**
+ * Proxies GET requests to AniList GraphQL queries for testing and returns the query result as JSON.
+ *
+ * Parses `id`, `method`, `season`, and `year` from the request URL to select and execute the appropriate AniList query. On failure returns a JSON object with an `error` property and HTTP status 500.
+ *
+ * @returns The JSON response containing the AniList query result, or an object with an `error` property on failure.
+ */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");

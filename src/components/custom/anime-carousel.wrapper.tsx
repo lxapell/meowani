@@ -30,6 +30,12 @@ const AnimeCards = dynamic(
   },
 );
 
+/**
+ * Client-side wrapper component that renders the anime carousel with the given props.
+ *
+ * @param props - Props matching `AnimeProps`: an `animes` array (each with `id`, `status`, `image`, `title`, `genres`, `type`, and `episodes`) and optional `label`, `href`, and `paddingX` strings.
+ * @returns The rendered `AnimeCards` React element populated with the provided props.
+ */
 export default function AnimeCardsClient({ ...props }: AnimeProps) {
   return <AnimeCards {...props} />;
 }

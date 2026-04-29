@@ -21,6 +21,14 @@ const buttonGroupVariants = cva(
   }
 )
 
+/**
+ * Renders a container for grouping buttons and related controls with orientation-aware styles.
+ *
+ * Includes role="group" and data attributes (`data-slot="button-group"` and `data-orientation`) used as hooks for styling and tooling.
+ *
+ * @param orientation - Controls layout and edge rounding; `"horizontal"` or `"vertical"`. Defaults to `"horizontal"`.
+ * @returns A <div> element that serves as the button group container.
+ */
 function ButtonGroup({
   className,
   orientation,
@@ -37,6 +45,14 @@ function ButtonGroup({
   )
 }
 
+/**
+ * Renders a compact, text-styled container intended for use inside a ButtonGroup.
+ *
+ * @param asChild - When true, renders a Radix `Slot.Root` so the caller can substitute the host element; otherwise renders a `div`.
+ * @param className - Additional CSS classes merged with the component's text styling.
+ * @param props - Additional props are forwarded to the rendered element.
+ * @returns The rendered React element (either a `div` or `Slot.Root`) with text-specific styling and sizing classes applied.
+ */
 function ButtonGroupText({
   className,
   asChild = false,
@@ -57,6 +73,12 @@ function ButtonGroupText({
   )
 }
 
+/**
+ * Render a styled Separator configured for use inside a ButtonGroup.
+ *
+ * @param orientation - Controls the separator's orientation; `"vertical"` (default) renders a vertical divider between stacked items, `"horizontal"` renders a horizontal divider between inline items.
+ * @returns The rendered Separator element with `data-slot="button-group-separator"`, merged classes, and any forwarded props.
+ */
 function ButtonGroupSeparator({
   className,
   orientation = "vertical",

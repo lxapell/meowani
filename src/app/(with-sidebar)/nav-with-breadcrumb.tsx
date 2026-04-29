@@ -12,6 +12,14 @@ import {
 } from "@/components/ui/sidebar";
 import { SearchIcon } from "lucide-react";
 
+/**
+ * Provides a sidebar layout with a top header containing a sidebar toggle and a dynamic breadcrumb, and renders the given content inside the inset area.
+ *
+ * The breadcrumb is loaded with `React.Suspense` and displays a fallback "Home" element while loading.
+ *
+ * @param children - Content to render inside the inset area to the right of the sidebar
+ * @returns The layout element containing the sidebar, header with breadcrumb, and the provided children
+ */
 export default function NavWithBreadcrumb({
   children,
 }: {
