@@ -422,38 +422,37 @@ function Overview({
         )}
         <Item
           variant="outline"
-          className="items-center bg-white/3 text-foreground/80 px-3 py-2 sm:gap-3 lg:px-4"
+          className="flex-row items-center bg-white/3 text-foreground/80 px-3 py-2 gap-2 sm:gap-3 lg:px-4"
         >
           <ItemContent className="flex-row gap-2 flex-none">
-            <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/80">
+            <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/80 bg-input/30">
               {items.type}
             </div>
             {items.releaseDate && (
-              <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/70">
+              <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/70 bg-input/30">
                 Aired {items.releaseDate}
                 {items.endDate ? ` - ${items.endDate}` : ""}
               </div>
             )}
           </ItemContent>
           <ItemActions className="ml-auto">
-            <Button
-              variant="outline"
-              className="flex items-center h-fit gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs font-medium text-foreground/90 transition-all duration-200"
-              disabled={
-                items.trailer.url === null || items.trailer.url === undefined
-              }
-              aria-disabled={
-                items.trailer.url === null || items.trailer.url === undefined
-              }
-              asChild
-            >
-              <Link href={items.trailer.url || "#"}>
-                <span className="flex size-7 items-center justify-center rounded-full bg-foreground text-background">
-                  <PlayIcon fill="currentColor" />
-                </span>
-                Trailer
-              </Link>
-            </Button>
+            {items.trailer.url && (
+              <Button
+                variant="outline"
+                className="items-center h-fit gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs font-medium text-foreground/90 transition-all duration-200"
+                disabled={
+                  items.trailer.url === null || items.trailer.url === undefined
+                }
+                asChild
+              >
+                <Link href={items.trailer.url || "#"}>
+                  <span className="flex size-7 items-center justify-center rounded-full bg-foreground text-background">
+                    <PlayIcon fill="currentColor" />
+                  </span>
+                  Trailer
+                </Link>
+              </Button>
+            )}
           </ItemActions>
         </Item>
         <Collapsible className="group/synopsis">
