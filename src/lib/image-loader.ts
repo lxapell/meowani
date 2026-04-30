@@ -17,8 +17,9 @@ export default function customImageLoader({
   width,
   quality,
 }: ImageLoaderProps): string {
-  const baseUrl = "https://alpha.meowani.site";
-  const fullSrc = src.startsWith("/") ? `${baseUrl}${src}` : src;
+  // const baseUrl = "https://alpha.meowani.site";
+  // const fullSrc = src.startsWith("/") ? `${baseUrl}${src}` : src;
+  const fullSrc = src;
 
   const params = new URLSearchParams();
   params.set("url", fullSrc);
