@@ -917,6 +917,9 @@ export type InternalPageMediaTrendsArgs = {
 /** Page of data (Used for internal use only) */
 export type InternalPageModActionsArgs = {
   modId: InputMaybe<Scalars['Int']['input']>;
+  modId_in: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  modId_not: InputMaybe<Scalars['Int']['input']>;
+  modId_not_in: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   userId: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -1765,13 +1768,13 @@ export type MediaRelation =
   | 'SUMMARY';
 
 export type MediaSeason =
-  /** Months September to November */
+  /** Predominantly started airing between October and November */
   | 'FALL'
-  /** Months March to May */
+  /** Predominantly started airing between April and June */
   | 'SPRING'
-  /** Months June to August */
+  /** Predominantly started airing between July and September */
   | 'SUMMER'
-  /** Months December to February */
+  /** Predominantly started airing between January and March */
   | 'WINTER';
 
 /** Media sort enums */
@@ -2108,6 +2111,8 @@ export type MessageActivity = {
   isLiked: Maybe<Scalars['Boolean']['output']>;
   /** If the activity is locked and can receive replies */
   isLocked: Maybe<Scalars['Boolean']['output']>;
+  /** If the activity is pinned to the top of the users activity feed */
+  isPinned: Maybe<Scalars['Boolean']['output']>;
   /** If the message is private and only viewable to the sender and recipients */
   isPrivate: Maybe<Scalars['Boolean']['output']>;
   /** If the currently authenticated user is subscribed to the activity */
@@ -4695,6 +4700,19 @@ export type YearStats = {
   year: Maybe<Scalars['Int']['output']>;
 };
 
+export type TotalPageQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TotalPageQuery = { __typename?: 'Query', Page: { __typename?: 'Page', pageInfo: { __typename?: 'PageInfo', total: number | null } | null, media: Array<{ __typename?: 'Media', id: number, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null } | null> | null } | null };
+
+export type PageQueryVariables = Exact<{
+  page: InputMaybe<Scalars['Int']['input']>;
+  perPage: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type PageQuery = { __typename?: 'Query', Page: { __typename?: 'Page', media: Array<{ __typename?: 'Media', id: number, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null } | null> | null } | null };
+
 export type TrendingQueryVariables = Exact<{
   perPage: InputMaybe<Scalars['Int']['input']>;
   page: InputMaybe<Scalars['Int']['input']>;
@@ -4734,7 +4752,7 @@ export type AnimeInfoQueryVariables = Exact<{
 }>;
 
 
-export type AnimeInfoQuery = { __typename?: 'Query', Media: { __typename?: 'Media', id: number, idMal: number | null, description: string | null, bannerImage: string | null, episodes: number | null, status: MediaStatus | null, duration: number | null, genres: Array<string | null> | null, source: MediaSource | null, type: MediaType | null, format: MediaFormat | null, averageScore: number | null, popularity: number | null, countryOfOrigin: any | null, season: MediaSeason | null, seasonYear: number | null, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null, nextAiringEpisode: { __typename?: 'AiringSchedule', airingAt: number, episode: number } | null, startDate: { __typename?: 'FuzzyDate', year: number | null, month: number | null, day: number | null } | null, endDate: { __typename?: 'FuzzyDate', year: number | null, month: number | null, day: number | null } | null, trailer: { __typename?: 'MediaTrailer', id: string | null, site: string | null, thumbnail: string | null } | null, studios: { __typename?: 'StudioConnection', nodes: Array<{ __typename?: 'Studio', id: number, name: string, siteUrl: string | null } | null> | null } | null, relations: { __typename?: 'MediaConnection', edges: Array<{ __typename?: 'MediaEdge', relationType: MediaRelation | null, node: { __typename?: 'Media', id: number, format: MediaFormat | null, episodes: number | null, chapters: number | null, status: MediaStatus | null, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null, coverImage: { __typename?: 'MediaCoverImage', large: string | null, extraLarge: string | null, color: string | null } | null } | null } | null> | null } | null, recommendations: { __typename?: 'RecommendationConnection', nodes: Array<{ __typename?: 'Recommendation', mediaRecommendation: { __typename?: 'Media', id: number, episodes: number | null, status: MediaStatus | null, format: MediaFormat | null, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null, coverImage: { __typename?: 'MediaCoverImage', large: string | null, extraLarge: string | null, color: string | null } | null, nextAiringEpisode: { __typename?: 'AiringSchedule', airingAt: number, timeUntilAiring: number, episode: number } | null } | null } | null> | null } | null, characters: { __typename?: 'CharacterConnection', edges: Array<{ __typename?: 'CharacterEdge', id: number | null, role: CharacterRole | null, node: { __typename?: 'Character', name: { __typename?: 'CharacterName', first: string | null, last: string | null, full: string | null, native: string | null, userPreferred: string | null } | null, image: { __typename?: 'CharacterImage', large: string | null } | null } | null, voiceActorRoles: Array<{ __typename?: 'StaffRoleType', voiceActor: { __typename?: 'Staff', id: number, name: { __typename?: 'StaffName', first: string | null, middle: string | null, last: string | null, full: string | null, native: string | null, userPreferred: string | null } | null, image: { __typename?: 'StaffImage', large: string | null } | null } | null } | null> | null } | null> | null } | null } | null };
+export type AnimeInfoQuery = { __typename?: 'Query', Media: { __typename?: 'Media', id: number, idMal: number | null, description: string | null, bannerImage: string | null, synonyms: Array<string | null> | null, episodes: number | null, status: MediaStatus | null, duration: number | null, genres: Array<string | null> | null, source: MediaSource | null, type: MediaType | null, format: MediaFormat | null, averageScore: number | null, popularity: number | null, countryOfOrigin: any | null, season: MediaSeason | null, seasonYear: number | null, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null, coverImage: { __typename?: 'MediaCoverImage', large: string | null, extraLarge: string | null, color: string | null } | null, externalLinks: Array<{ __typename?: 'MediaExternalLink', site: string, url: string | null } | null> | null, tags: Array<{ __typename?: 'MediaTag', isAdult: boolean | null, name: string } | null> | null, nextAiringEpisode: { __typename?: 'AiringSchedule', airingAt: number, episode: number } | null, startDate: { __typename?: 'FuzzyDate', year: number | null, month: number | null, day: number | null } | null, endDate: { __typename?: 'FuzzyDate', year: number | null, month: number | null, day: number | null } | null, trailer: { __typename?: 'MediaTrailer', id: string | null, site: string | null, thumbnail: string | null } | null, studios: { __typename?: 'StudioConnection', nodes: Array<{ __typename?: 'Studio', id: number, name: string, siteUrl: string | null } | null> | null } | null, relations: { __typename?: 'MediaConnection', edges: Array<{ __typename?: 'MediaEdge', relationType: MediaRelation | null, node: { __typename?: 'Media', id: number, format: MediaFormat | null, episodes: number | null, chapters: number | null, status: MediaStatus | null, type: MediaType | null, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null, coverImage: { __typename?: 'MediaCoverImage', large: string | null, extraLarge: string | null, color: string | null } | null } | null } | null> | null } | null, recommendations: { __typename?: 'RecommendationConnection', nodes: Array<{ __typename?: 'Recommendation', mediaRecommendation: { __typename?: 'Media', id: number, episodes: number | null, status: MediaStatus | null, format: MediaFormat | null, title: { __typename?: 'MediaTitle', romaji: string | null, english: string | null, native: string | null, userPreferred: string | null } | null, coverImage: { __typename?: 'MediaCoverImage', large: string | null, extraLarge: string | null, color: string | null } | null, nextAiringEpisode: { __typename?: 'AiringSchedule', airingAt: number, timeUntilAiring: number, episode: number } | null } | null } | null> | null } | null, characters: { __typename?: 'CharacterConnection', edges: Array<{ __typename?: 'CharacterEdge', id: number | null, role: CharacterRole | null, node: { __typename?: 'Character', name: { __typename?: 'CharacterName', first: string | null, last: string | null, full: string | null, native: string | null, userPreferred: string | null } | null, image: { __typename?: 'CharacterImage', large: string | null } | null } | null, voiceActorRoles: Array<{ __typename?: 'StaffRoleType', voiceActor: { __typename?: 'Staff', id: number, name: { __typename?: 'StaffName', first: string | null, middle: string | null, last: string | null, full: string | null, native: string | null, userPreferred: string | null } | null, image: { __typename?: 'StaffImage', large: string | null } | null } | null } | null> | null } | null> | null } | null } | null };
 
 export type AdvancedSearchQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;

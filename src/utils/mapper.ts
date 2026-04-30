@@ -65,50 +65,65 @@ export const mapMediaType = (type: MediaFormat): string => {
   }
 };
 
+interface MediaRecommendation {
+  mediaRecommendation: {
+    id: number;
+    title: any;
+    coverImage: string;
+    episodes: number;
+    status: string;
+    format: string;
+    nextAiringEpisode: any;
+  };
+}
+
 export const mapSimple = (data: any[]): ISimpleAnimeData[] =>
-  data.map((anime, index) => {
-    let animeData;
-    if (anime.mediaRecommendation) {
-      animeData = anime.mediaRecommendation;
-    } else if (anime.node) {
-      animeData = anime.node;
-    } else animeData = anime;
+  data
+    .filter((anime): anime is any & MediaRecommendation => {
+      return anime.mediaRecommendation !== null;
+    })
+    .map((anime, index) => {
+      let animeData;
+      if (anime.mediaRecommendation) {
+        animeData = anime.mediaRecommendation;
+      } else if (anime.node) {
+        animeData = anime.node;
+      } else animeData = anime;
 
-    const title =
-      animeData.title?.english || animeData.title?.romaji || animeData.title;
+      const title =
+        animeData.title?.english || animeData.title?.romaji || animeData.title;
+      const id = `${title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")}-${animeData.id}`;
+      const status = mapStatus(animeData.status);
 
-    const id = `${title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")}-${animeData.id}`;
-    const status = mapStatus(animeData.status);
+      const relationType = animeData.relationType
+        ? mapRelationType(animeData.relationType)
+        : mapRelationType(anime.relationType);
 
-    const relationType = animeData.relationType
-      ? mapRelationType(animeData.relationType)
-      : mapRelationType(anime.relationType);
+      const type = animeData.format
+        ? mapMediaType(animeData.format)
+        : animeData.type
+          ? mapMediaType(animeData.type)
+          : null;
 
-    const type = animeData.format
-      ? mapMediaType(animeData.format)
-      : animeData.type
-        ? mapMediaType(animeData.type)
-        : null;
-
-    return {
-      relationType: relationType || null,
-      rank: index + 1,
-      id,
-      title,
-      image: animeData.coverImage?.large || animeData.image,
-      banner: animeData.bannerImage,
-      type,
-      status: status ? (capitalize(status) as TStatus) : null,
-      genres: animeData.genres,
-      episodes: animeData.episodes,
-      chapters: animeData.chapters,
-      studios: animeData.studios
-        ? animeData.studios.nodes?.map((studio: Studio) => studio.name)
-        : null,
-      color: animeData.coverImage?.color || animeData.color,
-      description: animeData.description,
-    };
-  });
+      return {
+        relationType: relationType || null,
+        rank: index + 1,
+        id,
+        title,
+        image: animeData.coverImage?.large || animeData.image,
+        banner: animeData.bannerImage,
+        type,
+        status: status ? (capitalize(status) as TStatus) : null,
+        genres: animeData.genres,
+        episodes: animeData.episodes,
+        chapters: animeData.chapters,
+        studios: animeData.studios
+          ? animeData.studios.nodes?.map((studio: Studio) => studio.name)
+          : null,
+        color: animeData.coverImage?.color || animeData.color,
+        description: animeData.description,
+      };
+    });
