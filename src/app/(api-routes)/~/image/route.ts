@@ -13,13 +13,19 @@ interface remotePatterns {
  * Determine whether a given image URL is allowed as a remote source.
  *
  * @param url - The image URL to validate; may be an absolute URL or a path beginning with `/`
+ *  @param currentOrigin - The app origin;
  * @returns `true` if the URL is allowed according to the configured remotePatterns or is a local path, `false` otherwise.
  */
-function isValidUrl(url: string): boolean {
+function isValidUrl(url: string, currentOrigin?: string): boolean {
   try {
     const parsed = new URL(url);
 
     if (url.startsWith("/")) return true;
+
+    // const devOrigins = nextConfig.allowedDevOrigins;
+    // if (!devOrigins)
+    // console.log(`${parsed.hostname} against ${currentOrigin}`);
+    if (currentOrigin && parsed.origin === currentOrigin) return true;
 
     const patterns = nextConfig.images?.remotePatterns as remotePatterns[];
 
@@ -54,6 +60,9 @@ function isValidUrl(url: string): boolean {
  * @returns A NextResponse containing the image bytes and appropriate `Content-Type` and `Cache-Control` headers. May return 400 for missing/invalid parameters, 403 for forbidden remote domains, or 500 for internal processing errors.
  */
 export async function GET(request: NextRequest) {
+  const host = request.headers.get("host") || "localhost:3000";
+  const protocol = request.headers.get("x-forwarded-proto") ?? "http";
+  const currentOrigin = `${protocol}://${host}`;
   const { searchParams } = new URL(request.url);
   const src = searchParams.get("url");
   const width = searchParams.get("w");
@@ -66,11 +75,9 @@ export async function GET(request: NextRequest) {
 
   let imageUrl: string;
   if (src.startsWith("/")) {
-    const host = request.headers.get("host") || "localhost:300";
-    const protocol = host.includes("localhost") ? "http" : "https";
     imageUrl = `${protocol}://${host}${src}`;
   } else if (src.startsWith("http://") || src.startsWith("https://")) {
-    if (!isValidUrl(src)) {
+    if (!isValidUrl(src, currentOrigin)) {
       return new NextResponse("Forbidden remote domain", { status: 403 });
     }
     imageUrl = src;
