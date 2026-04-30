@@ -261,18 +261,21 @@ export function AnimeInfoBanner({
 
                 <div className="md:justify-start gap-2 flex w-fit md:w-full items-stretch *:focus-visible:relative *:focus-visible:z-10 has-[>[data-slot=button-group]]:gap-2">
                   <ButtonGroup className="inline-flex items-center overflow-hidden">
-                    <Button
-                      className="md:h-10 md:px-3"
-                      disabled={!data.episodes || data.episodes < 1}
-                      asChild
-                    >
-                      <Link
-                        href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/1`}
-                      >
+                    {data.episodes && data.episodes >= 1 ? (
+                      <Button className="md:h-10 md:px-3" asChild>
+                        <Link
+                          href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/1`}
+                        >
+                          <PlayIcon fill="currentColor" />
+                          Watch Now
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button className="md:h-10 md:px-3" disabled>
                         <PlayIcon fill="currentColor" />
                         Watch Now
-                      </Link>
-                    </Button>
+                      </Button>
+                    )}
                     <Button className="md:h-10 md:px-3">
                       <PencilLineIcon />
                     </Button>
