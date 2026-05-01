@@ -466,7 +466,6 @@ const CatalogResult = React.memo(function CatalogResult() {
     return (
       <div className="text-center py-10 text-destructive px-6 md:px-12">
         Failed to load catalog
-        <EndOfContent />
       </div>
     );
   }
@@ -477,7 +476,6 @@ const CatalogResult = React.memo(function CatalogResult() {
     return (
       <div className="text-center py-10 text-muted-foreground px-6 md:px-12">
         No results found.
-        <EndOfContent />
       </div>
     );
   }
