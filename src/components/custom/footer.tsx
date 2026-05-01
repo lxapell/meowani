@@ -58,7 +58,7 @@ export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
             </p>
           </div>
           <div className="col-span-6 flex sm:col-span-4 md:col-span-3 md:justify-end">
-            <div className="flex flex-col gap-1" suppressHydrationWarning>
+            <div className="flex flex-col gap-1">
               <div className="mb-1 font-semibold text-foreground">Browse</div>
               <Suspense
                 fallback={
