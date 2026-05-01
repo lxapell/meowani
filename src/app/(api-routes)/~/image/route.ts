@@ -13,7 +13,7 @@ interface remotePatterns {
  * Determine whether a given image URL is allowed as a remote source.
  *
  * @param url - The image URL to validate; may be an absolute URL or a path beginning with `/`
- *  @param currentOrigin - The app origin;
+ * @param currentOrigin - The app origin;
  * @returns `true` if the URL is allowed according to the configured remotePatterns or is a local path, `false` otherwise.
  */
 function isValidUrl(url: string, currentOrigin?: string): boolean {
@@ -100,6 +100,18 @@ export async function GET(request: NextRequest) {
     if (isSVG) {
       const svgBuffer = Buffer.from(await response.arrayBuffer());
       return new NextResponse(svgBuffer, {
+        status: 200,
+        headers: {
+          "Content-Type": "image/svg+xml",
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
+
+    const isProd = process.env.NODE_ENV === "production";
+    if (!isProd) {
+      const imgBuffer = Buffer.from(await response.arrayBuffer());
+      return new NextResponse(imgBuffer, {
         status: 200,
         headers: {
           "Content-Type": "image/svg+xml",

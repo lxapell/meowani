@@ -26,6 +26,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import FooterClient from "@/components/custom/footer.wrapper";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
 // const mapped = raw.Media.characters.edges.map((character) => {
@@ -84,6 +85,7 @@ export default async function Page({
           />
         )}
         <EndOfContent />
+        <FooterClient />
       </div>
     );
   } catch (error) {
@@ -109,6 +111,7 @@ export default async function Page({
             </ItemContent>
           </Item>
         </div>
+        <FooterClient />
       </div>
     );
   }

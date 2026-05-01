@@ -430,7 +430,10 @@ function Overview({
             </div>
             {items.releaseDate && (
               <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/70 bg-input/30">
-                Aired {items.releaseDate}
+                {items.status?.toUpperCase() === "UPCOMING"
+                  ? "Airing "
+                  : "Aired "}
+                {items.releaseDate}
                 {items.endDate ? ` - ${items.endDate}` : ""}
               </div>
             )}
@@ -445,7 +448,11 @@ function Overview({
                 }
                 asChild
               >
-                <Link href={items.trailer.url || "#"}>
+                <Link
+                  href={items.trailer.url || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <span className="flex size-7 items-center justify-center rounded-full bg-foreground text-background">
                     <PlayIcon fill="currentColor" />
                   </span>
@@ -606,7 +613,11 @@ function Overview({
                     className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
                     asChild
                   >
-                    <Link href={`https://anilist.co/anime/${items.id}`}>
+                    <Link
+                      href={`https://anilist.co/anime/${items.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Anilist
                     </Link>
                   </Badge>
@@ -617,7 +628,13 @@ function Overview({
                       className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
                       asChild
                     >
-                      <Link href={link.url}>{link.site}</Link>
+                      <Link
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.site}
+                      </Link>
                     </Badge>
                   ))}
                 </div>
