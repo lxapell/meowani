@@ -48,49 +48,39 @@ const cachedAnilist = unstable_cache(
     const fallback = { Page: { pageInfo: null, media: [] } };
 
     const results = await Promise.allSettled([
-      anilistRequest<TrendingQuery>(
-        trending,
-        {
-          page: 1,
-          perPage: 15,
-        },
-      ),
-      anilistRequest<Top100AnimeQuery>(
-        top100anime,
-        {
-          page: 1,
-          perPage: 10,
-        },
-      ),
-      anilistRequest<SeasonalQuery>(
-        seasonal,
-        {
-          page: 1,
-          perPage: 10,
-          season,
-          seasonYear: year,
-        },
-      ),
-      anilistRequest<PopularQuery>(
-        popular,
-        {
-          page: 1,
-          perPage: 15,
-        },
-      ),
+      anilistRequest<TrendingQuery>(trending, {
+        page: 1,
+        perPage: 15,
+      }),
+      anilistRequest<Top100AnimeQuery>(top100anime, {
+        page: 1,
+        perPage: 10,
+      }),
+      anilistRequest<SeasonalQuery>(seasonal, {
+        page: 1,
+        perPage: 10,
+        season,
+        seasonYear: year,
+      }),
+      anilistRequest<PopularQuery>(popular, {
+        page: 1,
+        perPage: 15,
+      }),
     ]);
 
     if (results.every((result) => result.status === "rejected")) {
       throw new Error("[AnilistRequest] failed to generate sitemap data");
     }
 
-    const [ trendingData, topData, seasonalData, popularData ] = results.map((result) => result.status === "fulfilled" ? result.value : fallback) as [ TrendingQuery, Top100AnimeQuery, SeasonalQuery, PopularQuery ];
+    const [trendingData, topData, seasonalData, popularData] = results.map(
+      (result) => (result.status === "fulfilled" ? result.value : fallback),
+    ) as [TrendingQuery, Top100AnimeQuery, SeasonalQuery, PopularQuery];
 
     return { trendingData, topData, seasonalData, popularData };
   },
   ["anilist-sitemap"],
-  { revalidate: 604800 }
-)
+  { revalidate: 604800 },
+);
 
 /**
  * Builds the site's sitemap entries including static pages and anime library pages generated from AniList data.
@@ -104,10 +94,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Singapore" }),
     ),
-    8
+    8,
   );
 
-  const { trendingData, topData, seasonalData, popularData } = await cachedAnilist();
+  const { trendingData, topData, seasonalData, popularData } =
+    await cachedAnilist();
 
   const allData = [
     ...(trendingData.Page?.media || []),

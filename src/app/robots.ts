@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 
+<<<<<<< HEAD
 /**
  * Provide robots metadata for the site, specifying crawler rules and sitemap location.
  *
@@ -9,6 +10,8 @@ import { MetadataRoute } from "next";
  *
  * @returns A `MetadataRoute.Robots` object containing the site's crawl `rules` and `sitemap` URL.
  */
+=======
+>>>>>>> 44ede12 (Adding metadata routes)
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -16,8 +19,11 @@ export default function robots(): MetadataRoute.Robots {
       allow: [
         "/$",
         "/assets/*",
+<<<<<<< HEAD
         "/~/image",
         "/_next/static/*",
+=======
+>>>>>>> 44ede12 (Adding metadata routes)
         "/library",
         "/library/anime/*",
         "/library/watch/*",
