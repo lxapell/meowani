@@ -92,6 +92,7 @@ export function AnimeInfoBanner({
         <Image
           src={
             data.bannerImage ||
+            data.image?.replace("/medium/", "/large/") ||
             data.image ||
             getShimmerDataURL(data.color || "#FFFFFF")
           }
@@ -135,6 +136,7 @@ export function AnimeInfoBanner({
                     <Image
                       src={
                         data.image?.replace("/medium/", "/large/") ||
+                        data.image ||
                         getShimmerDataURL(data.color || "8bdfea")
                       }
                       placeholder="blur"
@@ -762,7 +764,12 @@ function Relations({
                 <AnimeCard
                   anime={anime}
                   href={href}
-                  as={item.media === "ANIME" ? Link : "div"}
+                  as={
+                    item.media === "ANIME" &&
+                    item.relationType?.toLowerCase() !== "music"
+                      ? Link
+                      : "div"
+                  }
                 />
               </CarouselItem>
             );
