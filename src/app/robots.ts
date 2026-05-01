@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
       allow: [
         "/$",
         "/assets/*",
-        "/_next/*",
+        "/~/image",
+        "/_next/static/*",
         "/library",
         "/library/anime/*",
         "/library/watch/*",
