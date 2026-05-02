@@ -15,6 +15,8 @@ import {
   TrendingQuery,
 } from "@/types/anilist-types";
 
+export const revalidate = 604800;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { season, year } = AnimeSeason.now();
   const trendingData = await anilistRequest<TrendingQuery>(trending, {

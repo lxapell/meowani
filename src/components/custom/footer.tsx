@@ -46,6 +46,13 @@ export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
               <div className="mb-1 font-semibold text-foreground">
                 Resources
               </div>
+              <Path
+                href="/sitemap.xml"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Site Map
+              </Path>
             </div>
           </div>
         </div>

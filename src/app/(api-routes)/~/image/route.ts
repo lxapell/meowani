@@ -111,13 +111,7 @@ export async function GET(request: NextRequest) {
     const isProd = process.env.NODE_ENV === "production";
     if (!isProd) {
       const imgBuffer = Buffer.from(await response.arrayBuffer());
-      return new NextResponse(imgBuffer, {
-        status: 200,
-        headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=31536000, immutable",
-        },
-      });
+      return new NextResponse(imgBuffer);
     }
 
     const buffer = Buffer.from(await response.arrayBuffer());
