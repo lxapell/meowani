@@ -139,12 +139,17 @@ export function AnimeCards({
             );
           })}
         </CarouselContent>
-        <div
-          className={cn("flex justify-end gap-2 px-6 lg:px-12 mt-4", paddingX)}
-        >
-          <CarouselPrevious className="static translate-y-0" />
-          <CarouselNext className="static translate-y-0" />
-        </div>
+        {animes.length > 3 && (
+          <div
+            className={cn(
+              "flex justify-end gap-2 px-6 lg:px-12 mt-4",
+              paddingX,
+            )}
+          >
+            <CarouselPrevious className="static translate-y-0" />
+            <CarouselNext className="static translate-y-0" />
+          </div>
+        )}
       </Carousel>
     </section>
   );

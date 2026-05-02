@@ -730,56 +730,73 @@ function Relations({
 
   return (
     <div className={cn("space-y-6", className)} {...props}>
-      <div className="flex flex-wrap gap-2 items-center">
-        {relations.map((type) => (
-          <Button
-            key={type}
-            variant={activeFilter === type ? "default" : "outline"}
-            data-active={activeFilter === type}
-            onClick={() => setActiveFilter(type!)}
-            className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 data-[active=false]:bg-white/3 data-[active=false]:text-foreground/60 size-fit"
-          >
-            {type}
-          </Button>
-        ))}
-      </div>
-      <Carousel
-        opts={{ align: "center", dragFree: true }}
-        className="w-full mt-3"
-      >
-        <CarouselContent className="min-w-0">
-          {filteredItems.map((item) => {
-            const href = `/library/anime/${item.id}`;
-            const anime = {
-              ...item,
-              relationType: mapType(item.relationType!),
-              status: null,
-            };
+      {filteredItems.length >= 1 ? (
+        <>
+          {relations.length > 1 && (
+            <div className="flex flex-wrap gap-2 items-center">
+              {relations.map((type) => (
+                <Button
+                  key={type}
+                  variant={activeFilter === type ? "default" : "outline"}
+                  data-active={activeFilter === type}
+                  onClick={() => setActiveFilter(type!)}
+                  className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 data-[active=false]:bg-white/3 data-[active=false]:text-foreground/60 size-fit"
+                >
+                  {type}
+                </Button>
+              ))}
+            </div>
+          )}
 
-            return (
-              <CarouselItem
-                key={item.id}
-                className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
-              >
-                <AnimeCard
-                  anime={anime}
-                  href={href}
-                  as={
-                    item.media === "ANIME" &&
-                    item.relationType?.toLowerCase() !== "music"
-                      ? Link
-                      : "div"
-                  }
-                />
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-        <div className="flex justify-end gap-2 mt-4">
-          <CarouselPrevious className="static translate-y-0" />
-          <CarouselNext className="static translate-y-0" />
-        </div>
-      </Carousel>
+          <Carousel
+            opts={{ align: "center", dragFree: true }}
+            className="w-full mt-3"
+          >
+            <CarouselContent className="min-w-0">
+              {filteredItems.map((item) => {
+                const href = `/library/anime/${item.id}`;
+                const anime = {
+                  ...item,
+                  relationType: mapType(item.relationType!),
+                  status: null,
+                };
+                const isLink =
+                  item.media === "ANIME" &&
+                  item.type?.toLowerCase() !== "music";
+
+                return (
+                  <CarouselItem
+                    key={item.id}
+                    className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
+                  >
+                    <AnimeCard
+                      anime={anime}
+                      href={isLink ? href : undefined}
+                      as={isLink ? Link : "div"}
+                    />
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            {filteredItems.length > 3 && (
+              <div className="flex justify-end gap-2 mt-4">
+                <CarouselPrevious className="static translate-y-0" />
+                <CarouselNext className="static translate-y-0" />
+              </div>
+            )}
+          </Carousel>
+        </>
+      ) : (
+        <section className="w-full">
+          <div className={cn("min-w-0")}>
+            <div className="flex items-center justify-center min-h-[200px] md:min-h-[280px] rounded-xl bg-muted/20 border border-dashed border-muted-foreground/25">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">No Relations</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -818,37 +835,51 @@ export function Characters({
 }: Omit<React.ComponentPropsWithoutRef<"div">, "children"> & ICharactersProps) {
   return (
     <div className={cn("space-y-6", className)} {...props}>
-      <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
-        <CarouselContent className="min-w-0">
-          {items.map((item) => {
-            const anime = {
-              ...item,
-              status: item.role,
-              title: item.name,
-              id: item.id as string,
-              genres: null,
-              color: null,
-              episodes: null,
-              chapters: null,
-              relationType: null,
-              type: null,
-            };
+      {items.length >= 1 ? (
+        <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
+          <CarouselContent className="min-w-0">
+            {items.map((item) => {
+              const anime = {
+                ...item,
+                status: item.role,
+                title: item.name,
+                id: item.id as string,
+                genres: null,
+                color: null,
+                episodes: null,
+                chapters: null,
+                relationType: null,
+                type: null,
+              };
 
-            return (
-              <CarouselItem
-                key={item.id}
-                className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
-              >
-                <AnimeCard anime={anime} />
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-        <div className="flex justify-end gap-2 mt-4">
-          <CarouselPrevious className="static translate-y-0" />
-          <CarouselNext className="static translate-y-0" />
-        </div>
-      </Carousel>
+              return (
+                <CarouselItem
+                  key={item.id}
+                  className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
+                >
+                  <AnimeCard anime={anime} />
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+          {items.length > 3 && (
+            <div className="flex justify-end gap-2 mt-4">
+              <CarouselPrevious className="static translate-y-0" />
+              <CarouselNext className="static translate-y-0" />
+            </div>
+          )}
+        </Carousel>
+      ) : (
+        <section className="w-full">
+          <div className={cn("min-w-0")}>
+            <div className="flex items-center justify-center min-h-[200px] md:min-h-[280px] rounded-xl bg-muted/20 border border-dashed border-muted-foreground/25">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">No Characters</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

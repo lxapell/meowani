@@ -108,8 +108,11 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // at the moment I'm thinking of rewriting this endpoint into rust for faster optimization so for now because this is painfully slow so for now I'm going to just return what was passed
+
     const isProd = process.env.NODE_ENV === "production";
-    if (!isProd) {
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isProd || isDev) {
       const imgBuffer = Buffer.from(await response.arrayBuffer());
       return new NextResponse(imgBuffer);
     }
