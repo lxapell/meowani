@@ -732,7 +732,7 @@ function Relations({
     <div className={cn("space-y-6", className)} {...props}>
       {filteredItems.length >= 1 ? (
         <>
-          {relations.length > 1 && (
+          {relations.length > 2 && (
             <div className="flex flex-wrap gap-2 items-center">
               {relations.map((type) => (
                 <Button
@@ -750,7 +750,7 @@ function Relations({
 
           <Carousel
             opts={{ align: "center", dragFree: true }}
-            className="w-full mt-3"
+            className={cn("w-full", relations.length > 2 && "mt-3")}
           >
             <CarouselContent className="min-w-0">
               {filteredItems.map((item) => {
