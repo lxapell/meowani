@@ -37,7 +37,6 @@ async function safeFetch<T>(
   try {
     return await anilistRequest<T>(query, variables);
   } catch (error) {
-    // console.error("[AnilistRequest] request failed", error);
     return fallback;
   }
 }
