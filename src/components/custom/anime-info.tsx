@@ -62,7 +62,7 @@ import {
 interface IAnimeInfoBannerProps {
   data: {
     id: number;
-    image?: string;
+    image?: { large: string; extraLarge: string };
     color?: string;
     bannerImage?: string;
     title?: { eng?: string; romaji?: string };
@@ -92,8 +92,7 @@ export function AnimeInfoBanner({
         <Image
           src={
             data.bannerImage ||
-            data.image?.replace("/medium/", "/large/") ||
-            data.image ||
+            data.image?.large ||
             getShimmerDataURL(data.color || "#FFFFFF")
           }
           alt={data.title?.eng || "banner"}
@@ -113,7 +112,8 @@ export function AnimeInfoBanner({
                 >
                   <Image
                     src={
-                      data.image || getShimmerDataURL(data.color || "8bdfea")
+                      data.image?.large ||
+                      getShimmerDataURL(data.color || "8bdfea")
                     }
                     alt={data.title?.eng || "cover"}
                     placeholder="blur"
@@ -135,8 +135,8 @@ export function AnimeInfoBanner({
                   >
                     <Image
                       src={
-                        data.image?.replace("/medium/", "/large/") ||
-                        data.image ||
+                        data.image?.extraLarge ||
+                        data.image?.large ||
                         getShimmerDataURL(data.color || "8bdfea")
                       }
                       placeholder="blur"

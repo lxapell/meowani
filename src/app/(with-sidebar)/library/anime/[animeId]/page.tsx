@@ -121,7 +121,11 @@ const mapAdvanced = (data: any) => {
   return {
     ...data,
     title: { eng: data.title?.english, romaji: data.title?.romaji },
-    image: data.coverImage?.large,
+    image: {
+      large: data.coverImage?.large,
+      extraLarge: data.coverImage?.extraLarge,
+    },
+    bannerImage: data.bannerImage || data.coverImage?.extraLarge,
     color: data.coverImage?.color,
     type: data.format,
     score: data.averageScore,

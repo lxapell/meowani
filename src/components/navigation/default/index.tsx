@@ -86,7 +86,7 @@ const data = {
       items: [
         {
           title: "Movies",
-          url: "/brose?formats=MOVIE",
+          url: "/browse?formats=MOVIE",
         },
         {
           title: "TV series",
@@ -126,19 +126,19 @@ const data = {
       items: [
         {
           title: "Subbed",
-          url: "/subbed-anime",
+          url: "#subbed-anime",
         },
         {
           title: "Dubbed",
-          url: "/dubbed-anime",
+          url: "#dubbed-anime",
         },
         {
           title: "Most Popular",
-          url: "/most-popular",
+          url: "/browse?sort=POPULARITY_DESC",
         },
         {
           title: "Events",
-          url: "/events",
+          url: "#events",
         },
       ],
     },
