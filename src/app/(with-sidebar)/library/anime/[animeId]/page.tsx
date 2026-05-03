@@ -12,7 +12,7 @@ import { notFound } from "next/navigation";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { formatYearMonth, TitleSlug } from "@/utils/formatter";
-import { MediaEdge, Studio } from "@/types/anilist-types";
+import { AnimeInfoQuery, MediaEdge, Studio } from "@/types/anilist-types";
 import { mapStatus, mapSimple } from "@/utils/mapper";
 import { recommendedRules } from "graphql";
 import {
@@ -62,59 +62,31 @@ export default async function Page({
   const { animeId } = await params;
   const id = animeId.split("-").pop();
 
-  try {
-    const anime = await getAnimeInfo(id!);
-    if (!anime?.Media) notFound();
-    const animeInfo = mapAdvanced(anime.Media);
-    // throw new Error("Error test");
+  const anime = (await getAnimeInfo(id!)) as AnimeInfoQuery;
+  if (!anime?.Media) notFound();
+  const animeInfo = mapAdvanced(anime.Media);
+  // throw new Error("Error test");
 
-    return (
-      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-        <AnimeInfoBanner data={animeInfo} />
-        <AnimeInfoTabs data={animeInfo} />
-        {animeInfo.recommendations?.length > 0 ? (
-          <AnimeCards
-            animes={animeInfo.recommendations}
-            label="Recommendations"
-            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
-          />
-        ) : (
-          <AnimeCardsEmpty
-            label="Recommendations"
-            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
-          />
-        )}
-        <EndOfContent />
-        <FooterClient />
-      </div>
-    );
-  } catch (error) {
-    console.log(error);
-    return (
-      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-        <div className="md:mt-15 px-1.5 md:px-6 lg:px-12 xl:px-14">
-          <Item
-            variant="outline"
-            className="border-amber-500/90 bg-orange-500/10 px-3 py-1.5 text-sm text-foreground/80"
-          >
-            <ItemMedia variant="icon" className="text-amber-500/90">
-              <ExclamationTriangleIcon />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle className="font-medium text-foreground">
-                Anime Info Unavailable
-              </ItemTitle>
-              <ItemDescription>
-                Oops... looks like there won't be any anime info in the
-                meantime.
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-        </div>
-        <FooterClient />
-      </div>
-    );
-  }
+  return (
+    <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
+      <AnimeInfoBanner data={animeInfo} />
+      <AnimeInfoTabs data={animeInfo} />
+      {animeInfo.recommendations?.length > 0 ? (
+        <AnimeCards
+          animes={animeInfo.recommendations}
+          label="Recommendations"
+          paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+        />
+      ) : (
+        <AnimeCardsEmpty
+          label="Recommendations"
+          paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+        />
+      )}
+      <EndOfContent />
+      <FooterClient />
+    </div>
+  );
 }
 
 const mapAdvanced = (data: any) => {

@@ -391,7 +391,7 @@ function Overview({
     ? new DateFormatter(items.nextEpisode.airing)
     : null;
   const synopsis = truncateHTML(
-    sanitizeHTML(items.description, {
+    sanitizeHTML(items.description || "<i>No Synopsis</i>", {
       allowedTags: ["i", "b", "em", "strong", "br", "p", "span"],
       allowedAttributes: {},
     }),
@@ -428,7 +428,7 @@ function Overview({
         >
           <ItemContent className="flex-row gap-2 flex-none">
             <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/80 bg-input/30">
-              {items.type}
+              {items.type ?? "TV"}
             </div>
             {items.releaseDate && (
               <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/70 bg-input/30">
@@ -547,7 +547,7 @@ function Overview({
                   <Building2Icon size={11} />
                   Studios
                 </div>
-                {items.studios && (
+                {items.studios && items.studios.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {items.studios.map((studio) => (
                       <Badge
@@ -559,6 +559,15 @@ function Overview({
                       </Badge>
                     ))}
                   </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
+                  </div>
                 )}
               </div>
 
@@ -567,7 +576,7 @@ function Overview({
                 <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
                   Synonyms
                 </p>
-                {items.synonyms && (
+                {items.synonyms && items.synonyms.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {items.synonyms.map((synonym) => (
                       <Badge
@@ -579,6 +588,15 @@ function Overview({
                       </Badge>
                     ))}
                   </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
+                  </div>
                 )}
               </div>
 
@@ -587,7 +605,7 @@ function Overview({
                 <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
                   Genres
                 </p>
-                {items.genres && (
+                {items.genres && items.genres.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {items.genres.map((genre) => (
                       <Badge
@@ -599,6 +617,15 @@ function Overview({
                         <Link href={`/browse?genres=${genre}`}>{genre}</Link>
                       </Badge>
                     ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
                   </div>
                 )}
               </div>
@@ -647,7 +674,7 @@ function Overview({
                 <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
                   Tags
                 </p>
-                {items.tags && (
+                {items.tags && items.tags.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {(tagExpanded ? items.tags : items.tags.slice(0, 10)).map(
                       (tag) => (
@@ -661,6 +688,15 @@ function Overview({
                         </Badge>
                       ),
                     )}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
                   </div>
                 )}
                 {items.tags.length > 10 && (

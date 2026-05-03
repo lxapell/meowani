@@ -186,6 +186,8 @@ export async function UpcomingComponent() {
  * @returns A JSX element containing the spotlight carousel with up to 9 mapped trending anime items, or a fallback empty spotlight component on error.
  */
 export async function SpotlightComponent() {
+  "use cache";
+
   try {
     const raw: IAnilistQuery = await anilistRequest(trending, {
       page: 1,
