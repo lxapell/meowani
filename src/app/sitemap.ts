@@ -104,16 +104,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const allMap = [
     ...new Map(
       allData
-        .filter(
-          (anime) =>
-            anime?.id && (anime?.title?.english || anime?.title?.romaji),
+        .filter((anime): anime is NonNullable<typeof anime> =>
+          Boolean(anime?.id && (anime?.title?.english || anime?.title?.romaji)),
         )
         .map((anime) => [anime?.id, anime]),
     ).values(),
   ].map((anime) => {
     const id = TitleSlug.fromTitle(
-      anime?.title?.english || anime?.title?.romaji!,
-      anime?.id!,
+      anime.title?.english! || anime.title?.romaji!,
+      anime.id,
     );
     return {
       url: `https://meowani.site/library/anime/${id}`,

@@ -36,7 +36,7 @@ import FooterClient from "@/components/custom/footer.wrapper";
 //   };
 // });
 
-const getCachedAnime = cache(async (id: string) => {
+const getCachedAnime = cache(async (id: number) => {
   const anime = (await getAnimeInfo(id)) as AnimeInfoQuery;
   if (!anime?.Media) return null;
   return mapAdvanced(anime.Media);
@@ -122,13 +122,13 @@ export async function generateMetadata({
 
   const title = animeInfo.title.eng || animeInfo.title.romaji || "No Title";
   const description = truncateText(
-    animeInfo.description
+    (animeInfo.description || "No Synopsis")
       .replace(/<[^>]*>/g, "")
       .replace(/&amp;/g, "&")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&#039;/g, "'")
-      .replace(/&quot;/g, '"') || "No Synopsis",
+      .replace(/&quot;/g, '"'),
     160,
   );
 
@@ -137,9 +137,9 @@ export async function generateMetadata({
   if (animeInfo.year) search.set("year", animeInfo.year);
   if (animeInfo.type) search.set("mediaType", animeInfo.type);
   if (title) search.set("title", title);
-  if (animeInfo.studios.length >= 1)
+  if (animeInfo.studios?.length >= 1)
     search.set("studio", animeInfo.studios.join(", "));
-  if (animeInfo.genres.length >= 1)
+  if (animeInfo.genres?.length >= 1)
     search.set("genre", animeInfo.genres.join(", "));
   if (animeInfo.image.extraLarge || animeInfo.image.large)
     search.set("imageUrl", animeInfo.image.extraLarge ?? animeInfo.image.large);

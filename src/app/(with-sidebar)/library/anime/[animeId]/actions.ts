@@ -12,9 +12,7 @@ import { ClientError } from "graphql-request";
  * @param animeId - The AniList media ID identifying the anime
  * @returns An `AnimeInfoQuery` result containing a `Media` property with the anime data; if the AniList API returns 404, returns `{ Media: null }`; other `ClientError` responses are rethrown as `ClientError`
  */
-export async function getAnimeInfo(
-  animeId: number,
-): Promise<AnimeInfoQuery | ClientError> {
+export async function getAnimeInfo(animeId: number): Promise<AnimeInfoQuery> {
   const cachedAnime = unstable_cache(
     async (id: number) => {
       const data = await anilistRequest<AnimeInfoQuery>(animeInfo, { id })
