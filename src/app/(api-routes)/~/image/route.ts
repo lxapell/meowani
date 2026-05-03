@@ -27,11 +27,6 @@ function isValidUrl(url: string, currentOrigin?: string): boolean {
     // console.log(`${parsed.hostname} against ${currentOrigin}`);
     if (currentOrigin && parsed.origin === currentOrigin) return true;
 
-    // const devOrigins = nextConfig.allowedDevOrigins;
-    // if (!devOrigins)
-    // console.log(`${parsed.hostname} against ${currentOrigin}`);
-    if (currentOrigin && parsed.origin === currentOrigin) return true;
-
     const patterns = nextConfig.images?.remotePatterns as remotePatterns[];
 
     if (!patterns || patterns.length === 0) {
