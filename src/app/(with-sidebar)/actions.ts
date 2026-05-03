@@ -27,6 +27,11 @@ interface PageData {
   };
 }
 
+/**
+ * Selects a random AniList media entry and produces a slug from its title and ID.
+ *
+ * @returns The slugified title combined with the media ID, or `null` if no valid media is available or an error occurs.
+ */
 export async function getRandomAnime(): Promise<string | null> {
   try {
     const count = await anilistRequest<CountData>(totalPage);

@@ -19,6 +19,14 @@ import { DocumentNode } from "graphql";
 
 export const revalidate = 604800;
 
+/**
+ * Fetches data from AniList for the provided GraphQL query and returns a fallback value if the request fails.
+ *
+ * @param query - GraphQL query string or parsed `DocumentNode` to execute
+ * @param variables - Variables object to pass to the GraphQL query
+ * @param fallback - Value to return if the request fails
+ * @returns The AniList response for the query, or `fallback` if an error occurred during the request
+ */
 async function safeFetch<T>(
   query: string | DocumentNode,
   variables: Record<string, any>,
@@ -32,6 +40,13 @@ async function safeFetch<T>(
   }
 }
 
+/**
+ * Builds the site's sitemap entries including static pages and anime library pages generated from AniList data.
+ *
+ * Fetches multiple AniList categories, deduplicates media results, and maps each unique anime to a library URL that includes a shared `lastModified` timestamp.
+ *
+ * @returns An array of sitemap entries containing top-level site URLs and generated anime library URLs with `lastModified`, `changeFrequency`, and `priority` where applicable.
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { season, year } = AnimeSeason.now();
   const lastModified: string = getISOWithOffset(

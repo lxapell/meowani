@@ -7,10 +7,10 @@ import { AnimeInfoQuery } from "@/types/anilist-types";
 import { ClientError } from "graphql-request";
 
 /**
- * Fetches anime details from AniList for the given anime ID.
+ * Fetches AniList anime details for the specified anime ID.
  *
- * @param animeId - The AniList media ID (as a string) identifying the anime
- * @returns The AniList response object containing a `Media` property with the anime's data
+ * @param animeId - The AniList media ID identifying the anime
+ * @returns An `AnimeInfoQuery` result containing a `Media` property with the anime data; if the AniList API returns 404, returns `{ Media: null }`; other `ClientError` responses are rethrown as `ClientError`
  */
 export async function getAnimeInfo(
   animeId: string,

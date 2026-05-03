@@ -53,11 +53,11 @@ function isValidUrl(url: string, currentOrigin?: string): boolean {
 }
 
 /**
- * Serves an optimized image for the requested source URL and width.
+ * Handles image requests by fetching an allowlisted source and returning the fetched image bytes with appropriate Content-Type and caching.
  *
- * Fetches the source image (allowlisting remote URLs), returns SVGs unchanged, and for raster images produces a resized/converted image according to query parameters (`w`, `q`, `fm`) and client `Accept` headers.
+ * SVG images are returned unchanged. Raster images are currently returned unmodified (the optimization pipeline is bypassed), both with long-term immutable caching.
  *
- * @returns A NextResponse containing the image bytes and appropriate `Content-Type` and `Cache-Control` headers. May return 400 for missing/invalid parameters, 403 for forbidden remote domains, or 500 for internal processing errors.
+ * @returns A NextResponse containing the image bytes and appropriate `Content-Type` and `Cache-Control` headers. May return 400 for missing/invalid parameters, 403 for forbidden remote domains, or 500 for internal errors.
  */
 export async function GET(request: NextRequest) {
   const host = request.headers.get("host") || "localhost:3000";

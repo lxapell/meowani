@@ -740,12 +740,10 @@ interface RelationsProps {
 /**
  * Render a filterable carousel of related media grouped by relation type.
  *
- * Renders a row of filter buttons derived from the provided items' `relationType`
- * (with an "All" option) and a draggable carousel of `AnimeCard` tiles for the
- * currently selected relation group.
+ * Shows relation-type filter buttons when multiple relation groups exist and a draggable carousel of corresponding `AnimeCard` tiles; displays a dashed "No Relations" placeholder when no items are available.
  *
- * @param items - Array of relation entries to display. Each entry should include at least `id` and `relationType`; `media` is used to determine the card wrapper element.
- * @returns A React element containing relation-type filter controls and a carousel of related entries.
+ * @param items - Array of relation entries to display; each entry should include `id` and `relationType`. `media` and `type` influence whether a card is rendered as a link.
+ * @returns A container element that includes optional filter controls and a carousel of related entries, or a placeholder when the list is empty.
  */
 function Relations({
   items,
