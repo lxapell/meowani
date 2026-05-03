@@ -1,9 +1,30 @@
+import type { Metadata } from "next";
 import Providers from "./providers";
 import { Suspense } from "react";
 import {
   CatalogSearchSkeleton,
   CatalogResultSkeleton,
 } from "@/components/custom/catalog-search";
+
+export const metadata: Metadata = {
+  title: "Browse Anime",
+  description:
+    "Browse and filter thousands of anime series by genres, tags, year, season, and more. Find your next favorite anime on MeowAni",
+  openGraph: {
+    title: "Browse Anime | MeowAni",
+    description:
+      "Browse and filter thousands of anime series by genres, tags, year, season, and more.",
+    url: "https://meowani.site/browse",
+  },
+  twitter: {
+    title: "Browse Anime | MeowAni",
+    description:
+      "Browse and filter thousands of anime series by genres, tags, year, season, and more.",
+  },
+  alternates: {
+    canonical: "https://meowani.site/browse",
+  },
+};
 
 /**
  * Layout component that wraps page content with Providers and a Suspense boundary that shows skeletons while loading.

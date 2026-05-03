@@ -144,3 +144,8 @@ export const truncateHTML = (
 
   return { truncated: truncated.trim() + "...", full: html };
 };
+
+export const capitalizeFirst = (text: string): string => {
+  const result = text.toLowerCase();
+  return result.charAt(0).toUpperCase() + result.slice(1);
+};

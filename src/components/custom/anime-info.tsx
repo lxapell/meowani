@@ -62,7 +62,7 @@ import {
 interface IAnimeInfoBannerProps {
   data: {
     id: number;
-    image?: string;
+    image?: { large: string; extraLarge: string };
     color?: string;
     bannerImage?: string;
     title?: { eng?: string; romaji?: string };
@@ -92,7 +92,7 @@ export function AnimeInfoBanner({
         <Image
           src={
             data.bannerImage ||
-            data.image ||
+            data.image?.large ||
             getShimmerDataURL(data.color || "#FFFFFF")
           }
           alt={data.title?.eng || "banner"}
@@ -112,7 +112,8 @@ export function AnimeInfoBanner({
                 >
                   <Image
                     src={
-                      data.image || getShimmerDataURL(data.color || "8bdfea")
+                      data.image?.large ||
+                      getShimmerDataURL(data.color || "#8bdfea")
                     }
                     alt={data.title?.eng || "cover"}
                     placeholder="blur"
@@ -134,8 +135,9 @@ export function AnimeInfoBanner({
                   >
                     <Image
                       src={
-                        data.image?.replace("/medium/", "/large/") ||
-                        getShimmerDataURL(data.color || "8bdfea")
+                        data.image?.extraLarge ||
+                        data.image?.large ||
+                        getShimmerDataURL(data.color || "#8bdfea")
                       }
                       placeholder="blur"
                       blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}
@@ -261,18 +263,21 @@ export function AnimeInfoBanner({
 
                 <div className="md:justify-start gap-2 flex w-fit md:w-full items-stretch *:focus-visible:relative *:focus-visible:z-10 has-[>[data-slot=button-group]]:gap-2">
                   <ButtonGroup className="inline-flex items-center overflow-hidden">
-                    <Button
-                      className="md:h-10 md:px-3"
-                      disabled={!data.episodes || data.episodes < 1}
-                      asChild
-                    >
-                      <Link
-                        href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/1`}
-                      >
+                    {data.episodes && data.episodes >= 1 ? (
+                      <Button className="md:h-10 md:px-3" asChild>
+                        <Link
+                          href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/1`}
+                        >
+                          <PlayIcon fill="currentColor" />
+                          Watch Now
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button className="md:h-10 md:px-3" disabled>
                         <PlayIcon fill="currentColor" />
                         Watch Now
-                      </Link>
-                    </Button>
+                      </Button>
+                    )}
                     <Button className="md:h-10 md:px-3">
                       <PencilLineIcon />
                     </Button>
@@ -386,7 +391,7 @@ function Overview({
     ? new DateFormatter(items.nextEpisode.airing)
     : null;
   const synopsis = truncateHTML(
-    sanitizeHTML(items.description, {
+    sanitizeHTML(items.description || "<i>No Synopsis</i>", {
       allowedTags: ["i", "b", "em", "strong", "br", "p", "span"],
       allowedAttributes: {},
     }),
@@ -411,46 +416,54 @@ function Overview({
               <span className="font-medium text-foreground">
                 Episode {items.nextEpisode.episode}
               </span>
-              <span>airing {date?.diff}</span>
+              <span suppressHydrationWarning>airing {date?.diff}</span>
               <span className="text-foreground/30">•</span>
-              <span className="text-foreground/50">{date?.formattted}</span>
+              <span className="text-foreground/50" suppressHydrationWarning>
+                {date?.formattted}
+              </span>
             </ItemContent>
           </Item>
         )}
         <Item
           variant="outline"
-          className="items-center bg-white/3 text-foreground/80 px-3 py-2 sm:gap-3 lg:px-4"
+          className="flex-row items-center bg-white/3 text-foreground/80 px-3 py-2 gap-2 sm:gap-3 lg:px-4"
         >
           <ItemContent className="flex-row gap-2 flex-none">
-            <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/80">
-              {items.type}
+            <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/80 bg-input/30">
+              {items.type ?? "TV"}
             </div>
             {items.releaseDate && (
-              <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/70">
-                Aired {items.releaseDate}
+              <div className="rounded-md border focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 border-border px-3 py-1.5 text-xs font-medium text-foreground/70 bg-input/30">
+                {items.status?.toUpperCase() === "UPCOMING"
+                  ? "Airing "
+                  : "Aired "}
+                {items.releaseDate}
                 {items.endDate ? ` - ${items.endDate}` : ""}
               </div>
             )}
           </ItemContent>
           <ItemActions className="ml-auto">
-            <Button
-              variant="outline"
-              className="flex items-center h-fit gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs font-medium text-foreground/90 transition-all duration-200"
-              disabled={
-                items.trailer.url === null || items.trailer.url === undefined
-              }
-              aria-disabled={
-                items.trailer.url === null || items.trailer.url === undefined
-              }
-              asChild
-            >
-              <Link href={items.trailer.url || "#"}>
-                <span className="flex size-7 items-center justify-center rounded-full bg-foreground text-background">
-                  <PlayIcon fill="currentColor" />
-                </span>
-                Trailer
-              </Link>
-            </Button>
+            {items.trailer.url && (
+              <Button
+                variant="outline"
+                className="items-center h-fit gap-2 rounded-full border border-white/15 px-3 py-1.5 text-xs font-medium text-foreground/90 transition-all duration-200"
+                disabled={
+                  items.trailer.url === null || items.trailer.url === undefined
+                }
+                asChild
+              >
+                <Link
+                  href={items.trailer.url || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="flex size-7 items-center justify-center rounded-full bg-foreground text-background">
+                    <PlayIcon fill="currentColor" />
+                  </span>
+                  Trailer
+                </Link>
+              </Button>
+            )}
           </ItemActions>
         </Item>
         <Collapsible className="group/synopsis">
@@ -536,7 +549,7 @@ function Overview({
                   <Building2Icon size={11} />
                   Studios
                 </div>
-                {items.studios && (
+                {items.studios && items.studios.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {items.studios.map((studio) => (
                       <Badge
@@ -548,6 +561,15 @@ function Overview({
                       </Badge>
                     ))}
                   </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
+                  </div>
                 )}
               </div>
 
@@ -556,7 +578,7 @@ function Overview({
                 <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
                   Synonyms
                 </p>
-                {items.synonyms && (
+                {items.synonyms && items.synonyms.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {items.synonyms.map((synonym) => (
                       <Badge
@@ -568,6 +590,15 @@ function Overview({
                       </Badge>
                     ))}
                   </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
+                  </div>
                 )}
               </div>
 
@@ -576,7 +607,7 @@ function Overview({
                 <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
                   Genres
                 </p>
-                {items.genres && (
+                {items.genres && items.genres.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {items.genres.map((genre) => (
                       <Badge
@@ -588,6 +619,15 @@ function Overview({
                         <Link href={`/browse?genres=${genre}`}>{genre}</Link>
                       </Badge>
                     ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
                   </div>
                 )}
               </div>
@@ -604,7 +644,11 @@ function Overview({
                     className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
                     asChild
                   >
-                    <Link href={`https://anilist.co/anime/${items.id}`}>
+                    <Link
+                      href={`https://anilist.co/anime/${items.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Anilist
                     </Link>
                   </Badge>
@@ -615,7 +659,13 @@ function Overview({
                       className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
                       asChild
                     >
-                      <Link href={link.url}>{link.site}</Link>
+                      <Link
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.site}
+                      </Link>
                     </Badge>
                   ))}
                 </div>
@@ -626,7 +676,7 @@ function Overview({
                 <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
                   Tags
                 </p>
-                {items.tags && (
+                {items.tags && items.tags.length >= 1 ? (
                   <div className="flex flex-wrap gap-1.5">
                     {(tagExpanded ? items.tags : items.tags.slice(0, 10)).map(
                       (tag) => (
@@ -640,6 +690,15 @@ function Overview({
                         </Badge>
                       ),
                     )}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge
+                      variant="outline"
+                      className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                    >
+                      No data
+                    </Badge>
                   </div>
                 )}
                 {items.tags.length > 10 && (
@@ -681,12 +740,10 @@ interface RelationsProps {
 /**
  * Render a filterable carousel of related media grouped by relation type.
  *
- * Renders a row of filter buttons derived from the provided items' `relationType`
- * (with an "All" option) and a draggable carousel of `AnimeCard` tiles for the
- * currently selected relation group.
+ * Shows relation-type filter buttons when multiple relation groups exist and a draggable carousel of corresponding `AnimeCard` tiles; displays a dashed "No Relations" placeholder when no items are available.
  *
- * @param items - Array of relation entries to display. Each entry should include at least `id` and `relationType`; `media` is used to determine the card wrapper element.
- * @returns A React element containing relation-type filter controls and a carousel of related entries.
+ * @param items - Array of relation entries to display; each entry should include `id` and `relationType`. `media` and `type` influence whether a card is rendered as a link.
+ * @returns A container element that includes optional filter controls and a carousel of related entries, or a placeholder when the list is empty.
  */
 function Relations({
   items,
@@ -709,51 +766,73 @@ function Relations({
 
   return (
     <div className={cn("space-y-6", className)} {...props}>
-      <div className="flex flex-wrap gap-2 items-center">
-        {relations.map((type) => (
-          <Button
-            key={type}
-            variant={activeFilter === type ? "default" : "outline"}
-            data-active={activeFilter === type}
-            onClick={() => setActiveFilter(type!)}
-            className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 data-[active=false]:bg-white/3 data-[active=false]:text-foreground/60 size-fit"
-          >
-            {type}
-          </Button>
-        ))}
-      </div>
-      <Carousel
-        opts={{ align: "center", dragFree: true }}
-        className="w-full mt-3"
-      >
-        <CarouselContent className="min-w-0">
-          {filteredItems.map((item) => {
-            const href = `/library/anime/${item.id}`;
-            const anime = {
-              ...item,
-              relationType: mapType(item.relationType!),
-              status: null,
-            };
+      {filteredItems.length >= 1 ? (
+        <>
+          {relations.length > 2 && (
+            <div className="flex flex-wrap gap-2 items-center">
+              {relations.map((type) => (
+                <Button
+                  key={type}
+                  variant={activeFilter === type ? "default" : "outline"}
+                  data-active={activeFilter === type}
+                  onClick={() => setActiveFilter(type!)}
+                  className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all duration-200 data-[active=false]:bg-white/3 data-[active=false]:text-foreground/60 size-fit"
+                >
+                  {type}
+                </Button>
+              ))}
+            </div>
+          )}
 
-            return (
-              <CarouselItem
-                key={item.id}
-                className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
-              >
-                <AnimeCard
-                  anime={anime}
-                  href={href}
-                  as={item.media === "ANIME" ? Link : "div"}
-                />
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-        <div className="flex justify-end gap-2 mt-4">
-          <CarouselPrevious className="static translate-y-0" />
-          <CarouselNext className="static translate-y-0" />
-        </div>
-      </Carousel>
+          <Carousel
+            opts={{ align: "center", dragFree: true }}
+            className={cn("w-full", relations.length > 2 && "mt-3")}
+          >
+            <CarouselContent className="min-w-0">
+              {filteredItems.map((item) => {
+                const href = `/library/anime/${item.id}`;
+                const anime = {
+                  ...item,
+                  relationType: mapType(item.relationType!),
+                  status: null,
+                };
+                const isLink =
+                  item.media === "ANIME" &&
+                  item.type?.toLowerCase() !== "music";
+
+                return (
+                  <CarouselItem
+                    key={item.id}
+                    className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
+                  >
+                    <AnimeCard
+                      anime={anime}
+                      href={isLink ? href : undefined}
+                      as={isLink ? Link : "div"}
+                    />
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            {filteredItems.length > 3 && (
+              <div className="flex justify-end gap-2 mt-4">
+                <CarouselPrevious className="static translate-y-0" />
+                <CarouselNext className="static translate-y-0" />
+              </div>
+            )}
+          </Carousel>
+        </>
+      ) : (
+        <section className="w-full">
+          <div className={cn("min-w-0")}>
+            <div className="flex items-center justify-center min-h-[200px] md:min-h-[280px] rounded-xl bg-muted/20 border border-dashed border-muted-foreground/25">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">No Relations</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -792,37 +871,51 @@ export function Characters({
 }: Omit<React.ComponentPropsWithoutRef<"div">, "children"> & ICharactersProps) {
   return (
     <div className={cn("space-y-6", className)} {...props}>
-      <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
-        <CarouselContent className="min-w-0">
-          {items.map((item) => {
-            const anime = {
-              ...item,
-              status: item.role,
-              title: item.name,
-              id: item.id as string,
-              genres: null,
-              color: null,
-              episodes: null,
-              chapters: null,
-              relationType: null,
-              type: null,
-            };
+      {items.length >= 1 ? (
+        <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
+          <CarouselContent className="min-w-0">
+            {items.map((item) => {
+              const anime = {
+                ...item,
+                status: item.role,
+                title: item.name,
+                id: item.id as string,
+                genres: null,
+                color: null,
+                episodes: null,
+                chapters: null,
+                relationType: null,
+                type: null,
+              };
 
-            return (
-              <CarouselItem
-                key={item.id}
-                className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
-              >
-                <AnimeCard anime={anime} />
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-        <div className="flex justify-end gap-2 mt-4">
-          <CarouselPrevious className="static translate-y-0" />
-          <CarouselNext className="static translate-y-0" />
-        </div>
-      </Carousel>
+              return (
+                <CarouselItem
+                  key={item.id}
+                  className="basis-1/3 md:basis-1/5 lg:basis-1/6 min-w-0 shrink-0 grow-0"
+                >
+                  <AnimeCard anime={anime} />
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+          {items.length > 3 && (
+            <div className="flex justify-end gap-2 mt-4">
+              <CarouselPrevious className="static translate-y-0" />
+              <CarouselNext className="static translate-y-0" />
+            </div>
+          )}
+        </Carousel>
+      ) : (
+        <section className="w-full">
+          <div className={cn("min-w-0")}>
+            <div className="flex items-center justify-center min-h-[200px] md:min-h-[280px] rounded-xl bg-muted/20 border border-dashed border-muted-foreground/25">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">No Characters</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

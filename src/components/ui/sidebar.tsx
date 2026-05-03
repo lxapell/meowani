@@ -22,7 +22,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PanelLeftIcon } from "lucide-react";
+import { MenuIcon, PanelLeftIcon } from "lucide-react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -250,12 +250,20 @@ function Sidebar({
   );
 }
 
+/**
+ * Renders a compact button that toggles the sidebar and displays a mobile or desktop icon.
+ *
+ * The button shows a menu icon when on mobile and a panel icon on desktop, includes a screen-reader-only
+ * label "Toggle Sidebar", and invokes the sidebar toggle handler when activated.
+ *
+ * @returns The Button element used to trigger opening or collapsing the sidebar
+ */
 function SidebarTrigger({
   className,
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile } = useSidebar();
 
   return (
     <Button
@@ -270,7 +278,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon className="rtl:rotate-180" />
+      {isMobile ? <MenuIcon /> : <PanelLeftIcon className="rtl:rotate-180" />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

@@ -41,14 +41,15 @@ export const metadata: Metadata = {
     siteName: "MeowAni - Free anime online",
     title: "MeowAni - Free Anime Streaming",
     description: "Watch anime online for free with no ads.",
-    images: ["/assets/logo/logo-large.png"],
+    images: ["/assets/logo/logo-4.png"],
+    url: "https://meowani.site/",
   },
   twitter: {
     card: "summary_large_image",
     title: "MeowAni - Free Anime Streaming",
     site: "MeowAni",
     description: "Watch anime online for free with no ads.",
-    images: ["/assets/logo/logo-large.png"],
+    images: ["/assets/logo/logo-4.png"],
   },
   applicationName: "MeowAni",
   appleWebApp: {
@@ -62,6 +63,9 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
     shortcut: [{ url: "/favicon.ico", type: "image/x-icon" }],
+  },
+  alternates: {
+    canonical: "https://meowani.site/",
   },
 };
 

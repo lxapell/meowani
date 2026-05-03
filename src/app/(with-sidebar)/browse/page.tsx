@@ -8,6 +8,7 @@ import {
   CatalogResult,
   CatalogResultSkeleton,
 } from "@/components/custom/catalog-search";
+import FooterClient from "@/components/custom/footer.wrapper";
 import {
   URLParamsToFilters,
   filtersToURLParams,
@@ -19,10 +20,10 @@ import {
 } from "@tanstack/react-query";
 
 /**
- * Next.js server component that derives initial catalog filters from route search params, prefetches catalog data into a TanStack QueryClient, hydrates that cache for the client, and renders the browse UI.
+ * Server component that derives initial catalog filters from route query parameters, prefetches catalog data into a TanStack QueryClient, hydrates that cache for the client, and renders the browse UI.
  *
- * @param searchParams - A promise that resolves to the route's query parameters (string or string[] values) used to construct the initial filters.
- * @returns The browse page element with prefetched and hydrated catalog data and UI providers (filters, search, and results).
+ * @param searchParams - Route query parameters where each key maps to a `string`, `string[]`, or `undefined`; values are used to construct the initial catalog filters.
+ * @returns The browse page React element rendering the catalog UI with a prehydrated query cache, filter provider, search, results, and footer.
  */
 export default async function BrowsePage({
   searchParams,
@@ -57,6 +58,7 @@ export default async function BrowsePage({
           <Suspense fallback={<CatalogResultSkeleton />}>
             <CatalogResult />
           </Suspense>
+          <FooterClient />
         </CatalogFiltersProvider>
       </div>
     </HydrationBoundary>

@@ -13,13 +13,19 @@ interface remotePatterns {
  * Determine whether a given image URL is allowed as a remote source.
  *
  * @param url - The image URL to validate; may be an absolute URL or a path beginning with `/`
+ * @param currentOrigin - The app origin;
  * @returns `true` if the URL is allowed according to the configured remotePatterns or is a local path, `false` otherwise.
  */
-function isValidUrl(url: string): boolean {
+function isValidUrl(url: string, currentOrigin?: string): boolean {
   try {
+    if (url.startsWith("/")) return true;
+
     const parsed = new URL(url);
 
-    if (url.startsWith("/")) return true;
+    // const devOrigins = nextConfig.allowedDevOrigins;
+    // if (!devOrigins)
+    // console.log(`${parsed.hostname} against ${currentOrigin}`);
+    if (currentOrigin && parsed.origin === currentOrigin) return true;
 
     const patterns = nextConfig.images?.remotePatterns as remotePatterns[];
 
@@ -47,13 +53,16 @@ function isValidUrl(url: string): boolean {
 }
 
 /**
- * Serves an optimized image for the requested source URL and width.
+ * Handles image requests by fetching an allowlisted source and returning the fetched image bytes with appropriate Content-Type and caching.
  *
- * Fetches the source image (allowlisting remote URLs), returns SVGs unchanged, and for raster images produces a resized/converted image according to query parameters (`w`, `q`, `fm`) and client `Accept` headers.
+ * SVG images are returned unchanged. Raster images are currently returned unmodified (the optimization pipeline is bypassed), both with long-term immutable caching.
  *
- * @returns A NextResponse containing the image bytes and appropriate `Content-Type` and `Cache-Control` headers. May return 400 for missing/invalid parameters, 403 for forbidden remote domains, or 500 for internal processing errors.
+ * @returns A NextResponse containing the image bytes and appropriate `Content-Type` and `Cache-Control` headers. May return 400 for missing/invalid parameters, 403 for forbidden remote domains, or 500 for internal errors.
  */
 export async function GET(request: NextRequest) {
+  const host = request.headers.get("host") || "localhost:3000";
+  const protocol = request.headers.get("x-forwarded-proto") ?? "http";
+  const currentOrigin = `${protocol}://${host}`;
   const { searchParams } = new URL(request.url);
   const src = searchParams.get("url");
   const width = searchParams.get("w");
@@ -66,11 +75,9 @@ export async function GET(request: NextRequest) {
 
   let imageUrl: string;
   if (src.startsWith("/")) {
-    const host = request.headers.get("host") || "localhost:300";
-    const protocol = host.includes("localhost") ? "http" : "https";
     imageUrl = `${protocol}://${host}${src}`;
   } else if (src.startsWith("http://") || src.startsWith("https://")) {
-    if (!isValidUrl(src)) {
+    if (!isValidUrl(src, currentOrigin)) {
       return new NextResponse("Forbidden remote domain", { status: 403 });
     }
     imageUrl = src;
@@ -98,6 +105,17 @@ export async function GET(request: NextRequest) {
           "Content-Type": "image/svg+xml",
           "Cache-Control": "public, max-age=31536000, immutable",
         },
+      });
+    }
+
+    // at the moment I'm thinking of rewriting this endpoint into rust for faster optimization so for now because this is painfully slow so for now I'm going to just return what was passed
+
+    const isProd = process.env.NODE_ENV === "production";
+    const isDev = process.env.NODE_ENV !== "production";
+    if (isProd || isDev) {
+      const imgBuffer = Buffer.from(await response.arrayBuffer());
+      return new NextResponse(imgBuffer, {
+        headers: { "Cache-Control": "public, max-age=31536000, immutable" },
       });
     }
 

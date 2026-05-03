@@ -1,15 +1,17 @@
+import { Footer } from "@/components/custom/footer";
+import FooterClient from "@/components/custom/footer.wrapper";
 import { LibraryIcon } from "lucide-react";
-import Image from "next/image";
+import { Suspense } from "react";
 
 /**
- * Renders the Home page layout containing the "MeowAni" title and a call-to-action link.
+ * Renders the Home page layout with the "MeowAni" heading and a rounded "Library" call-to-action.
  *
- * @returns The React element for the Home page: a centered container with a card-like main area that displays the "MeowAni" heading and a rounded "Library" link to `/library`.
+ * @returns The Home page JSX element containing the title and a link to `/library`.
  */
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex gap-5 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex gap-5 w-full max-w-3xl mx-auto flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black">
         <span className="truncate leading-tight text-xl font-extrabold font-stretch-100%">
           MeowAni
         </span>
@@ -24,6 +26,8 @@ export default function Home() {
           </a>
         </div>
       </main>
+
+      <FooterClient />
     </div>
   );
 }

@@ -1,5 +1,9 @@
 "use client";
 
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { getRandomAnime } from "@/app/(with-sidebar)/actions";
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -23,6 +27,8 @@ import {
   ShuffleIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Render the main sidebar navigation group labeled "Menu".
@@ -30,6 +36,30 @@ import Link from "next/link";
  * @returns The sidebar group JSX element containing menu items for Library, Browse, and Random.
  */
 export function NavMain() {
+  const router = useRouter();
+  const [loadingRandom, setLoadingRandom] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const randomLoading = loadingRandom || isPending;
+
+  const handleRandom = async () => {
+    setLoadingRandom(true);
+    setError(null);
+    const id = await getRandomAnime();
+    if (!id) {
+      setLoadingRandom(false);
+      setError("No anime found");
+      return;
+    }
+
+    startTransition(() => {
+      router.push(`/library/anime/${id}`);
+    });
+
+    setLoadingRandom(false);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Menu</SidebarGroupLabel>
@@ -59,11 +89,17 @@ export function NavMain() {
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton tooltip="Random" asChild>
-            <Link href="#">
+          <SidebarMenuButton
+            tooltip="Random"
+            onClick={handleRandom}
+            disabled={randomLoading}
+          >
+            {randomLoading ? (
+              <Spinner data-icon="inline-start" />
+            ) : (
               <ShuffleIcon />
-              Random
-            </Link>
+            )}
+            {error ? error : "Random"}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { cache } from "react";
 import {
   AnimeInfoBanner,
   AnimeInfoTabs,
@@ -5,27 +7,16 @@ import {
 } from "@/components/custom/anime-info";
 import { EndOfContent } from "@/components/custom/end-of-content";
 
-import { anilistRequest } from "@/lib/anilist/client";
-import { animeInfo } from "@/constants/anilist/queries";
 import { getAnimeInfo } from "./actions";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ExternalLink } from "lucide-react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
-import { formatYearMonth, TitleSlug } from "@/utils/formatter";
-import { MediaEdge, Studio } from "@/types/anilist-types";
+import { capitalizeFirst, formatYearMonth, TitleSlug } from "@/utils/formatter";
+import { AnimeInfoQuery, MediaEdge, Studio } from "@/types/anilist-types";
 import { mapStatus, mapSimple } from "@/utils/mapper";
-import { recommendedRules } from "graphql";
 import {
   AnimeCards,
   AnimeCardsEmpty,
 } from "@/components/custom/anime-carousel";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
+import FooterClient from "@/components/custom/footer.wrapper";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
 // const mapped = raw.Media.characters.edges.map((character) => {
@@ -44,81 +35,157 @@ import {
 //     voiceActor: voiceActor,
 //   };
 // });
+
+const getCachedAnime = cache(async (id: number) => {
+  const anime = (await getAnimeInfo(id)) as AnimeInfoQuery;
+  if (!anime?.Media) return null;
+  return mapAdvanced(anime.Media);
+});
+
 /**
- * Render the anime details page for the given route parameter.
+ * Renders the anime details page for a given route slug.
  *
- * Retrieves anime data by extracting the numeric id from `animeId` (the last hyphen-separated segment), fetches and maps the AniList media into a UI-friendly shape, and returns a page containing the anime banner, tabs, recommendations (or an empty recommendations state), and end-of-content marker. If the anime cannot be found or an error occurs, returns an "Anime Info Unavailable" fallback UI.
+ * If the route id cannot be parsed or the anime data is not available, triggers a 404 response.
  *
- * @param params - A promise resolving to an object with `animeId`, a route slug (e.g. `"some-title-12345"`)
- * @returns The rendered React element for the anime details page or a fallback unavailable-state element
+ * @param params - Promise resolving to an object with `animeId`, a route slug (e.g. "some-title-12345")
+ * @returns The React element for the anime details page
  */
 
-export default async function Page({
+export default async function InfoPage({
   params,
 }: {
   params: Promise<{ animeId: string }>;
 }) {
   const { animeId } = await params;
-  const id = animeId.split("-").pop();
-
+  let id: number;
   try {
-    const anime = await getAnimeInfo(id!);
-    if (!anime?.Media) notFound();
-    const animeInfo = mapAdvanced(anime.Media);
-    // throw new Error("Error test");
-
-    return (
-      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-        <AnimeInfoBanner data={animeInfo} />
-        <AnimeInfoTabs data={animeInfo} />
-        {animeInfo.recommendations?.length > 0 ? (
-          <AnimeCards
-            animes={animeInfo.recommendations}
-            label="Recommendations"
-            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
-          />
-        ) : (
-          <AnimeCardsEmpty
-            label="Recommendations"
-            paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
-          />
-        )}
-        <EndOfContent />
-      </div>
-    );
-  } catch (error) {
-    console.log(error);
-    return (
-      <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-        <div className="md:mt-15 px-1.5 md:px-6 lg:px-12 xl:px-14">
-          <Item
-            variant="outline"
-            className="border-amber-500/90 bg-orange-500/10 px-3 py-1.5 text-sm text-foreground/80"
-          >
-            <ItemMedia variant="icon" className="text-amber-500/90">
-              <ExclamationTriangleIcon />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle className="font-medium text-foreground">
-                Anime Info Unavailable
-              </ItemTitle>
-              <ItemDescription>
-                Oops... looks like there won't be any anime info in the
-                meantime.
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-        </div>
-      </div>
-    );
+    id = new TitleSlug(animeId).getId();
+  } catch {
+    notFound();
   }
+
+  const animeInfo = await getCachedAnime(id);
+  if (!animeInfo) notFound();
+  // throw new Error("Error test");
+
+  return (
+    <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
+      <AnimeInfoBanner data={animeInfo} />
+      <AnimeInfoTabs data={animeInfo} />
+      {animeInfo.recommendations?.length > 0 ? (
+        <AnimeCards
+          animes={animeInfo.recommendations}
+          label="Recommendations"
+          paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+        />
+      ) : (
+        <AnimeCardsEmpty
+          label="Recommendations"
+          paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
+        />
+      )}
+      <EndOfContent />
+      <FooterClient />
+    </div>
+  );
 }
+
+/**
+ * Generate SEO metadata for an anime detail page based on the route `animeId`.
+ *
+ * @param params - A promise resolving to route parameters; must include `animeId` (slug or title-id string).
+ * @returns A `Metadata` object with title, description, Open Graph and Twitter card data, and a canonical URL. If the anime cannot be resolved, returns metadata with title "Anime Not Found" and a brief not-found description.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ animeId: string }>;
+}): Promise<Metadata> {
+  const { animeId } = await params;
+  let id: number;
+  try {
+    id = new TitleSlug(animeId).getId();
+  } catch {
+    return {
+      title: "Anime Not Found",
+      description: "Anime not found on MeowAni",
+    };
+  }
+
+  const animeInfo = await getCachedAnime(id);
+  if (!animeInfo) {
+    return {
+      title: "Anime Not Found",
+      description: "Anime not found on MeowAni",
+    };
+  }
+
+  const title = animeInfo.title.eng || animeInfo.title.romaji || "No Title";
+  const description = truncateText(
+    (animeInfo.description || "No Synopsis")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&#039;/g, "'")
+      .replace(/&quot;/g, '"'),
+    160,
+  );
+
+  const search = new URLSearchParams();
+  if (animeInfo.season) search.set("season", capitalizeFirst(animeInfo.season));
+  if (animeInfo.year) search.set("year", animeInfo.year);
+  if (animeInfo.type) search.set("mediaType", animeInfo.type);
+  if (title) search.set("title", title);
+  if (animeInfo.studios?.length >= 1)
+    search.set("studio", animeInfo.studios.join(", "));
+  if (animeInfo.genres?.length >= 1)
+    search.set("genre", animeInfo.genres.join(", "));
+  if (animeInfo.image.extraLarge || animeInfo.image.large)
+    search.set("imageUrl", animeInfo.image.extraLarge ?? animeInfo.image.large);
+  // if (animeInfo.bannerImage) search.set("backgroundUrl", animeInfo.bannerImage);
+  if (animeInfo.episodes) search.set("episodes", animeInfo.episodes);
+
+  const image = `https://source.meowani.site/assets/card?${search}`;
+
+  return {
+    title: `${title}`,
+    description,
+    openGraph: {
+      title: `${title} | MeowAni`,
+      description,
+      images: [image],
+      type: "video.tv_show",
+      url: `https://meowani.site/library/anime/${animeId}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | MeowAni`,
+      description,
+      images: [image],
+    },
+    alternates: {
+      canonical: `https://meowani.site/library/anime/${animeId}`,
+    },
+  };
+}
+
+const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return text.substring(0, maxLength) + "...";
+};
 
 const mapAdvanced = (data: any) => {
   return {
     ...data,
     title: { eng: data.title?.english, romaji: data.title?.romaji },
-    image: data.coverImage?.large,
+    image: {
+      large: data.coverImage?.large,
+      extraLarge: data.coverImage?.extraLarge,
+    },
+    bannerImage: data.bannerImage || data.coverImage?.extraLarge,
     color: data.coverImage?.color,
     type: data.format,
     score: data.averageScore,

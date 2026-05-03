@@ -16,64 +16,10 @@ import {
 } from "@/components/ui/sidebar";
 import { genreEnums } from "@/constants/anilist/enums";
 import {
-  GalleryVerticalEndIcon,
-  AudioLinesIcon,
-  TerminalIcon,
-  TerminalSquareIcon,
-  BotIcon,
-  BookOpenIcon,
-  Settings2Icon,
-  FrameIcon,
-  PieChartIcon,
-  MapIcon,
   ClapperboardIcon,
   TagsIcon,
   SlidersHorizontalIcon,
 } from "lucide-react";
-
-const genres = [
-  "Action",
-  "Adventure",
-  "Cars",
-  "Comedy",
-  "Dementia",
-  "Demons",
-  "Drama",
-  "Ecchi",
-  "Fantasy",
-  "Game",
-  "Harem",
-  "Historical",
-  "Horror",
-  "Isekai",
-  "Josei",
-  "Kids",
-  "Magic",
-  "Martial Arts",
-  "Mecha",
-  "Military",
-  "Music",
-  "Mystery",
-  "Parody",
-  "Police",
-  "Psychological",
-  "Romance",
-  "Samurai",
-  "School",
-  "Sci-Fi",
-  "Seinen",
-  "Shoujo",
-  "Shoujo Ai",
-  "Shounen",
-  "Shounen Ai",
-  "Slice of Life",
-  "Space",
-  "Sports",
-  "Super Power",
-  "Supernatural",
-  "Thriller",
-  "Vampire",
-];
 
 const data = {
   user: {
@@ -96,23 +42,23 @@ const data = {
       items: [
         {
           title: "Movies",
-          url: "/type/movie",
+          url: "/browse?formats=MOVIE",
         },
         {
           title: "TV series",
-          url: "/type/tv",
+          url: "/browse?formats=TV",
         },
         {
           title: "OVAs",
-          url: "/type/ova",
+          url: "/browse?formats=OVA",
         },
         {
           title: "ONAs",
-          url: "/type/ona",
+          url: "/browse?formats=ONA",
         },
         {
           title: "Specials",
-          url: "/type/special",
+          url: "/browse?formats=TV_SHORT",
         },
       ],
     },
@@ -136,19 +82,19 @@ const data = {
       items: [
         {
           title: "Subbed",
-          url: "/subbed-anime",
+          url: "#subbed-anime",
         },
         {
           title: "Dubbed",
-          url: "/dubbed-anime",
+          url: "#dubbed-anime",
         },
         {
           title: "Most Popular",
-          url: "/most-popular",
+          url: "/browse?sort=POPULARITY_DESC",
         },
         {
           title: "Events",
-          url: "/events",
+          url: "#events",
         },
       ],
     },

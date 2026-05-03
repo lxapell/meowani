@@ -179,13 +179,13 @@ export async function UpcomingComponent() {
 }
 
 /**
- * Renders a spotlight carousel populated with trending anime.
+ * Render a spotlight carousel populated with trending anime for the UI.
  *
- * Attempts to fetch up to 9 trending anime, map them for the spotlight UI, and return the spotlight client component. If fetching or mapping fails, returns an empty spotlight component.
- *
- * @returns A JSX element containing the spotlight carousel with up to 9 mapped trending anime items, or a fallback empty spotlight component on error.
+ * @returns A JSX element rendering a spotlight carousel of mapped trending anime items, or a `SpotlightEmpty` fallback if fetching or mapping fails.
  */
 export async function SpotlightComponent() {
+  "use cache";
+
   try {
     const raw: IAnilistQuery = await anilistRequest(trending, {
       page: 1,

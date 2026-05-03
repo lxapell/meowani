@@ -493,7 +493,11 @@ const CatalogResult = React.memo(function CatalogResult() {
         ref={ref}
         className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5"
       ></div>
-      {!hasNextPage && !isFetchingNextPage && <EndOfContent />}
+      {!hasNextPage && !isFetchingNextPage && (
+        <>
+          <EndOfContent />
+        </>
+      )}
     </div>
   );
 });

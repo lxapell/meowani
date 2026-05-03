@@ -34,7 +34,7 @@ export const genreEnums = [
   "Drama",
   "Ecchi",
   "Fantasy",
-  "Hentai",
+  // "Hentai",
   "Horror",
   "Mahou Shoujo",
   "Mecha",

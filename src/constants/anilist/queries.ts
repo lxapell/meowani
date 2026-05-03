@@ -1,5 +1,40 @@
 import gpl from "graphql-tag";
 
+export const totalPage = gpl`
+  query TotalPage {
+    Page(page: 1, perPage: 1) {
+      pageInfo {
+        total
+      }
+      media(type: ANIME, genre_not_in: ["Hentai"]) {
+        id
+        title {
+          romaji
+          english
+          native
+          userPreferred
+        }
+      }
+    }
+  }
+`;
+
+export const page = gpl`
+  query Page($page: Int, $perPage: Int) {
+    Page(page: $page, perPage: $perPage) {
+      media(sort: SCORE_DESC, type: ANIME, genre_not_in: ["Hentai"]) {
+        id
+        title {
+          romaji
+          english
+          native
+          userPreferred
+        }
+      }
+    }
+  }
+`;
+
 export const trending = gpl`
   query Trending($perPage: Int, $page: Int) {
     Page(page: $page, perPage: $perPage) {
@@ -569,7 +604,7 @@ export const schedule = gpl`
         lastPage
         hasNextPage
       }
-      airingSchedules(airingAt_greater: $from, airingAt_lesser: $to, media_genre_not_in: ["Hentai"]) {
+      airingSchedules(airingAt_greater: $from, airingAt_lesser: $to) {
         episode
         timeUntilAiring
         airingAt
