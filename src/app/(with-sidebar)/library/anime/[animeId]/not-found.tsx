@@ -14,7 +14,7 @@ import FooterClient from "@/components/custom/footer.wrapper";
 export default function InfoNotFound() {
   return (
     <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-      <div className="flex min-h-dvh flex-col item-s-center justify-center px-4 text-center">
+      <div className="flex min-h-dvh flex-col items-center justify-center px-4 text-center">
         <div className="space-y-4">
           <h1 className="text-6xl font-bold tracking-tighter text-destructive sm:text-7xl md:text-8xl">
             404
@@ -28,7 +28,7 @@ export default function InfoNotFound() {
             </p>
           </div>
           <Button size="lg" asChild>
-            <Link href="/">
+            <Link href="/library">
               <LibraryIcon />
               Library
             </Link>

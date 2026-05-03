@@ -270,11 +270,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      {isMobile ? (
-        <MenuIcon className="sm:hidden" />
-      ) : (
-        <PanelLeftIcon className="rtl:rotate-180 hidden sm:block" />
-      )}
+      {isMobile ? <MenuIcon /> : <PanelLeftIcon className="rtl:rotate-180" />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

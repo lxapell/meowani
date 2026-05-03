@@ -102,7 +102,13 @@ export async function generateMetadata({
   }
 
   const title = animeInfo.title.eng || animeInfo.title.romaji || "No Title";
-  const description = truncateText(animeInfo.description || "No Synopsis", 160);
+  const description = truncateText(animeInfo.description || "No Synopsis", 160)
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#039;/g, "'")
+    .replace(/&quot;/g, '"');
   const search = new URLSearchParams();
   if (animeInfo.season) search.set("season", capitalizeFirst(animeInfo.season));
   if (animeInfo.year) search.set("year", animeInfo.year);

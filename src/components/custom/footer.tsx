@@ -58,8 +58,11 @@ export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
         </div>
         <Separator className="shrink-0 my-4" />
         <div className="mx-auto h-7.5 flex w-full items-center pb-2 text-[0.7rem] text-muted-foreground lg:text-[0.8rem] justify-center">
-          <span className="items-center justify-center">
-            {"© 2026 "}
+          <span
+            className="items-center justify-center"
+            suppressHydrationWarning
+          >
+            {`© ${new Date().getFullYear()} `}
             <Path href="/" className="font-medium">
               MeowAni
             </Path>

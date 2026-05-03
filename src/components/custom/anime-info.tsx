@@ -416,9 +416,11 @@ function Overview({
               <span className="font-medium text-foreground">
                 Episode {items.nextEpisode.episode}
               </span>
-              <span>airing {date?.diff}</span>
+              <span suppressHydrationWarning>airing {date?.diff}</span>
               <span className="text-foreground/30">•</span>
-              <span className="text-foreground/50">{date?.formattted}</span>
+              <span className="text-foreground/50" suppressHydrationWarning>
+                {date?.formattted}
+              </span>
             </ItemContent>
           </Item>
         )}

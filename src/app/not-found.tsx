@@ -10,7 +10,7 @@ import { HomeIcon } from "lucide-react";
  */
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col item-s-center justify-center px-4 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
       <div className="space-y-4">
         <h1 className="text-6xl font-bold tracking-tighter text-destructive sm:text-7xl md:text-8xl">
           404

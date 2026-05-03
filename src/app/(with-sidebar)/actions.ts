@@ -38,7 +38,7 @@ export async function getRandomAnime(): Promise<string | null> {
     const indexInPage = randomIndex % 20;
 
     const pageData = await anilistRequest<PageData>(page, {
-      randomPage,
+      page: randomPage,
       perPage: 20,
     });
     const mediaList = pageData.Page.media;

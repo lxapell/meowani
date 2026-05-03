@@ -11,7 +11,7 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex gap-5 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black">
+      <main className="flex gap-5 w-full max-w-3xl mx-auto flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black">
         <span className="truncate leading-tight text-xl font-extrabold font-stretch-100%">
           MeowAni
         </span>

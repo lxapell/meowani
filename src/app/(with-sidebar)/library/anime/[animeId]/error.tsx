@@ -26,7 +26,9 @@ export default function InfoErrorPage({ reset }: { reset: () => void }) {
               Anime Info Unavailable
             </ItemTitle>
             <ItemDescription>
-              Oops... looks like there won't be any anime info in the meantime.
+              {
+                "Oops... looks like there won't be any anime info in the meantime."
+              }
             </ItemDescription>
           </ItemContent>
         </Item>
