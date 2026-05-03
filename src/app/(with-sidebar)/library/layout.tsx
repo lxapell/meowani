@@ -6,12 +6,15 @@ export const metadata: Metadata = {
     "Discover featured anime, trending now, popular this season, all-time favorites, and upcoming anime. Watch free on MeowAni.",
   openGraph: {
     title: "Anime Library | MeowAni",
+    type: "website",
+    siteName: "MeowAni",
     description:
       "Discover featured anime, trending now, popular this season, all-time favorites, and upcoming anime.",
     url: "https://meowani.site/library",
   },
   twitter: {
     title: "Anime Library | MeowAni",
+    site: "MeowAni",
     description:
       "Discover featured anime, trending now, popular this season, all-time favorites, and upcoming anime.",
   },

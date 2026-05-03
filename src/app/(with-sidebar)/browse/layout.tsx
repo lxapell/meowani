@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description:
     "Browse and filter thousands of anime series by genres, tags, year, season, and more. Find your next favorite anime on MeowAni",
   openGraph: {
+    type: "website",
+    siteName: "MeowAni",
     title: "Browse Anime | MeowAni",
     description:
       "Browse and filter thousands of anime series by genres, tags, year, season, and more.",
@@ -18,6 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: "Browse Anime | MeowAni",
+    site: "MeowAni",
     description:
       "Browse and filter thousands of anime series by genres, tags, year, season, and more.",
   },

@@ -152,6 +152,7 @@ export async function generateMetadata({
     title: `${title}`,
     description,
     openGraph: {
+      siteName: "MeowAni",
       title: `${title} | MeowAni`,
       description,
       images: [image],
@@ -161,6 +162,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: `${title} | MeowAni`,
+      site: "MeowAni",
       description,
       images: [image],
     },
