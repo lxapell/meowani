@@ -113,7 +113,7 @@ export function AnimeInfoBanner({
                   <Image
                     src={
                       data.image?.large ||
-                      getShimmerDataURL(data.color || "8bdfea")
+                      getShimmerDataURL(data.color || "#8bdfea")
                     }
                     alt={data.title?.eng || "cover"}
                     placeholder="blur"
@@ -137,7 +137,7 @@ export function AnimeInfoBanner({
                       src={
                         data.image?.extraLarge ||
                         data.image?.large ||
-                        getShimmerDataURL(data.color || "8bdfea")
+                        getShimmerDataURL(data.color || "#8bdfea")
                       }
                       placeholder="blur"
                       blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}

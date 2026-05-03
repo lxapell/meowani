@@ -57,9 +57,9 @@ export default async function InfoPage({
   params: Promise<{ animeId: string }>;
 }) {
   const { animeId } = await params;
-  let id: string;
+  let id: number;
   try {
-    id = new TitleSlug(animeId).getId().toString();
+    id = new TitleSlug(animeId).getId();
   } catch {
     notFound();
   }
@@ -102,9 +102,9 @@ export async function generateMetadata({
   params: Promise<{ animeId: string }>;
 }): Promise<Metadata> {
   const { animeId } = await params;
-  let id: string;
+  let id: number;
   try {
-    id = new TitleSlug(animeId).getId().toString();
+    id = new TitleSlug(animeId).getId();
   } catch {
     return {
       title: "Anime Not Found",
@@ -121,13 +121,17 @@ export async function generateMetadata({
   }
 
   const title = animeInfo.title.eng || animeInfo.title.romaji || "No Title";
-  const description = truncateText(animeInfo.description || "No Synopsis", 160)
-    .replace(/<[^>]*>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&#039;/g, "'")
-    .replace(/&quot;/g, '"');
+  const description = truncateText(
+    animeInfo.description
+      .replace(/<[^>]*>/g, "")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&#039;/g, "'")
+      .replace(/&quot;/g, '"') || "No Synopsis",
+    160,
+  );
+
   const search = new URLSearchParams();
   if (animeInfo.season) search.set("season", capitalizeFirst(animeInfo.season));
   if (animeInfo.year) search.set("year", animeInfo.year);
