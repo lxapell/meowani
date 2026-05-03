@@ -1,3 +1,10 @@
+/**
+ * Format a Date into an ISO-like datetime string that includes a whole-hour UTC offset.
+ *
+ * @param date - The Date to format.
+ * @param offset - Hour offset from UTC (may be negative); rendered as the `±HH` portion of the result.
+ * @returns A string in the format `YYYY-MM-DDTHH:mm:ss±HH:00`
+ */
 export function getISOWithOffset(date: Date, offset: number): string {
   const pad = (number: number) => String(number).padStart(2, "0");
 

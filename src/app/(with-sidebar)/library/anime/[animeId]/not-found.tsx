@@ -4,10 +4,9 @@ import { LibraryIcon } from "lucide-react";
 import FooterClient from "@/components/custom/footer.wrapper";
 
 /**
- * Render a full-screen 404 "Anime not found" UI with a link to the home page.
+ * Render a full-height "Anime not found" page with a primary link to the library.
  *
- * @returns A JSX element that displays a centered "404" heading, a "Page not found" subheading,
- * and an outlined "Go Home" button linking to `/`.
+ * @returns A JSX element containing a centered "404" heading, an "Anime not found" subheading, a short explanatory paragraph, a large button linking to `/library`, and the page footer.
  */
 export default function InfoNotFound() {
   return (

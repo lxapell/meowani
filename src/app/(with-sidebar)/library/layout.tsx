@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Layout component that renders its children without adding any wrappers or layout structure.
+ *
+ * @param children - The page content to render within this layout.
+ * @returns The provided `children` React nodes.
+ */
 export default function LibraryLayout({
   children,
 }: {

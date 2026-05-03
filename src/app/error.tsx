@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { HomeIcon } from "lucide-react";
 
+/**
+ * Render a full-screen 500 error page with actions to retry or navigate home.
+ *
+ * @param reset - Callback invoked when the user clicks "Try Again" to attempt to recover or re-render the page
+ * @returns The error page element containing the "500" message, explanatory text, and action buttons for retrying or going home
+ */
 export default function ErrorPage({ reset }: { reset: () => void }) {
   const router = useRouter();
   return (

@@ -250,6 +250,14 @@ function Sidebar({
   );
 }
 
+/**
+ * Renders a compact button that toggles the sidebar and displays a mobile or desktop icon.
+ *
+ * The button shows a menu icon when on mobile and a panel icon on desktop, includes a screen-reader-only
+ * label "Toggle Sidebar", and invokes the sidebar toggle handler when activated.
+ *
+ * @returns The Button element used to trigger opening or collapsing the sidebar
+ */
 function SidebarTrigger({
   className,
   onClick,

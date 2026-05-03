@@ -8,6 +8,12 @@ import { cn } from "@/lib/shadcn/utils";
 const text =
   '<div className="min-w-0 flex flex-1 flex-col bg-background overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh"';
 
+/**
+ * Renders the site footer with brand, legal disclaimer, browse and resources links (including links for the current and upcoming anime seasons), and a centered copyright line.
+ *
+ * @param className - Additional CSS class names to apply to the outer wrapper
+ * @returns The footer's JSX element
+ */
 export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
   const season = AnimeSeason.now();
   return (
@@ -73,6 +79,15 @@ export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
   );
 }
 
+/**
+ * Render a styled Next.js `Link` that combines a default hover transition class with any additional classes and forwards anchor props.
+ *
+ * @param href - Destination URL for the link
+ * @param className - Additional CSS class names to merge with the default transition/hover classes
+ * @param children - Content rendered inside the link
+ * @param props - Additional anchor props forwarded to the underlying `Link`
+ * @returns A `Link` rendered as an anchor with combined classes and forwarded props
+ */
 function Path({
   href,
   className,

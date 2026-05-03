@@ -10,6 +10,15 @@ import {
 import FooterClient from "@/components/custom/footer.wrapper";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
+/**
+ * Render a client-side error UI shown when anime information cannot be loaded.
+ *
+ * Renders an outlined, amber-styled message card with an attention icon, the
+ * title "Anime Info Unavailable", a brief descriptive message, and the page footer.
+ *
+ * @param reset - Callback supplied to reset the surrounding error boundary or retry loading.
+ * @returns A JSX element containing the error message card and footer.
+ */
 export default function InfoErrorPage({ reset }: { reset: () => void }) {
   return (
     <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">

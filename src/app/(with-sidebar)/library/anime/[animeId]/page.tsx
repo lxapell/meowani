@@ -43,12 +43,12 @@ const getCachedAnime = cache(async (id: string) => {
 });
 
 /**
- * Render the anime details page for the given route parameter.
+ * Renders the anime details page for a given route slug.
  *
- * Retrieves anime data by extracting the numeric id from `animeId` (the last hyphen-separated segment), fetches and maps the AniList media into a UI-friendly shape, and returns a page containing the anime banner, tabs, recommendations (or an empty recommendations state), and end-of-content marker. If the anime cannot be found or an error occurs, returns an "Anime Info Unavailable" fallback UI.
+ * If the route id cannot be parsed or the anime data is not available, triggers a 404 response.
  *
- * @param params - A promise resolving to an object with `animeId`, a route slug (e.g. `"some-title-12345"`)
- * @returns The rendered React element for the anime details page or a fallback unavailable-state element
+ * @param params - Promise resolving to an object with `animeId`, a route slug (e.g. "some-title-12345")
+ * @returns The React element for the anime details page
  */
 
 export default async function InfoPage({
@@ -90,6 +90,12 @@ export default async function InfoPage({
   );
 }
 
+/**
+ * Generate SEO metadata for an anime detail page based on the route `animeId`.
+ *
+ * @param params - A promise resolving to route parameters; must include `animeId` (slug or title-id string).
+ * @returns A `Metadata` object with title, description, Open Graph and Twitter card data, and a canonical URL. If the anime cannot be resolved, returns metadata with title "Anime Not Found" and a brief not-found description.
+ */
 export async function generateMetadata({
   params,
 }: {

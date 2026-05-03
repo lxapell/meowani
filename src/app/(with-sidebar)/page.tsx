@@ -4,9 +4,9 @@ import { LibraryIcon } from "lucide-react";
 import { Suspense } from "react";
 
 /**
- * Renders the Home page layout containing the "MeowAni" title and a call-to-action link.
+ * Renders the Home page layout with the "MeowAni" heading and a rounded "Library" call-to-action.
  *
- * @returns The React element for the Home page: a centered container with a card-like main area that displays the "MeowAni" heading and a rounded "Library" link to `/library`.
+ * @returns The Home page JSX element containing the title and a link to `/library`.
  */
 export default function Home() {
   return (
