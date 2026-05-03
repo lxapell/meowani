@@ -57,7 +57,12 @@ export default async function InfoPage({
   params: Promise<{ animeId: string }>;
 }) {
   const { animeId } = await params;
-  const id = new TitleSlug(animeId).getId().toString();
+  let id: string;
+  try {
+    id = new TitleSlug(animeId).getId().toString();
+  } catch {
+    notFound();
+  }
 
   const animeInfo = await getCachedAnime(id);
   if (!animeInfo) notFound();
@@ -91,7 +96,15 @@ export async function generateMetadata({
   params: Promise<{ animeId: string }>;
 }): Promise<Metadata> {
   const { animeId } = await params;
-  const id = new TitleSlug(animeId).getId().toString();
+  let id: string;
+  try {
+    id = new TitleSlug(animeId).getId().toString();
+  } catch {
+    return {
+      title: "Anime Not Found",
+      description: "Anime not found on MeowAni",
+    };
+  }
 
   const animeInfo = await getCachedAnime(id);
   if (!animeInfo) {
