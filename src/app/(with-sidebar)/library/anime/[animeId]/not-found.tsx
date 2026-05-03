@@ -7,6 +7,17 @@ import { Footer } from "@/components/custom/footer";
  * Render a full-height "Anime not found" page with a primary link to the library.
  *
  * @returns A JSX element containing a centered "404" heading, an "Anime not found" subheading, a short explanatory paragraph, a large button linking to `/library`, and the page footer.
+=======
+import FooterClient from "@/components/custom/footer.wrapper";
+
+("min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto");
+
+/**
+ * Render a full-screen 404 "Anime not found" UI with a link to the home page.
+ *
+ * @returns A JSX element that displays a centered "404" heading, a "Page not found" subheading,
+ * and an outlined "Go Home" button linking to `/`.
+>>>>>>> 4e75198 (Added error handlers for Anime info and global error handler + small UX update for info)
  */
 export default function InfoNotFound() {
   return (
