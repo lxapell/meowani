@@ -10,8 +10,6 @@ import { Footer } from "@/components/custom/footer";
 =======
 import FooterClient from "@/components/custom/footer.wrapper";
 
-("min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto");
-
 /**
  * Render a full-screen 404 "Anime not found" UI with a link to the home page.
  *
