@@ -18,9 +18,9 @@ interface remotePatterns {
  */
 function isValidUrl(url: string, currentOrigin?: string): boolean {
   try {
-    const parsed = new URL(url);
-
     if (url.startsWith("/")) return true;
+
+    const parsed = new URL(url);
 
     // const devOrigins = nextConfig.allowedDevOrigins;
     // if (!devOrigins)
