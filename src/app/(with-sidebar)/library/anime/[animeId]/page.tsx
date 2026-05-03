@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { cache } from "react";
 import {
   AnimeInfoBanner,
   AnimeInfoTabs,
@@ -5,27 +7,15 @@ import {
 } from "@/components/custom/anime-info";
 import { EndOfContent } from "@/components/custom/end-of-content";
 
-import { anilistRequest } from "@/lib/anilist/client";
-import { animeInfo } from "@/constants/anilist/queries";
 import { getAnimeInfo } from "./actions";
 import { notFound } from "next/navigation";
-import { AlertTriangle, ExternalLink } from "lucide-react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
-import { formatYearMonth, TitleSlug } from "@/utils/formatter";
+import { capitalizeFirst, formatYearMonth, TitleSlug } from "@/utils/formatter";
 import { AnimeInfoQuery, MediaEdge, Studio } from "@/types/anilist-types";
 import { mapStatus, mapSimple } from "@/utils/mapper";
-import { recommendedRules } from "graphql";
 import {
   AnimeCards,
   AnimeCardsEmpty,
 } from "@/components/custom/anime-carousel";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
 import FooterClient from "@/components/custom/footer.wrapper";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
@@ -45,6 +35,13 @@ import FooterClient from "@/components/custom/footer.wrapper";
 //     voiceActor: voiceActor,
 //   };
 // });
+
+const getCachedAnime = cache(async (id: string) => {
+  const anime = (await getAnimeInfo(id)) as AnimeInfoQuery;
+  if (!anime?.Media) return null;
+  return mapAdvanced(anime.Media);
+});
+
 /**
  * Render the anime details page for the given route parameter.
  *
@@ -54,17 +51,16 @@ import FooterClient from "@/components/custom/footer.wrapper";
  * @returns The rendered React element for the anime details page or a fallback unavailable-state element
  */
 
-export default async function Page({
+export default async function InfoPage({
   params,
 }: {
   params: Promise<{ animeId: string }>;
 }) {
   const { animeId } = await params;
-  const id = animeId.split("-").pop();
+  const id = new TitleSlug(animeId).getId().toString();
 
-  const anime = (await getAnimeInfo(id!)) as AnimeInfoQuery;
-  if (!anime?.Media) notFound();
-  const animeInfo = mapAdvanced(anime.Media);
+  const animeInfo = await getCachedAnime(id);
+  if (!animeInfo) notFound();
   // throw new Error("Error test");
 
   return (
@@ -88,6 +84,69 @@ export default async function Page({
     </div>
   );
 }
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ animeId: string }>;
+}): Promise<Metadata> {
+  const { animeId } = await params;
+  const id = new TitleSlug(animeId).getId().toString();
+
+  const animeInfo = await getCachedAnime(id);
+  if (!animeInfo) {
+    return {
+      title: "Anime Not Found",
+      description: "Anime not found on MeowAni",
+    };
+  }
+
+  const title = animeInfo.title.eng || animeInfo.title.romaji || "No Title";
+  const description = truncateText(animeInfo.description || "No Synopsis", 160);
+  const search = new URLSearchParams();
+  if (animeInfo.season) search.set("season", capitalizeFirst(animeInfo.season));
+  if (animeInfo.year) search.set("year", animeInfo.year);
+  if (animeInfo.type) search.set("mediaType", animeInfo.type);
+  if (title) search.set("title", title);
+  if (animeInfo.studios.length >= 1)
+    search.set("studio", animeInfo.studios.join(", "));
+  if (animeInfo.genres.length >= 1)
+    search.set("genre", animeInfo.genres.join(", "));
+  if (animeInfo.image.extraLarge || animeInfo.image.large)
+    search.set("imageUrl", animeInfo.image.extraLarge ?? animeInfo.image.large);
+  // if (animeInfo.bannerImage) search.set("backgroundUrl", animeInfo.bannerImage);
+  if (animeInfo.episodes) search.set("episodes", animeInfo.episodes);
+
+  const image = `https://source.meowani.site/assets/card?${search}`;
+
+  return {
+    title: `${title}`,
+    description,
+    openGraph: {
+      title: `${title} | MeowAni`,
+      description,
+      images: [image],
+      type: "video.tv_show",
+      url: `https://meowani.site/library/anime/${animeId}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | MeowAni`,
+      description,
+      images: [image],
+    },
+    alternates: {
+      canonical: `https://meowani.site/library/anime/${animeId}`,
+    },
+  };
+}
+
+const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return text.substring(0, maxLength) + "...";
+};
 
 const mapAdvanced = (data: any) => {
   return {

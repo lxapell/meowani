@@ -23,7 +23,7 @@ export async function getAnimeInfo(
         })
         .catch((err: ClientError) => {
           console.log(err.response.status);
-          if (err.response.status == 404) return { Media: null };
+          if (err.response.status === 404) return { Media: null };
           throw err;
         });
       // console.log("[TestFetch] anime info:", data);
