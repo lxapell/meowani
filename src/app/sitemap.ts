@@ -47,24 +47,22 @@ const cachedAnilist = unstable_cache(
     const { season, year } = AnimeSeason.now();
     const fallback = { Page: { pageInfo: null, media: [] } };
 
-    const [ trendingData, topData, seasonalData, popularData ] = await Promise.all([
-      safeFetch<TrendingQuery>(
+    const results = await Promise.allSettled([
+      anilistRequest<TrendingQuery>(
         trending,
         {
           page: 1,
           perPage: 15,
         },
-        fallback,
       ),
-      safeFetch<Top100AnimeQuery>(
+      anilistRequest<Top100AnimeQuery>(
         top100anime,
         {
           page: 1,
           perPage: 10,
         },
-        fallback,
       ),
-      safeFetch<SeasonalQuery>(
+      anilistRequest<SeasonalQuery>(
         seasonal,
         {
           page: 1,
@@ -72,17 +70,21 @@ const cachedAnilist = unstable_cache(
           season,
           seasonYear: year,
         },
-        fallback,
       ),
-      safeFetch<PopularQuery>(
+      anilistRequest<PopularQuery>(
         popular,
         {
           page: 1,
           perPage: 15,
         },
-        fallback,
       ),
     ]);
+
+    if (results.every((result) => result.status === "rejected")) {
+      throw new Error("[AnilistRequest] failed to generate sitemap data");
+    }
+
+    const [ trendingData, topData, seasonalData, popularData ] = results.map((result) => result.status === "fulfilled" ? result.value : fallback) as [ TrendingQuery, Top100AnimeQuery, SeasonalQuery, PopularQuery ];
 
     return { trendingData, topData, seasonalData, popularData };
   },
