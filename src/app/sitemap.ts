@@ -1,4 +1,5 @@
 import { MetadataRoute } from "next";
+import { unstable_cache } from "next/cache";
 import {
   trending,
   top100anime,
@@ -36,10 +37,58 @@ async function safeFetch<T>(
   try {
     return await anilistRequest<T>(query, variables);
   } catch (error) {
-    console.error("[AnilistRequest] request failed", error);
+    // console.error("[AnilistRequest] request failed", error);
     return fallback;
   }
 }
+
+const cachedAnilist = unstable_cache(
+  async () => {
+    const { season, year } = AnimeSeason.now();
+    const fallback = { Page: { pageInfo: null, media: [] } };
+
+    const [ trendingData, topData, seasonalData, popularData ] = await Promise.all([
+      safeFetch<TrendingQuery>(
+        trending,
+        {
+          page: 1,
+          perPage: 15,
+        },
+        fallback,
+      ),
+      safeFetch<Top100AnimeQuery>(
+        top100anime,
+        {
+          page: 1,
+          perPage: 10,
+        },
+        fallback,
+      ),
+      safeFetch<SeasonalQuery>(
+        seasonal,
+        {
+          page: 1,
+          perPage: 10,
+          season,
+          seasonYear: year,
+        },
+        fallback,
+      ),
+      safeFetch<PopularQuery>(
+        popular,
+        {
+          page: 1,
+          perPage: 15,
+        },
+        fallback,
+      ),
+    ]);
+
+    return { trendingData, topData, seasonalData, popularData };
+  },
+  ["anilist-sitemap"],
+  { revalidate: 604800 }
+)
 
 /**
  * Builds the site's sitemap entries including static pages and anime library pages generated from AniList data.
@@ -49,51 +98,14 @@ async function safeFetch<T>(
  * @returns An array of sitemap entries containing top-level site URLs and generated anime library URLs with `lastModified`, `changeFrequency`, and `priority` where applicable.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { season, year } = AnimeSeason.now();
   const lastModified: string = getISOWithOffset(
     new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Singapore" }),
     ),
-    8,
+    8
   );
-  const fallback = { Page: { pageInfo: null, media: [] } };
 
-  const [trendingData, topData, seasonalData, popularData] = await Promise.all([
-    safeFetch<TrendingQuery>(
-      trending,
-      {
-        page: 1,
-        perPage: 15,
-      },
-      fallback,
-    ),
-    safeFetch<Top100AnimeQuery>(
-      top100anime,
-      {
-        page: 1,
-        perPage: 10,
-      },
-      fallback,
-    ),
-    safeFetch<SeasonalQuery>(
-      seasonal,
-      {
-        page: 1,
-        perPage: 10,
-        season,
-        seasonYear: year,
-      },
-      fallback,
-    ),
-    safeFetch<PopularQuery>(
-      popular,
-      {
-        page: 1,
-        perPage: 15,
-      },
-      fallback,
-    ),
-  ]);
+  const { trendingData, topData, seasonalData, popularData } = await cachedAnilist();
 
   const allData = [
     ...(trendingData.Page?.media || []),
