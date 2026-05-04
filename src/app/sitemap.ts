@@ -17,6 +17,7 @@ import {
 import { getISOWithOffset } from "@/utils/date";
 import { DocumentNode } from "graphql";
 
+export const dynamic = "force-static";
 export const revalidate = 604800;
 
 /**
