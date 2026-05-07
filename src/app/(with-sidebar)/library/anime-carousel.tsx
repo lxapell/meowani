@@ -214,6 +214,8 @@ export async function UpcomingComponent() {
  * @returns A JSX element rendering a spotlight carousel of mapped trending anime items, or a `SpotlightEmpty` fallback if fetching or mapping fails.
  */
 export async function SpotlightComponent() {
+  "use cache";
+
   try {
     const mapped = await getCachedSpotlight();
     return <SpotlightClient items={mapped} />;
