@@ -125,11 +125,11 @@ export async function generateMetadata({
   const description = truncateText(
     (animeInfo.description || "No Synopsis")
       .replace(/<[^>]*>/g, "")
-      .replace(/&amp;/g, "&")
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&#039;/g, "'")
-      .replace(/&quot;/g, '"'),
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, "&"),
     160,
   );
 
