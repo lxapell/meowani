@@ -1,40 +1,42 @@
 "use server";
 
-import { unstable_cache, revalidateTag } from "next/cache";
+import { cacheLife, cacheTag, revalidateTag } from "next/cache";
 import { anilistRequest } from "@/lib/anilist/client";
 import { animeInfo } from "@/constants/anilist/queries";
 import { AnimeInfoQuery } from "@/types/anilist-types";
 import { ClientError } from "graphql-request";
 
 /**
+ * Cached function to fetch anime info from AniList.
+ * Throws on error to prevent caching error states.
+ */
+async function getCachedAnimeInfo(animeId: number): Promise<AnimeInfoQuery> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`anime-${animeId}`);
+
+  const data = await anilistRequest<AnimeInfoQuery>(animeInfo, { id: animeId });
+  return data;
+}
+
+/**
  * Fetches AniList anime details for the specified anime ID.
+ * Error handling is done outside the cache to prevent caching error states.
  *
  * @param animeId - The AniList media ID identifying the anime
- * @returns An `AnimeInfoQuery` result containing a `Media` property with the anime data; if the AniList API returns 404, returns `{ Media: null }`; other `ClientError` responses are rethrown as `ClientError`
+ * @returns An `AnimeInfoQuery` result containing a `Media` property with the anime data;
+ *          if the AniList API returns 404, returns `{ Media: null }`;
+ *          other `ClientError` responses are rethrown
  */
 export async function getAnimeInfo(animeId: number): Promise<AnimeInfoQuery> {
-  const cachedAnime = unstable_cache(
-    async (id: number) => {
-      const data = await anilistRequest<AnimeInfoQuery>(animeInfo, { id })
-        .then((data) => {
-          return data;
-        })
-        .catch((err: ClientError) => {
-          console.log(err.response.status);
-          if (err.response.status === 404) return { Media: null };
-          throw err;
-        });
-      // console.log("[TestFetch] anime info:", data);
-      return data;
-    },
-    [`anime-${animeId}`],
-    {
-      revalidate: 60 * 5,
-      tags: [`anime-${animeId}`],
-    },
-  );
-
-  return cachedAnime(animeId);
+  try {
+    return await getCachedAnimeInfo(animeId);
+  } catch (err) {
+    if (err instanceof ClientError && err.response.status === 404) {
+      return { Media: null };
+    }
+    throw err;
+  }
 }
 
 /**

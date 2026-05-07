@@ -135,8 +135,16 @@ function useCatalogData(filters: FilterState) {
 
   return useInfiniteQuery({
     queryKey: ["catalog", serializedFilters],
-    queryFn: ({ pageParam = 1 }) =>
-      fetchCatalog({ pageParam: pageParam as number, filters }),
+    queryFn: async ({ pageParam = 1 }) => {
+      const result = await fetchCatalog({
+        pageParam: pageParam as number,
+        filters,
+      });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      return result;
+    },
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.pageInfo?.hasNextPage && lastPage.pageInfo?.currentPage != null

@@ -7,14 +7,17 @@ import {
   ItemTitle,
   ItemDescription,
 } from "@/components/ui/item";
+import { Button } from "@/components/ui/button";
 import FooterClient from "@/components/custom/footer.wrapper";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
+import { RefreshCwIcon } from "lucide-react";
 
 /**
  * Render a client-side error UI shown when anime information cannot be loaded.
  *
  * Renders an outlined, amber-styled message card with an attention icon, the
- * title "Anime Info Unavailable", a brief descriptive message, and the page footer.
+ * title "Anime Info Unavailable", a brief descriptive message, a retry button,
+ * and the page footer.
  *
  * @param reset - Callback supplied to reset the surrounding error boundary or retry loading.
  * @returns A JSX element containing the error message card and footer.
@@ -22,7 +25,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 export default function InfoErrorPage({ reset }: { reset: () => void }) {
   return (
     <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-      <div className="md:mt-15 px-1.5 md:px-6 lg:px-12 xl:px-14">
+      <div className="md:mt-15 px-1.5 md:px-6 lg:px-12 xl:px-14 flex flex-col gap-3">
         <Item
           variant="outline"
           className="border-amber-500/90 bg-orange-500/10 px-3 py-1.5 text-sm text-foreground/80"
@@ -41,6 +44,15 @@ export default function InfoErrorPage({ reset }: { reset: () => void }) {
             </ItemDescription>
           </ItemContent>
         </Item>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={reset}
+          className="w-fit"
+        >
+          <RefreshCwIcon className="size-4" />
+          Try Again
+        </Button>
       </div>
       <FooterClient />
     </div>
