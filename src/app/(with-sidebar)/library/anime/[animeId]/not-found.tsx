@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LibraryIcon } from "lucide-react";
-import FooterClient from "@/components/custom/footer.wrapper";
+import { Footer } from "@/components/custom/footer";
 
 /**
  * Render a full-height "Anime not found" page with a primary link to the library.
@@ -32,7 +32,7 @@ export default function InfoNotFound() {
           </Button>
         </div>
       </div>
-      <FooterClient />
+      <Footer />
     </div>
   );
 }

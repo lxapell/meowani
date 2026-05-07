@@ -16,7 +16,7 @@ import {
   AnimeCards,
   AnimeCardsEmpty,
 } from "@/components/custom/anime-carousel";
-import FooterClient from "@/components/custom/footer.wrapper";
+import { Footer } from "@/components/custom/footer";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
 // const mapped = raw.Media.characters.edges.map((character) => {
@@ -85,7 +85,7 @@ export default async function InfoPage({
         />
       )}
       <EndOfContent />
-      <FooterClient />
+      <Footer />
     </div>
   );
 }

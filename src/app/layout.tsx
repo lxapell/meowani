@@ -8,7 +8,7 @@ import { cn } from "@/lib/shadcn/utils";
 
 import { SerwistProvider } from "./serwist";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans" });

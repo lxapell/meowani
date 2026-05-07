@@ -7,7 +7,7 @@ import {
   ItemTitle,
   ItemDescription,
 } from "@/components/ui/item";
-import FooterClient from "@/components/custom/footer.wrapper";
+import { Footer } from "@/components/custom/footer";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
 /**
@@ -42,7 +42,7 @@ export default function InfoErrorPage({ reset }: { reset: () => void }) {
           </ItemContent>
         </Item>
       </div>
-      <FooterClient />
+      <Footer />
     </div>
   );
 }

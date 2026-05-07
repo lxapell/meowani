@@ -1,7 +1,5 @@
 import { Footer } from "@/components/custom/footer";
-import FooterClient from "@/components/custom/footer.wrapper";
 import { LibraryIcon } from "lucide-react";
-import { Suspense } from "react";
 
 /**
  * Renders the Home page layout with the "MeowAni" heading and a rounded "Library" call-to-action.
@@ -27,7 +25,7 @@ export default function Home() {
         </div>
       </main>
 
-      <FooterClient />
+      <Footer />
     </div>
   );
 }

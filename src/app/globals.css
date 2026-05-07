@@ -39,6 +39,18 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+  --color-success-text: var(--success-text);
+  --color-info-bg: var(--info-bg);
+  --color-info-border: var(--info-border);
+  --color-info-text: var(--info-text);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+  --color-warning-text: var(--warning-text);
+  --color-error-bg: var(--error-bg);
+  --color-error-border: var(--error-border);
+  --color-error-text: var(--error-text);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -81,6 +93,19 @@
   --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
   --sidebar-border: oklch(0.925 0.005 214.3);
   --sidebar-ring: oklch(0.723 0.014 214.4);
+  --success-bg: oklch(21.07% 0.0498 157.43);
+  --success-border: oklch(31.55% 0.0818 152.67);
+  --success-text: oklch(86.35% 0.1699 157.75);
+  --info-bg: oklch(15.72% 0.0453 250.69);
+  --info-border: oklch(26.17% 0.0528 267.35);
+  --info-text: oklch(67.44% 0.1527 258.33);
+  --warning-bg: oklch(22.94% 0.0512 113.19);
+  --warning-border: oklch(29.15% 0.0636 109.77);
+  --warning-text: oklch(86.35% 0.1415 92.29);
+  --error-bg: oklch(19.94% 0.0643 23.56);
+  --error-border: oklch(26.89% 0.1033 25.32);
+  --error-text: oklch(79.85% 0.1159 17.99);
+
 }
 
 .dark {
@@ -115,6 +140,18 @@
   --sidebar-accent-foreground: oklch(0.987 0.002 197.1);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.56 0.021 213.5);
+  --success-bg: oklch(21.07% 0.0498 157.43);
+  --success-border: oklch(31.55% 0.0818 152.67);
+  --success-text: oklch(86.35% 0.1699 157.75);
+  --info-bg: oklch(15.72% 0.0453 250.69);
+  --info-border: oklch(26.17% 0.0528 267.35);
+  --info-text: oklch(67.44% 0.1527 258.33);
+  --warning-bg: oklch(22.94% 0.0512 113.19);
+  --warning-border: oklch(29.15% 0.0636 109.77);
+  --warning-text: oklch(86.35% 0.1415 92.29);
+  --error-bg: oklch(19.94% 0.0643 23.56);
+  --error-border: oklch(26.89% 0.1033 25.32);
+  --error-text: oklch(79.85% 0.1159 17.99);
 }
 
 @layer base {

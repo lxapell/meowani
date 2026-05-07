@@ -11,6 +11,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { SearchIcon } from "lucide-react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 
 /**
  * Provides a sidebar layout with a top header containing a sidebar toggle and a dynamic breadcrumb, and renders the given content inside the inset area.
@@ -38,7 +44,17 @@ export default function NavWithBreadcrumb({
               orientation="vertical"
               className="me-2 data-vertical:h-4 data-vertical:self-auto"
             />
-            <React.Suspense fallback={<div className="h-20">Home</div>}>
+            <React.Suspense
+              fallback={
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    <BreadcrumbItem className="max-w-[20ch]">
+                      <BreadcrumbPage className="truncate">Home</BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+              }
+            >
               <DynamicBreadcrumb />
             </React.Suspense>
           </div>
