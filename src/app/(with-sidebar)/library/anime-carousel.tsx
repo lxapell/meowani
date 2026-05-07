@@ -1,4 +1,5 @@
 import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
 import { AnimeCardsEmpty } from "@/components/custom/anime-carousel";
 import AnimeCardsClient from "@/components/custom/anime-carousel.wrapper";
 import { anilistRequest } from "@/lib/anilist/client";
@@ -108,6 +109,7 @@ export async function TrendingComponent() {
  * Error handling is done outside the cache to prevent caching error states.
  */
 export async function SeasonalComponent() {
+  await connection(); // Opt into dynamic rendering before accessing current time
   const label = "Popular This Season";
   const { season, year } = AnimeSeason.now();
 
@@ -165,6 +167,7 @@ export async function PopularComponent() {
  * Error handling is done outside the cache to prevent caching error states.
  */
 export async function UpcomingComponent() {
+  await connection(); // Opt into dynamic rendering before accessing current time
   const label = "Upcoming Anime";
   const { season, year } = AnimeSeason.now().next();
 
