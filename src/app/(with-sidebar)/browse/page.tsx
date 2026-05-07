@@ -8,7 +8,7 @@ import {
   CatalogResult,
   CatalogResultSkeleton,
 } from "@/components/custom/catalog-search";
-import FooterClient from "@/components/custom/footer.wrapper";
+import { Footer } from "@/components/custom/footer";
 import {
   URLParamsToFilters,
   filtersToURLParams,
@@ -58,7 +58,7 @@ export default async function BrowsePage({
           <Suspense fallback={<CatalogResultSkeleton />}>
             <CatalogResult />
           </Suspense>
-          <FooterClient />
+          <Footer />
         </CatalogFiltersProvider>
       </div>
     </HydrationBoundary>

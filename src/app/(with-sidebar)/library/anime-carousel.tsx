@@ -1,3 +1,6 @@
+import { cacheLife, cacheTag } from "next/cache";
+import { connection } from "next/server";
+
 import { AnimeCardsEmpty } from "@/components/custom/anime-carousel";
 import AnimeCardsClient from "@/components/custom/anime-carousel.wrapper";
 import { anilistRequest } from "@/lib/anilist/client";
@@ -14,40 +17,86 @@ interface IAnilistQuery {
   };
 }
 
-export const revalidate = 86400;
+async function getCachedTrending() {
+  "use cache";
 
-/**
- * Render an `AnimeCardsEmpty` fallback with fixed responsive horizontal padding and an optional label.
- *
- * @param label - Optional text displayed by the empty state component
- * @returns An `AnimeCardsEmpty` element configured with responsive `paddingX` classes and the provided `label`
- */
-function EmptyFallback(label?: string) {
-  return (
-    <AnimeCardsEmpty
-      paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
-      label={label}
-    />
-  );
+  cacheLife("hours");
+  cacheTag("trending");
+
+  const raw: IAnilistQuery = await anilistRequest(trending, {
+    page: 1,
+    perPage: 10,
+  });
+  return map(raw?.Page?.media);
+}
+
+async function getCachedSeasonal(season: string, year: number) {
+  "use cache";
+
+  cacheLife("hours");
+  cacheTag("seasonal", `seasonal-${season}-${year}`);
+
+  const raw: IAnilistQuery = await anilistRequest(seasonal, {
+    page: 1,
+    perPage: 10,
+    season,
+    seasonYear: year,
+  });
+  return map(raw.Page.media);
+}
+
+async function getCachedPopular() {
+  "use cache";
+
+  cacheLife("hours");
+  cacheTag("popular");
+
+  const raw: IAnilistQuery = await anilistRequest(popular, {
+    page: 1,
+    perPage: 10,
+  });
+  return map(raw.Page.media);
+}
+
+async function getCachedUpcoming(season: string, year: number) {
+  "use cache";
+
+  cacheLife("days");
+  cacheTag("upcoming", `upcoming-${season}-${year}`);
+
+  const raw: IAnilistQuery = await anilistRequest(seasonal, {
+    page: 1,
+    perPage: 10,
+    season,
+    seasonYear: year,
+  });
+  return map(raw.Page.media);
+}
+
+async function getCachedSpotlight() {
+  "use cache";
+
+  cacheLife("days");
+  cacheTag("spotlight");
+
+  const raw: IAnilistQuery = await anilistRequest(trending, {
+    page: 1,
+    perPage: 9,
+  });
+  return mapSimple(raw?.Page?.media);
 }
 
 /**
  * Render a carousel of the top trending anime.
+ * Error handling is done outside the cache to prevent caching error states.
  *
  * Fetches the top 10 trending titles from AniList, maps them into card data, and renders an `AnimeCardsClient` carousel. If fetching or mapping fails, logs the error and renders an `AnimeCardsEmpty` fallback with the same horizontal padding.
  *
  * @returns A JSX element containing the trending anime cards or an empty fallback component on error.
  */
 export async function TrendingComponent() {
-  "use cache";
-
   try {
-    const raw: IAnilistQuery = await anilistRequest(trending, {
-      page: 1,
-      perPage: 10,
-    });
-    const mapped = map(raw?.Page?.media);
-
+    const mapped = await getCachedTrending();
     return (
       <AnimeCardsClient
         paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
@@ -63,6 +112,7 @@ export async function TrendingComponent() {
 
 /**
  * Render a carousel of popular anime for the current season.
+ * Error handling is done outside the cache to prevent caching error states.
  *
  * Fetches seasonal anime for the current season and year, maps results into
  * card data, and renders an AnimeCardsClient configured with a season-specific
@@ -71,19 +121,11 @@ export async function TrendingComponent() {
  * @returns A JSX element displaying seasonal anime cards or an empty fallback component on error.
  */
 export async function SeasonalComponent() {
-  "use cache";
-
+  await connection(); // Opt into dynamic rendering before accessing current time;
   const label = "Popular This Season";
   const { season, year } = AnimeSeason.now();
   try {
-    const raw: IAnilistQuery = await anilistRequest(seasonal, {
-      page: 1,
-      perPage: 10,
-      season,
-      seasonYear: year,
-    });
-    const mapped = map(raw.Page.media);
-
+    const mapped = await getCachedSeasonal(season, year);
     return (
       <AnimeCardsClient
         animes={mapped}
@@ -105,22 +147,16 @@ export async function SeasonalComponent() {
 
 /**
  * Render a carousel of all-time popular anime.
+ * Error handling is done outside the cache to prevent caching error states.
  *
  * Attempts to fetch the all-time popular anime list from AniList and render an anime cards client; if fetching or mapping fails, renders an empty fallback with the "All Time Popular" label.
  *
  * @returns A JSX element containing the populated anime cards client for all-time popular titles, or an empty fallback component when an error occurs.
  */
 export async function PopularComponent() {
-  "use cache";
-
   const label = "All Time Popular";
   try {
-    const raw: IAnilistQuery = await anilistRequest(popular, {
-      page: 1,
-      perPage: 10,
-    });
-    const mapped = map(raw.Page.media);
-
+    const mapped = await getCachedPopular();
     return (
       <AnimeCardsClient
         animes={mapped}
@@ -142,23 +178,16 @@ export async function PopularComponent() {
 
 /**
  * Renders an anime cards carousel for the upcoming season.
+ * Error handling is done outside the cache to prevent caching error states.
  *
  * @returns A JSX element containing the carousel populated with upcoming-season anime; returns an empty fallback component if fetching or mapping fails.
  */
 export async function UpcomingComponent() {
-  "use cache";
-
+  await connection(); // Opt into dynamic rendering before accessing current time;
   const label = "Upcoming Anime";
   const { season, year } = AnimeSeason.now().next();
   try {
-    const raw: IAnilistQuery = await anilistRequest(seasonal, {
-      page: 1,
-      perPage: 10,
-      season,
-      seasonYear: year,
-    });
-    const mapped = map(raw.Page.media);
-
+    const mapped = await getCachedUpcoming(season, year);
     return (
       <AnimeCardsClient
         animes={mapped}
@@ -180,6 +209,7 @@ export async function UpcomingComponent() {
 
 /**
  * Render a spotlight carousel populated with trending anime for the UI.
+ * Error handling is done outside the cache to prevent caching error states.
  *
  * @returns A JSX element rendering a spotlight carousel of mapped trending anime items, or a `SpotlightEmpty` fallback if fetching or mapping fails.
  */
@@ -187,13 +217,7 @@ export async function SpotlightComponent() {
   "use cache";
 
   try {
-    const raw: IAnilistQuery = await anilistRequest(trending, {
-      page: 1,
-      perPage: 9,
-    });
-    const mapped = mapSimple(raw?.Page?.media);
-
-    // return <SpotlightEmpty />;
+    const mapped = await getCachedSpotlight();
     return <SpotlightClient items={mapped} />;
   } catch (error) {
     console.error("[SpotlightFormatter] Error processing spotlight", error);

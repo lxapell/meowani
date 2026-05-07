@@ -1,5 +1,5 @@
-import { cn } from "@/lib/shadcn/utils"
-import { Loader2Icon } from "lucide-react"
+import { cn } from "@/lib/shadcn/utils";
+import { Loader2Icon } from "lucide-react";
 
 /**
  * Renders a spinning loader SVG icon for use as a loading indicator.
@@ -10,8 +10,13 @@ import { Loader2Icon } from "lucide-react"
  */
 function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
   return (
-    <Loader2Icon role="status" aria-label="Loading" className={cn("size-4 animate-spin", className)} {...props} />
-  )
+    <Loader2Icon
+      role="status"
+      aria-label="Loading"
+      className={cn("size-4 animate-spin", className)}
+      {...props}
+    />
+  );
 }
 
-export { Spinner }
+export { Spinner };

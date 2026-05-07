@@ -1,6 +1,5 @@
 import { Footer, FooterSkeleton } from "@/components/custom/footer";
 import { cn } from "@/lib/shadcn/utils";
-import { Suspense } from "react";
 
 /**
  * Renders the site's Footer component, forwarding and composing the optional `className`.

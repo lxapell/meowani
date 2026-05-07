@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Suspense } from "react";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { AnimeSeason } from "@/utils/current-season";
@@ -9,6 +9,33 @@ import { cn } from "@/lib/shadcn/utils";
 const text =
   '<div className="min-w-0 flex flex-1 flex-col bg-background overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh"';
 
+function CopyRight() {
+  return (
+    <span className="items-center justify-center">
+      {`© ${new Date().getFullYear()} `}
+      <Path href="/" className="font-medium">
+        MeowAni
+      </Path>
+    </span>
+  );
+}
+
+function SeasonalPaths() {
+  const season = AnimeSeason.now();
+  return (
+    <>
+      <Path href={`/browse?season=${season.season}&year=${season.year}`}>
+        This Season
+      </Path>
+      <Path
+        href={`/browse?season=${season.next().season}&year=${season.next().year}`}
+      >
+        Upcoming
+      </Path>
+    </>
+  );
+}
+
 /**
  * Renders the site footer with brand, legal disclaimer, browse and resources links (including links for the current and upcoming anime seasons), and a centered copyright line.
  *
@@ -16,7 +43,6 @@ const text =
  * @returns The footer's JSX element
  */
 export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
-  const season = AnimeSeason.now();
   return (
     <div className={cn("mt-auto", className)}>
       <footer className="mt-auto w-full text-xs px-1.5 md:px-6 lg:px-12 xl:px-14 pt-6 pb-3 font-light text-muted-foreground border-t border-border bg-secondary/30">
@@ -32,18 +58,22 @@ export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
             </p>
           </div>
           <div className="col-span-6 flex sm:col-span-4 md:col-span-3 md:justify-end">
-            <div className="flex flex-col gap-1" suppressHydrationWarning>
+            <div className="flex flex-col gap-1">
               <div className="mb-1 font-semibold text-foreground">Browse</div>
-              <Path
-                href={`/browse?season=${season.season}&year=${season.year}`}
+              <Suspense
+                fallback={
+                  <>
+                    <span className="transition-colors hover:text-foreground">
+                      This Season
+                    </span>
+                    <span className="transition-colors hover:text-foreground">
+                      Upcoming
+                    </span>
+                  </>
+                }
               >
-                This Season
-              </Path>
-              <Path
-                href={`/browse?season=${season.next().season}&year=${season.next().year}`}
-              >
-                Upcoming
-              </Path>
+                <SeasonalPaths />
+              </Suspense>
               <Path href="/browse?formats=MOVIE">Movies</Path>
               <Path href="/browse?formats=TV">TV Shows</Path>
             </div>
@@ -65,15 +95,21 @@ export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
         </div>
         <Separator className="shrink-0 my-4" />
         <div className="mx-auto h-7.5 flex w-full items-center pb-2 text-[0.7rem] text-muted-foreground lg:text-[0.8rem] justify-center">
-          <span
-            className="items-center justify-center"
-            suppressHydrationWarning
+          <Suspense
+            fallback={
+              <span
+                className="items-center justify-center"
+                suppressHydrationWarning
+              >
+                {"© .... "}
+                <Path href="/" className="font-medium">
+                  MeowAni
+                </Path>
+              </span>
+            }
           >
-            {`© ${new Date().getFullYear()} `}
-            <Path href="/" className="font-medium">
-              MeowAni
-            </Path>
-          </span>
+            <CopyRight />
+          </Suspense>
         </div>
       </footer>
     </div>

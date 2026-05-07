@@ -13,7 +13,7 @@ import {
   UpcomingComponent,
   SpotlightComponent,
 } from "./anime-carousel";
-import FooterClient from "@/components/custom/footer.wrapper";
+import { Footer } from "@/components/custom/footer";
 
 const test = [
   {
@@ -79,7 +79,7 @@ export default function LibraryPage() {
         <UpcomingComponent />
       </React.Suspense>
       <EndOfContent className="my-8" />
-      <FooterClient />
+      <Footer />
       {/*<AnimeCardsEmpty label="TEST" />*/}
     </div>
   );
