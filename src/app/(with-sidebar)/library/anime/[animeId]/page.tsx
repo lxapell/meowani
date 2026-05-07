@@ -81,6 +81,7 @@ export default async function InfoPage({
       ) : (
         <AnimeCardsEmpty
           label="Recommendations"
+          message="No Recommendations"
           paddingX="px-1.5 md:px-6 lg:px-12 xl:px-14"
         />
       )}

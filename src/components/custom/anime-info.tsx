@@ -971,8 +971,7 @@ export function AnimeInfoBannerSkeleton({
 
                 {/* Actions */}
                 <div className="flex gap-2 w-fit md:w-full items-stretch">
-                  <Skeleton className="h-9 w-32 rounded-md md:h-10" />
-                  <Skeleton className="size-9 rounded-md md:size-10" />
+                  <Skeleton className="h-9 w-40 rounded-md md:h-10" />
                   <Skeleton className="size-9 rounded-md md:size-10" />
                   <Skeleton className="size-9 rounded-md md:size-10" />
                 </div>
