@@ -11,6 +11,7 @@ import type {
   MediaStatus,
   MediaFormat,
   AdvancedStudioSearchQuery,
+  PageInfo,
 } from "@/types/anilist-types";
 import { mapSimple } from "@/utils/mapper";
 
@@ -23,9 +24,7 @@ const parseOptionalInt = (value?: string | null) => {
 export type CatalogResult =
   | {
       success: true;
-      pageInfo: AdvancedSearchQuery["Page"] extends { pageInfo: infer P }
-        ? P
-        : null;
+      pageInfo: PageInfo | null;
       media: ReturnType<typeof mapSimple>;
     }
   | {
