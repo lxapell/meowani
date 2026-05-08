@@ -35,10 +35,10 @@ const socialPlatforms: Record<string, SocialPlatform> = {
     name: "x",
     icon: <FaXTwitter />,
     twTheme: {
-      card: "dark:bg-white/5 dark:border-white/20",
-      icon: "bg-white/20 text-white",
+      card: "dark:bg-black/20 dark:border-black/70",
+      icon: "bg-black/70 text-white",
     },
-    label: "X",
+    label: "X (Twitter)",
     generateUrl: (title, url) =>
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
   },
@@ -129,10 +129,10 @@ export function SocialSharing({ title, url }: SocialSharingProps) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Shared successfully");
+      toast.success("Copied successfully");
     } catch (error) {
       console.error("[SocialSharing] Failed to copy: ", error);
-      toast.error("Failed to share");
+      toast.error("Failed to Copy");
     }
   };
 
@@ -161,6 +161,7 @@ export function SocialSharing({ title, url }: SocialSharingProps) {
             href={platform.generateUrl(title, url)}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => toast.success("Shared successfully")}
           >
             <div
               className={cn(
@@ -174,7 +175,7 @@ export function SocialSharing({ title, url }: SocialSharingProps) {
               <span className="truncate text-[13px] font-semibold text-foreground/90">
                 {platform.label}
               </span>
-              <span className="text-[10px] text-muted-foreground/50 group-hover:text-foreground/50 transition-colors">
+              <span className="truncate text-[10px] text-muted-foreground/50 group-hover:text-foreground/50 transition-colors">
                 {"Share to friends"}
               </span>
             </div>

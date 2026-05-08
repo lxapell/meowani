@@ -34,6 +34,7 @@ import {
   ChevronDown,
   Building2Icon,
   ExternalLinkIcon,
+  XIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -295,7 +296,19 @@ export function AnimeInfoBanner({
                         <Share2Icon />
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="p-0 gap-0">
+                    <DialogContent
+                      showCloseButton={false}
+                      className="p-0 gap-0"
+                    >
+                      <DialogClose asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon-lg"
+                          className="absolute top-2 right-2 rounded-md p-1 text-zinc-500 hover:text-foreground transition-colors size-auto z-1"
+                        >
+                          <XIcon className="size-5 text-foreground" />
+                        </Button>
+                      </DialogClose>
                       <DialogHeader className="border-b px-5 pt-5 pb-4">
                         <DialogTitle className="flex items-center gap-2.5 text-base font-bold tracking-tight text-foreground">
                           <div className="flex size-8 items-center justify-center rounded-lg bg-white/8 ring-1 ring-white/10">
@@ -496,7 +509,7 @@ function Overview({
             variant="outline"
             className="flex min-h-0 flex-col gap-0 bg-white/3 p-3 lg:h-full lg:flex-1 lg:p-4 lg:md:p-5"
           >
-            <h3 className="mb-2 w-full flex items-center gap-2 text-[10px] font-medium tracking-widest text-muted-foreground uppercase lg:mb-3">
+            <h3 className="mb-2 w-full flex items-center gap-2 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase lg:mb-3">
               <InfoIcon size={12} />
               Synopsis
             </h3>
@@ -570,7 +583,7 @@ function Overview({
             <ItemContent className="group-data-[state=closed]:hidden lg:group-data-[state=open]:block lg:group-data-[state=closed]:block space-y-4">
               {/* Studios */}
               <div>
-                <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   <Building2Icon size={11} />
                   Studios
                 </div>
@@ -600,7 +613,7 @@ function Overview({
 
               {/* Synonyms */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Synonyms
                 </p>
                 {items.synonyms && items.synonyms.length >= 1 ? (
@@ -609,7 +622,7 @@ function Overview({
                       <Badge
                         key={synonym}
                         variant="outline"
-                        className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                        className="bg-white/5 px-2.5 py-0.5 h-auto text-[11px] text-foreground/65 transition font-normal whitespace-normal"
                       >
                         {synonym}
                       </Badge>
@@ -629,7 +642,7 @@ function Overview({
 
               {/* Genres */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Genres
                 </p>
                 {items.genres && items.genres.length >= 1 ? (
@@ -659,7 +672,7 @@ function Overview({
 
               {/* External site */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Track on
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -698,7 +711,7 @@ function Overview({
 
               {/* Tags */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Tags
                 </p>
                 {items.tags && items.tags.length >= 1 ? (
@@ -730,7 +743,7 @@ function Overview({
                   <Button
                     variant="ghost"
                     onClick={() => setTagExpanded(!tagExpanded)}
-                    className="mt-2 text-[10px] font-medium tracking-widest text-foreground/40 uppercase transition p-0 size-fit"
+                    className="mt-2 text-[10px] font-medium tracking-widest text-muted-foreground/55 uppercase transition p-0 size-fit"
                   >
                     {tagExpanded
                       ? "Show less"
@@ -896,6 +909,9 @@ export function Characters({
 }: Omit<React.ComponentPropsWithoutRef<"div">, "children"> & ICharactersProps) {
   return (
     <div className={cn("space-y-6", className)} {...props}>
+      <h2 className="text-2xl font-bold text-foreground tracking-tight">
+        {"Main Cast & Supporting"}
+      </h2>
       {items.length >= 1 ? (
         <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
           <CarouselContent className="min-w-0">
