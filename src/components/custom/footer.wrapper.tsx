@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Footer, FooterSkeleton } from "@/components/custom/footer";
 import { cn } from "@/lib/shadcn/utils";
 
