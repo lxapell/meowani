@@ -33,6 +33,7 @@ import {
   LayersIcon,
   ChevronDown,
   Building2Icon,
+  ExternalLinkIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -55,10 +56,12 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SocialSharing } from "./social-sharing";
 
 interface IAnimeInfoBannerProps {
   data: {
@@ -286,9 +289,30 @@ export function AnimeInfoBanner({
                   <Button className="md:size-10">
                     <BookmarkIcon />
                   </Button>
-                  <Button className="md:size-10">
-                    <Share2Icon />
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="md:size-10">
+                        <Share2Icon />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="p-0 gap-0">
+                      <DialogHeader className="border-b px-5 pt-5 pb-4">
+                        <DialogTitle className="flex items-center gap-2.5 text-base font-bold tracking-tight text-foreground">
+                          <div className="flex size-8 items-center justify-center rounded-lg bg-white/8 ring-1 ring-white/10">
+                            <ExternalLinkIcon className="size-4 text-white/70" />
+                          </div>
+                          {" Share Links"}
+                        </DialogTitle>
+                        <DialogDescription className="sr-only">
+                          Share this anime to other social media platforms
+                        </DialogDescription>
+                      </DialogHeader>
+                      <SocialSharing
+                        title={`Watch ${data.title?.eng ?? data.title?.romaji} on MeowAni`}
+                        url={`https://meowani.site/library/anime/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}`}
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>
