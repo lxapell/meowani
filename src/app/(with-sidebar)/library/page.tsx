@@ -33,7 +33,7 @@ const test = [
  */
 export default function LibraryPage() {
   return (
-    <div className="min-w-0 flex flex-1 shrink flex-col bg-background overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh">
+    <div className="min-w-0 flex flex-1 shrink flex-col overflow-x-hidden gap-5 overflow-y-scroll max-h-dvh">
       <React.Suspense fallback={<SpotlightSkeleton />}>
         <SpotlightComponent />
       </React.Suspense>

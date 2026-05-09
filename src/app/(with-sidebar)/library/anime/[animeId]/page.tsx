@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import {
   AnimeInfoBanner,
+  AnimeInfoBannerV2,
   AnimeInfoTabs,
   Characters,
 } from "@/components/custom/anime-info";
@@ -69,8 +70,10 @@ export default async function InfoPage({
   // throw new Error("Error test");
 
   return (
-    <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 flex-col pt-0 gap-5 overflow-auto">
-      <AnimeInfoBanner data={animeInfo} />
+    <div className="min-w-0 max-h-dvh overflow-x-hidden overflow-y-scroll flex flex-1 shrink flex-col pt-0 gap-5 sm:gap-7 md:gap-11">
+      {/* <div className="w-screen max-w-full min-h-dvh overflow-x-hidden overflow-y-scroll pt-0"> */}
+      <AnimeInfoBannerV2 data={animeInfo} />
+      {/* <div className="flex flex-1 flex-col gap-5 sm:gap-7 md:gap-11"> */}
       <AnimeInfoTabs data={animeInfo} />
       {animeInfo.recommendations?.length > 0 ? (
         <AnimeCards
@@ -86,7 +89,8 @@ export default async function InfoPage({
         />
       )}
       <EndOfContent />
-      <Footer />
+      <Footer className="mt-auto" />
+      {/* </div> */}
     </div>
   );
 }

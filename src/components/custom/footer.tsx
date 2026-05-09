@@ -44,8 +44,14 @@ function SeasonalPaths() {
  */
 export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
   return (
-    <div className={cn("mt-auto", className)}>
-      <footer className="mt-auto w-full text-xs px-1.5 md:px-6 lg:px-12 xl:px-14 pt-6 pb-3 font-light text-muted-foreground border-t border-border bg-secondary/30">
+    <>
+      {/* <div className={cn("mt-auto", className)}> */}
+      <footer
+        className={cn(
+          "mt-auto w-full text-xs px-1.5 md:px-6 lg:px-12 xl:px-14 pt-6 pb-3 font-light text-muted-foreground border-t border-border bg-secondary/30",
+          className,
+        )}
+      >
         <div className="mx-auto grid w-full max-w-[1920px] grid-cols-12 gap-4 px-4 sm:px-8 lg:px-16">
           <div className="col-span-12 mb-2 md:col-span-6 md:text-left">
             <span className="truncate leading-tight text-xl font-extrabold font-stretch-100% text-foreground">
@@ -112,7 +118,8 @@ export function Footer({ className }: React.ComponentPropsWithoutRef<"div">) {
           </Suspense>
         </div>
       </footer>
-    </div>
+      {/* </div> */}
+    </>
   );
 }
 

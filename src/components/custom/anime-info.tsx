@@ -33,6 +33,8 @@ import {
   LayersIcon,
   ChevronDown,
   Building2Icon,
+  ExternalLinkIcon,
+  XIcon,
 } from "lucide-react";
 import {
   Collapsible,
@@ -55,10 +57,12 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SocialSharing } from "./social-sharing";
 
 interface IAnimeInfoBannerProps {
   data: {
@@ -286,10 +290,308 @@ export function AnimeInfoBanner({
                   <Button className="md:size-10">
                     <BookmarkIcon />
                   </Button>
-                  <Button className="md:size-10">
-                    <Share2Icon />
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="md:size-10">
+                        <Share2Icon />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent
+                      showCloseButton={false}
+                      className="p-0 gap-0"
+                    >
+                      <DialogClose asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon-lg"
+                          className="absolute top-2 right-2 rounded-md p-1 text-zinc-500 hover:text-foreground transition-colors size-auto z-1"
+                        >
+                          <XIcon className="size-5 text-foreground" />
+                        </Button>
+                      </DialogClose>
+                      <DialogHeader className="border-b px-5 pt-5 pb-4">
+                        <DialogTitle className="flex items-center gap-2.5 text-base font-bold tracking-tight text-foreground">
+                          <div className="flex size-8 items-center justify-center rounded-lg bg-white/8 ring-1 ring-white/10">
+                            <ExternalLinkIcon className="size-4 text-white/70" />
+                          </div>
+                          {" Share Links"}
+                        </DialogTitle>
+                        <DialogDescription className="sr-only">
+                          Share this anime to other social media platforms
+                        </DialogDescription>
+                      </DialogHeader>
+                      <SocialSharing
+                        title={`Watch ${data.title?.eng ?? data.title?.romaji} on MeowAni`}
+                        url={`https://meowani.site/library/anime/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}`}
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function AnimeInfoBannerV2({
+  data,
+  className,
+  ...props
+}: IAnimeInfoBannerProps & React.ComponentProps<"div">) {
+  return (
+    <section>
+      <div className={cn("h-[550px] sm:h-[500px]", className)} {...props}>
+        <div className="relative bottom-0 h-[350px]">
+          <Image
+            src={
+              data.bannerImage ||
+              data.image?.large ||
+              getShimmerDataURL(data.color || "#FFFFFF")
+            }
+            alt={data.title?.eng || "banner"}
+            placeholder="blur"
+            blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}
+            fill
+            className="object-cover object-center size-full absolute inset-0"
+            fetchPriority="high"
+          />
+          <div className="absolute bottom-[-2px] left-0 h-[101%] w-full bg-linear-to-t from-background from-20% via-background/80 via-60% to-transparent" />
+          <div
+            className={cn(
+              "absolute bottom-[-58%] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 sm:bottom-[-35%] sm:left-[2%] sm:translate-x-0 sm:flex-row sm:gap-6",
+              "sm:left-1.5 md:left-6 lg:left-12 xl:left-14",
+            )}
+          >
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className="group no-scale pt-0 relative h-[245px] w-[170px] shrink-0 overflow-hidden rounded-xl sm:h-[270px] sm:w-[180px] md:h-[300px] md:w-[200px]"
+                  aria-label="View full size image"
+                >
+                  <Image
+                    src={
+                      data.image?.large ||
+                      getShimmerDataURL(data.color || "#8bdfea")
+                    }
+                    alt={data.title?.eng || "cover"}
+                    placeholder="blur"
+                    blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}
+                    fill
+                    sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, 20vw"
+                    className="size-full object-cover"
+                    fetchPriority="high"
+                  />
+                </Button>
+              </DialogTrigger>
+              <DialogContent
+                showCloseButton={false}
+                className="max-w-[90vw] max-h-[90vh] p-0 border-0 border-none bg-transparent shadow-none w-auto md:w-full"
+              >
+                <DialogClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex rounded-xl h-auto ps-0 pe-0 px-0"
+                  >
+                    <Image
+                      src={
+                        data.image?.extraLarge ||
+                        data.image?.large ||
+                        getShimmerDataURL(data.color || "#8bdfea")
+                      }
+                      placeholder="blur"
+                      blurDataURL={getShimmerDataURL(data.color || "#8bdfea")}
+                      alt={data.title?.eng || "cover"}
+                      className="size-auto md:size-full object-contain rounded-xl"
+                      width={800}
+                      height={1000}
+                      fetchPriority="high"
+                    />
+                  </Button>
+                </DialogClose>
+                <VisuallyHidden>
+                  <DialogTitle>Anime cover image</DialogTitle>
+                  <DialogDescription>
+                    The cover image of the current anime
+                  </DialogDescription>
+                </VisuallyHidden>
+              </DialogContent>
+            </Dialog>
+
+            {/* Anime Info */}
+            <div className="flex max-w-[95%] flex-col px-4 sm:max-w-[400px] sm:self-center sm:px-0 md:max-w-[500px] xl:max-w-[700px]">
+              {/* Stats */}
+              <div className="hidden sm:flex w-max items-center justify-start flex-wrap gap-1.5 md:gap-3">
+                {/* Episode */}
+                {data.episodes && (
+                  <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
+                    {data.episodes} EPS
+                  </Badge>
+                )}
+
+                {/* Type */}
+                {data.type && (
+                  <Badge
+                    className="h-5 font-bold md:h-6 md:px-3.5 md:text-base"
+                    asChild
+                  >
+                    <Link href={`/browse?format=${data.type}`}>
+                      {data.type}
+                    </Link>
+                  </Badge>
+                )}
+
+                {/* Status */}
+                {data.status && (
+                  <Badge
+                    className="h-5 font-bold md:h-6 md:px-3.5 md:text-base"
+                    asChild
+                  >
+                    <Link href={`/browse?status=${data.status}`}>
+                      {data.status}
+                    </Link>
+                  </Badge>
+                )}
+
+                {/* Season */}
+                {data.season && (
+                  <Badge
+                    className="hidden h-5 font-bold md:h-6 md:px-3.5 md:text-base lg:inline-flex capitalize"
+                    asChild
+                  >
+                    <Link href={`/browse?season=${data.season}`}>
+                      {data.season}
+                    </Link>
+                  </Badge>
+                )}
+
+                {/* Score */}
+                {data.score && (
+                  <Badge
+                    className="hidden font-bold h-5 md:h-6 md:px-3.5 md:text-base lg:inline-flex"
+                    asChild
+                  >
+                    <Link href="/browse?sort=SCORE_DESC">{data.score}%</Link>
+                  </Badge>
+                )}
+              </div>
+
+              <h1 className="line-clamp-2 text-xl w-full font-bold tracking-tighter select-text text-[1.3rem] leading-7 text-center sm:text-left sm:text-[1.4rem] sm:leading-8 md:text-[1.5rem] lg:text-[1.7rem] lg:leading-10 xl:text-[1.9rem]">
+                {data.title?.eng || data.title?.romaji || "No Title"}
+              </h1>
+              <h2 className="mt-0.5 line-clamp-2 hidden text-center text-[0.95rem] font-medium text-muted-foreground select-text sm:block sm:text-left">
+                {data.title?.romaji}
+              </h2>
+
+              {/* Genres */}
+              {data.genres && (
+                <div className="hidden mt-2.5 mb-2.5 sm:flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                  {data.genres.map((genre) => (
+                    <Badge
+                      key={genre}
+                      variant="secondary"
+                      className="size-auto px-2.5 py-1 text-[0.8rem] font-semibold tracking-wide text-nowrap"
+                      asChild
+                    >
+                      <Link href={`/browse?genres=${genre}`}>{genre}</Link>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-2 mb-2.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
+                {data.score && (
+                  <Badge
+                    variant="outline"
+                    className="size-auto px-2.5 py-1 text-[0.8rem] font-semibold border-cyan-500/20 bg-cyan-500/10 text-cyan-500"
+                  >
+                    <StarIcon fill="currentColor" />
+                    {data.score / 10}
+                  </Badge>
+                )}
+                {data.status && (
+                  <Badge
+                    variant="secondary"
+                    className="size-auto px-2.5 py-1 text-[0.8rem] font-semibold uppercase tracking-wide text-nowrap bg-emerald-500/20 text-emerald-300"
+                  >
+                    {data.status}
+                  </Badge>
+                )}
+                {data.episodes && (
+                  <Badge
+                    variant="ghost"
+                    className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-nowrap text-muted-foreground/60"
+                  >
+                    {data.episodes} Episodes
+                  </Badge>
+                )}
+              </div>
+
+              <div className="sm:justify-start gap-3 flex w-max items-center *:focus-visible:relative *:focus-visible:z-10 has-[>[data-slot=button-group]]:gap-2">
+                <ButtonGroup className="inline-flex items-center overflow-hidden">
+                  {data.episodes && data.episodes >= 1 ? (
+                    <Button
+                      className="size-auto px-3 py-1.5 font-medium"
+                      asChild
+                    >
+                      <Link
+                        href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/1`}
+                      >
+                        <PlayIcon fill="currentColor" className="size-5" />
+                        Watch Now
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      className="size-auto px-3 py-1.5 font-medium"
+                      disabled
+                    >
+                      <PlayIcon fill="currentColor" className="size-5" />
+                      Watch Now
+                    </Button>
+                  )}
+                  <Button className="size-auto px-3 py-1.5">
+                    <PencilLineIcon className="size-5" />
+                  </Button>
+                </ButtonGroup>
+                <Button className="size-auto px-3 py-1.5">
+                  <BookmarkIcon className="size-5" />
+                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="size-auto px-3 py-1.5">
+                      <Share2Icon className="size-5" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent showCloseButton={false} className="p-0 gap-0">
+                    <DialogClose asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon-lg"
+                        className="absolute top-2 right-2 rounded-md p-1 text-zinc-500 hover:text-foreground transition-colors size-auto z-1"
+                      >
+                        <XIcon className="size-5 text-foreground" />
+                      </Button>
+                    </DialogClose>
+                    <DialogHeader className="border-b px-5 pt-5 pb-4">
+                      <DialogTitle className="flex items-center gap-2.5 text-base font-bold tracking-tight text-foreground">
+                        <div className="flex size-8 items-center justify-center rounded-lg bg-white/8 ring-1 ring-white/10">
+                          <ExternalLinkIcon className="size-4 text-white/70" />
+                        </div>
+                        {" Share Links"}
+                      </DialogTitle>
+                      <DialogDescription className="sr-only">
+                        Share this anime to other social media platforms
+                      </DialogDescription>
+                    </DialogHeader>
+                    <SocialSharing
+                      title={`Watch ${data.title?.eng ?? data.title?.romaji} on MeowAni`}
+                      url={`https://meowani.site/library/anime/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}`}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
@@ -467,12 +769,12 @@ function Overview({
             )}
           </ItemActions>
         </Item>
-        <Collapsible className="group/synopsis">
+        <Collapsible className="group/synopsis h-full">
           <Item
             variant="outline"
             className="flex min-h-0 flex-col gap-0 bg-white/3 p-3 lg:h-full lg:flex-1 lg:p-4 lg:md:p-5"
           >
-            <h3 className="mb-2 w-full flex items-center gap-2 text-[10px] font-medium tracking-widest text-muted-foreground uppercase lg:mb-3">
+            <h3 className="mb-2 w-full flex items-center gap-2 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase lg:mb-3">
               <InfoIcon size={12} />
               Synopsis
             </h3>
@@ -546,7 +848,7 @@ function Overview({
             <ItemContent className="group-data-[state=closed]:hidden lg:group-data-[state=open]:block lg:group-data-[state=closed]:block space-y-4">
               {/* Studios */}
               <div>
-                <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   <Building2Icon size={11} />
                   Studios
                 </div>
@@ -576,7 +878,7 @@ function Overview({
 
               {/* Synonyms */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Synonyms
                 </p>
                 {items.synonyms && items.synonyms.length >= 1 ? (
@@ -585,7 +887,7 @@ function Overview({
                       <Badge
                         key={synonym}
                         variant="outline"
-                        className="bg-white/5 px-2.5 py-0 text-[11px] text-foreground/65 transition font-normal"
+                        className="bg-white/5 px-2.5 py-0.5 h-auto text-[11px] text-foreground/65 transition font-normal whitespace-normal"
                       >
                         {synonym}
                       </Badge>
@@ -605,7 +907,7 @@ function Overview({
 
               {/* Genres */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Genres
                 </p>
                 {items.genres && items.genres.length >= 1 ? (
@@ -635,7 +937,7 @@ function Overview({
 
               {/* External site */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Track on
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -674,7 +976,7 @@ function Overview({
 
               {/* Tags */}
               <div>
-                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-foreground/35 uppercase">
+                <p className="mb-1.5 text-[10px] font-medium tracking-widest text-muted-foreground/50 uppercase">
                   Tags
                 </p>
                 {items.tags && items.tags.length >= 1 ? (
@@ -706,7 +1008,7 @@ function Overview({
                   <Button
                     variant="ghost"
                     onClick={() => setTagExpanded(!tagExpanded)}
-                    className="mt-2 text-[10px] font-medium tracking-widest text-foreground/40 uppercase transition p-0 size-fit"
+                    className="mt-2 text-[10px] font-medium tracking-widest text-muted-foreground/55 uppercase transition p-0 size-fit"
                   >
                     {tagExpanded
                       ? "Show less"
@@ -872,6 +1174,9 @@ export function Characters({
 }: Omit<React.ComponentPropsWithoutRef<"div">, "children"> & ICharactersProps) {
   return (
     <div className={cn("space-y-6", className)} {...props}>
+      <h2 className="text-2xl font-bold text-foreground tracking-tight">
+        {"Main Cast & Supporting"}
+      </h2>
       {items.length >= 1 ? (
         <Carousel opts={{ align: "center", dragFree: true }} className="w-full">
           <CarouselContent className="min-w-0">
@@ -927,12 +1232,12 @@ export function AnimeInfoBannerSkeleton({
 }: React.ComponentProps<"section">) {
   return (
     <section className={cn("w-full", className)} {...props}>
-      <div className="relative min-h-[240px] md:min-h-[300px] lg:min-h-[360px] flex items-end">
+      <div className="relative h-[550px] sm:h-[500px] flex items-end">
         {/* Banner Background */}
         <Skeleton className="absolute inset-0 z-10" />
         <div className="absolute inset-0 z-11 bg-linear-to-t from-background from-20% via-background/80 via-60% to-transparent" />
 
-        <div className="relativ pointer-events-auto flex w-full flex-col items-center justify-center gap-6 px-4 pt-16 md:pd-24 md:px-10 xl:px-14 max-w-[1600px] z-20">
+        <div className="relativ pointer-events-auto flex w-full flex-col items-center justify-center gap-6 px-4 pt-16 md:pt-24 md:px-10 xl:px-14 max-w-[1600px] z-20">
           <div className="flex w-full flex-col md:flex-row items-center gap-3 pt-4 md:pt-8 md:gap-5">
             {/* Cover Image */}
             <Skeleton className="h-[175px] w-[125px] shrink-0 rounded-xl md:h-[256px] md:w-[180px]" />
@@ -1033,8 +1338,8 @@ export function AnimeInfoTabsSkeleton({
         </div>
 
         {/* Sidebar */}
-        <div className="flex flex-col space-y-3 lg:col-span-4">
-          <div className="p-3 lg:p-4 rounded-lg border bg-white/3 space-y-4">
+        <div className="flex flex-col space-y-3 lg:col-span-4 h-full">
+          <div className="p-3 lg:p-4 rounded-lg border bg-white/3 space-y-4 h-full">
             {/* Studios */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
