@@ -1229,7 +1229,7 @@ export function Characters({
 export function AnimeInfoBannerSkeleton({
   className,
   ...props
-}: React.ComponentProps<"section">) {
+}: React.ComponentProps<"div">) {
   return (
     <section>
       <div className={cn("h-[550px] sm:h-[500px]", className)} {...props}>
@@ -1247,7 +1247,6 @@ export function AnimeInfoBannerSkeleton({
           >
             {/* Cover Image Skeleton */}
             <Skeleton className="h-[245px] w-[170px] shrink-0 rounded-xl sm:h-[270px] sm:w-[180px] md:h-[300px] md:w-[200px]" />
-
             {/* Info Section */}
             <div className="flex max-w-[95%] flex-col px-4 sm:max-w-[400px] sm:self-center sm:px-0 md:max-w-[500px] xl:max-w-[700px]">
               {/* Stats */}
