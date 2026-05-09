@@ -18,6 +18,7 @@ import {
   AnimeCardsEmpty,
 } from "@/components/custom/anime-carousel";
 import { Footer } from "@/components/custom/footer";
+import { SourceApi } from "@/lib/api";
 
 // const raw = await anilistRequest(animeInfo, { id: 180745 });
 // const mapped = raw.Media.characters.edges.map((character) => {
@@ -137,21 +138,17 @@ export async function generateMetadata({
     160,
   );
 
-  const search = new URLSearchParams();
-  if (animeInfo.season) search.set("season", capitalizeFirst(animeInfo.season));
-  if (animeInfo.year) search.set("year", animeInfo.year);
-  if (animeInfo.type) search.set("mediaType", animeInfo.type);
-  if (title) search.set("title", title);
-  if (animeInfo.studios?.length >= 1)
-    search.set("studio", animeInfo.studios.join(", "));
-  if (animeInfo.genres?.length >= 1)
-    search.set("genre", animeInfo.genres.join(", "));
-  if (animeInfo.image.extraLarge || animeInfo.image.large)
-    search.set("imageUrl", animeInfo.image.extraLarge ?? animeInfo.image.large);
-  // if (animeInfo.bannerImage) search.set("backgroundUrl", animeInfo.bannerImage);
-  if (animeInfo.episodes) search.set("episodes", animeInfo.episodes);
-
-  const image = `https://source.meowani.site/assets/card?${search}`;
+  const api = new SourceApi().Assets;
+  const card = api.card({
+    title,
+    season: animeInfo.season ? capitalizeFirst(animeInfo.season) : undefined,
+    year: animeInfo.year,
+    type: animeInfo.type,
+    studios: animeInfo.studios,
+    genres: animeInfo.genres,
+    cover: animeInfo.image.extraLarge ?? animeInfo.image.large,
+    episodes: animeInfo.episodes,
+  });
 
   return {
     title: `${title}`,
@@ -160,7 +157,7 @@ export async function generateMetadata({
       siteName: "MeowAni",
       title: `${title} | MeowAni`,
       description,
-      images: [image],
+      images: [card],
       type: "video.tv_show",
       url: `https://meowani.site/library/anime/${animeId}`,
     },
@@ -169,7 +166,7 @@ export async function generateMetadata({
       title: `${title} | MeowAni`,
       site: "MeowAni",
       description,
-      images: [image],
+      images: [card],
     },
     alternates: {
       canonical: `https://meowani.site/library/anime/${animeId}`,
@@ -198,6 +195,7 @@ const mapAdvanced = (data: any) => {
     score: data.averageScore,
     year: data.seasonYear,
     studios: data.studios?.nodes?.map((studio: Studio) => studio.name),
+    episodes: data.episodes ?? data.nextAiringEpisode?.episode,
     nextEpisode: {
       airing: data.nextAiringEpisode?.airingAt,
       episode: data.nextAiringEpisode?.episode,

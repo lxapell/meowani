@@ -271,7 +271,7 @@ export function AnimeInfoBanner({
                     {data.episodes && data.episodes >= 1 ? (
                       <Button className="md:h-10 md:px-3" asChild>
                         <Link
-                          href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/1`}
+                          href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/episode-1`}
                         >
                           <PlayIcon fill="currentColor" />
                           Watch Now
@@ -425,9 +425,13 @@ export function AnimeInfoBannerV2({
               {/* Stats */}
               <div className="hidden sm:flex w-max items-center justify-start flex-wrap gap-1.5 md:gap-3">
                 {/* Episode */}
-                {data.episodes && (
+                {data.episodes && data.episodes >= 1 ? (
                   <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
                     {data.episodes} EPS
+                  </Badge>
+                ) : (
+                  <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
+                    {"N/A EPS"}
                   </Badge>
                 )}
 
@@ -502,13 +506,21 @@ export function AnimeInfoBannerV2({
               )}
 
               <div className="mt-2 mb-2.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
-                {data.score && (
+                {data.score ? (
                   <Badge
                     variant="outline"
                     className="size-auto px-2.5 py-1 text-[0.8rem] font-semibold border-cyan-500/20 bg-cyan-500/10 text-cyan-500"
                   >
                     <StarIcon fill="currentColor" />
                     {data.score / 10}
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="size-auto px-2.5 py-1 text-[0.8rem] font-semibold border-muted-foreground/20 bg-muted-foreground/10 text-muted-foreground"
+                  >
+                    <StarIcon fill="currentColor" />
+                    {"N/A"}
                   </Badge>
                 )}
                 {data.status && (
@@ -519,12 +531,19 @@ export function AnimeInfoBannerV2({
                     {data.status}
                   </Badge>
                 )}
-                {data.episodes && (
+                {data.episodes && data.episodes >= 1 ? (
                   <Badge
                     variant="ghost"
                     className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-nowrap text-muted-foreground/60"
                   >
                     {data.episodes} Episodes
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="ghost"
+                    className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-nowrap text-muted-foreground/60"
+                  >
+                    {"N/A Episodes"}
                   </Badge>
                 )}
               </div>
@@ -1224,6 +1243,10 @@ export function Characters({
       )}
     </div>
   );
+}
+
+export function AnimeEpisodes() {
+  return <>d</>;
 }
 
 export function AnimeInfoBannerSkeleton({
