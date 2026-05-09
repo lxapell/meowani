@@ -1229,57 +1229,60 @@ export function Characters({
 export function AnimeInfoBannerSkeleton({
   className,
   ...props
-}: React.ComponentProps<"section">) {
+}: React.ComponentProps<"div">) {
   return (
-    <section className={cn("w-full", className)} {...props}>
-      <div className="relative h-[550px] sm:h-[500px] flex items-end">
-        {/* Banner Background */}
-        <Skeleton className="absolute inset-0 z-10" />
-        <div className="absolute inset-0 z-11 bg-linear-to-t from-background from-20% via-background/80 via-60% to-transparent" />
+    <section>
+      <div className={cn("h-[550px] sm:h-[500px]")} {...props}>
+        <div className="relative bottom-0 h-[350px]">
+          {/* Banner Background */}
+          <Skeleton className="absolute size-full inset-0" />
+          <div className="absolute bottom-[-2px] left-0 h-[101%] w-full bg-linear-to-t from-background from-20% via-background/80 via-60% to-transparent" />
 
-        <div className="relativ pointer-events-auto flex w-full flex-col items-center justify-center gap-6 px-4 pt-16 md:pt-24 md:px-10 xl:px-14 max-w-[1600px] z-20">
-          <div className="flex w-full flex-col md:flex-row items-center gap-3 pt-4 md:pt-8 md:gap-5">
+          <div
+            className={cn(
+              "absolute bottom-[-58%] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 sm:bottom-[-35%] sm:left-[2%] sm:translate-x-0 sm:flex-row sm:gap-6",
+              "sm:left-1.5 md:left-6 lg:left-12 xl:left-14",
+            )}
+          >
             {/* Cover Image */}
-            <Skeleton className="h-[175px] w-[125px] shrink-0 rounded-xl md:h-[256px] md:w-[180px]" />
+            <Skeleton className="h-[245px] w-[170px] shrink-0 rounded-xl sm:h-[270px] sm:w-[180px] md:h-[300px] md:w-[200px]" />
 
             {/* Info Section */}
-            <div className="flex w-full flex-col items-start justify-end gap-2 md:gap-4">
-              <div className="flex w-full flex-col gap-1 text-start md:gap-1.5 items-center md:items-start">
-                {/* Stats */}
-                <div className="hidden md:flex w-full flex-wrap gap-1.5 pt-0.5 md:gap-3 md:pt-1">
-                  <Skeleton className="h-5 w-16 rounded-full md:h-6" />
-                  <Skeleton className="h-5 w-12 rounded-full md:h-6" />
-                  <Skeleton className="h-5 w-20 rounded-full md:h-6" />
-                  <Skeleton className="hidden lg:block h-5 w-16 rounded-full md:h-6" />
-                </div>
+            <div className="flex max-w-[95%] flex-col px-4 sm:max-w-[400px] sm:self-center sm:px-0 md:max-w-[500px] xl:max-w-[700px] gap-1 sm:gap-1.5">
+              {/* Stats */}
+              <div className="hidden sm:flex w-max items-center justify-start flex-wrap gap-1.5 md:gap-3">
+                <Skeleton className="h-5 w-16 rounded-full md:h-6" />
+                <Skeleton className="h-5 w-12 rounded-full md:h-6" />
+                <Skeleton className="h-5 w-20 rounded-full md:h-6" />
+                <Skeleton className="hidden lg:block h-5 w-16 rounded-full md:h-6" />
+              </div>
 
-                {/* Romaji Title */}
-                <Skeleton className="hidden md:block h-5 w-48 md:w-64" />
+              {/* Main Title */}
+              <Skeleton className="h-[1.3rem] sm:h-[1.4rem] md:h-[1.5rem] lg:h-[1.7rem] xl:h-[1.9rem] w-64 md:h-10 md:w-96" />
 
-                {/* Main Title */}
-                <Skeleton className="h-7 w-64 md:h-10 md:w-96" />
+              {/* Romaji Title */}
+              <Skeleton className="hidden sm:block h-[0.95rem] w-48 md:w-64" />
 
-                {/* Genres */}
-                <div className="hidden md:flex flex-wrap items-center gap-2">
-                  <Skeleton className="h-7 w-16 rounded-full" />
-                  <Skeleton className="h-7 w-20 rounded-full" />
-                  <Skeleton className="h-7 w-14 rounded-full" />
-                  <Skeleton className="h-7 w-18 rounded-full" />
-                </div>
+              {/* Genres */}
+              <div className="hidden sm:flex mt-2.5 mb-2.5 flex-wrap items-center justify-start gap-2">
+                <Skeleton className="h-7 w-16 rounded-full" />
+                <Skeleton className="h-7 w-20 rounded-full" />
+                <Skeleton className="h-7 w-14 rounded-full" />
+                <Skeleton className="h-7 w-18 rounded-full" />
+              </div>
 
-                {/* Badges */}
-                <div className="flex md:hidden flex-wrap items-center justify-center gap-2">
-                  <Skeleton className="h-7 w-14 rounded-full" />
-                  <Skeleton className="h-7 w-20 rounded-full" />
-                  <Skeleton className="h-7 w-24 rounded-full" />
-                </div>
+              {/* Badges */}
+              <div className="mt-2.5 mb-2.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
+                <Skeleton className="h-7 w-14 rounded-full" />
+                <Skeleton className="h-7 w-[72px] rounded-full" />
+                <Skeleton className="h-7 w-[76px] rounded-full" />
+              </div>
 
-                {/* Actions */}
-                <div className="flex gap-2 w-fit md:w-full items-stretch">
-                  <Skeleton className="h-9 w-40 rounded-md md:h-10" />
-                  <Skeleton className="size-9 rounded-md md:size-10" />
-                  <Skeleton className="size-9 rounded-md md:size-10" />
-                </div>
+              {/* Actions */}
+              <div className="sm:justify-start gap-3 flex w-max items-center">
+                <Skeleton className="h-8 w-40 rounded-md" />
+                <Skeleton className="size-8 rounded-md" />
+                <Skeleton className="size-8 rounded-md" />
               </div>
             </div>
           </div>
