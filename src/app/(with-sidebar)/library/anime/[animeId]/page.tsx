@@ -41,6 +41,8 @@ import { SourceApi } from "@/lib/api";
 const getCachedAnime = cache(async (id: number) => {
   const anime = (await getAnimeInfo(id)) as AnimeInfoQuery;
   if (!anime?.Media) return null;
+  if (anime?.Media?.type !== "ANIME") return null;
+  if (anime?.Media?.format === "MUSIC") return null;
   return mapAdvanced(anime.Media);
 });
 
