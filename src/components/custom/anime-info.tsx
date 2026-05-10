@@ -425,13 +425,9 @@ export function AnimeInfoBannerV2({
               {/* Stats */}
               <div className="hidden sm:flex w-max items-center justify-start flex-wrap gap-1.5 md:gap-3">
                 {/* Episode */}
-                {data.episodes && data.episodes >= 1 ? (
+                {data.episodes && data.status === "FINISHED" && (
                   <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
                     {data.episodes} EPS
-                  </Badge>
-                ) : (
-                  <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
-                    {"N/A EPS"}
                   </Badge>
                 )}
 
@@ -531,19 +527,12 @@ export function AnimeInfoBannerV2({
                     {data.status}
                   </Badge>
                 )}
-                {data.episodes && data.episodes >= 1 ? (
+                {data.episodes && data.status === "FINISHED" && (
                   <Badge
                     variant="ghost"
-                    className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-nowrap text-muted-foreground/60"
+                    className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-normal text-muted-foreground/60"
                   >
                     {data.episodes} Episodes
-                  </Badge>
-                ) : (
-                  <Badge
-                    variant="ghost"
-                    className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-nowrap text-muted-foreground/60"
-                  >
-                    {"N/A Episodes"}
                   </Badge>
                 )}
               </div>
@@ -1287,7 +1276,7 @@ export function AnimeInfoBannerSkeleton({
               <Skeleton className="hidden sm:block h-[0.95rem] w-48 md:w-64" />
 
               {/* Genres */}
-              <div className="hidden sm:flex mt-2.5 mb-2.5 flex-wrap items-center justify-start gap-2">
+              <div className="hidden sm:flex mt-1.5 mb-1.5 sm:mt-1 sm:mb-1 flex-wrap items-center justify-start gap-2">
                 <Skeleton className="h-7 w-16 rounded-full" />
                 <Skeleton className="h-7 w-20 rounded-full" />
                 <Skeleton className="h-7 w-14 rounded-full" />
@@ -1295,7 +1284,7 @@ export function AnimeInfoBannerSkeleton({
               </div>
 
               {/* Badges */}
-              <div className="mt-2.5 mb-2.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
+              <div className="mt-1.5 mb-1.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
                 <Skeleton className="h-7 w-14 rounded-full" />
                 <Skeleton className="h-7 w-[72px] rounded-full" />
                 <Skeleton className="h-7 w-[76px] rounded-full" />

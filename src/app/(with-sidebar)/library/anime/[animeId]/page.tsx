@@ -12,7 +12,7 @@ import { getAnimeInfo } from "./actions";
 import { notFound } from "next/navigation";
 import { capitalizeFirst, formatYearMonth, TitleSlug } from "@/utils/formatter";
 import { AnimeInfoQuery, MediaEdge, Studio } from "@/types/anilist-types";
-import { mapStatus, mapSimple } from "@/utils/mapper";
+import { mapStatus, mapSimple, mapRelationType } from "@/utils/mapper";
 import {
   AnimeCards,
   AnimeCardsEmpty,
@@ -246,7 +246,7 @@ const mapRelations = (relations: any[]) => {
     const id = TitleSlug.fromTitle(title, node.id).slug;
 
     return {
-      relationType: relation.relationType,
+      relationType: mapRelationType(relation.relationType),
       id,
       title,
       type: node.format,
