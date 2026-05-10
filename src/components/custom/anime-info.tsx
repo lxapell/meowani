@@ -425,11 +425,13 @@ export function AnimeInfoBannerV2({
               {/* Stats */}
               <div className="hidden sm:flex w-max items-center justify-start flex-wrap gap-1.5 md:gap-3">
                 {/* Episode */}
-                {data.episodes && data.status === "FINISHED" && (
-                  <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
-                    {data.episodes} EPS
-                  </Badge>
-                )}
+                {data.episodes &&
+                  data.episodes >= 1 &&
+                  data.status === "FINISHED" && (
+                    <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
+                      {data.episodes} EPS
+                    </Badge>
+                  )}
 
                 {/* Type */}
                 {data.type && (
@@ -527,14 +529,16 @@ export function AnimeInfoBannerV2({
                     {data.status}
                   </Badge>
                 )}
-                {data.episodes && data.status === "FINISHED" && (
-                  <Badge
-                    variant="ghost"
-                    className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-normal text-muted-foreground/60"
-                  >
-                    {data.episodes} Episodes
-                  </Badge>
-                )}
+                {data.episodes &&
+                  data.episodes > 1 &&
+                  data.status === "FINISHED" && (
+                    <Badge
+                      variant="ghost"
+                      className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-normal text-muted-foreground/60"
+                    >
+                      {data.episodes} Episodes
+                    </Badge>
+                  )}
               </div>
 
               <div className="sm:justify-start gap-3 flex w-max items-center *:focus-visible:relative *:focus-visible:z-10 has-[>[data-slot=button-group]]:gap-2">
