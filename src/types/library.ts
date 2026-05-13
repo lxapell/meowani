@@ -1,4 +1,7 @@
-type MediaType = "TV" | "MOVIE" | "OVA" | "ONA" | "SPECIAL" | "MUSIC";
+import type { MediaFormat } from "@/types/anilist-types";
+
+/** Subset of MediaFormat commonly used for display */
+type DisplayMediaType = Extract<MediaFormat, "TV" | "MOVIE" | "OVA" | "ONA" | "SPECIAL" | "MUSIC">;
 
 export interface ISpotlight {
   id: string;
@@ -7,7 +10,7 @@ export interface ISpotlight {
   banner: string;
   rank: number;
   url: string;
-  type: MediaType;
+  type: DisplayMediaType;
   duration: string;
   releaseDate: string;
   quality: string;
@@ -24,7 +27,7 @@ export interface IRecentlyAdded {
   image: string;
   duration: string;
   japaneseTitle: string;
-  type: MediaType;
+  type: DisplayMediaType;
   nsfw: boolean;
   sub: number;
   dub: number;

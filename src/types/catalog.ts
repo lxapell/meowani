@@ -1,4 +1,5 @@
-import { PageInfo } from "./anilist-types";
+import type { PageInfo } from "./anilist-types";
+import type { ISimpleAnimeData } from "@/utils/mapper";
 
 export interface Normalized {
   id?: number;
@@ -24,15 +25,5 @@ export interface FilterState {
 
 export interface PageData {
   pageInfo: PageInfo;
-  media: {
-    id: string;
-    status: string;
-    image: string;
-    title: string;
-    genre: string[];
-    type: string;
-    episodes: number;
-    studios: string[];
-    color: string;
-  }[];
+  media: ISimpleAnimeData[];
 }

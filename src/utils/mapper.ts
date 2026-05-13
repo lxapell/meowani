@@ -6,39 +6,47 @@ import type {
   Media,
 } from "@/types/anilist-types";
 
-export type TStatus =
-  | "CANCELLED"
-  | "FINISHED"
-  | "HIATUS"
-  | "UPCOMING"
-  | "ONGOING"
-  | "OTHER";
+/** Normalized status values used throughout the app */
+export type NormalizedStatus =
+  | "Cancelled"
+  | "Finished"
+  | "Hiatus"
+  | "Upcoming"
+  | "Ongoing";
 
+/** Simplified anime data structure returned by mapSimple */
 export interface ISimpleAnimeData {
   rank?: number;
   description?: string;
   relationType: string | null;
-  id: string | null;
-  title: string | null;
+  id: string;
+  title: string;
   image: string | null;
   banner?: string;
   color: string | null;
   type: string | null;
-  status: TStatus | null;
-  genres: string[] | [] | null;
-  episodes: number | string | null;
-  chapters: number | string | null;
-  studios: string[] | [] | null;
+  status: NormalizedStatus | null;
+  genres: string[];
+  episodes: number | null;
+  chapters: number | null;
+  studios: string[];
 }
 
-export const mapStatus = (status: MediaStatus): TStatus => {
+export const mapStatus = (status: MediaStatus | null | undefined): NormalizedStatus | null => {
+  if (!status) return null;
   switch (status) {
     case "NOT_YET_RELEASED":
-      return "UPCOMING";
+      return "Upcoming";
     case "RELEASING":
-      return "ONGOING";
+      return "Ongoing";
+    case "CANCELLED":
+      return "Cancelled";
+    case "FINISHED":
+      return "Finished";
+    case "HIATUS":
+      return "Hiatus";
     default:
-      return status;
+      return null;
   }
 };
 
@@ -99,7 +107,7 @@ export const mapSimple = (data: any[]): ISimpleAnimeData[] =>
 
       const title =
         animeData.title?.english || animeData.title?.romaji || animeData.title;
-      const id = `${title
+      const id = `${String(title)
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "")}-${animeData.id}`;
@@ -119,18 +127,16 @@ export const mapSimple = (data: any[]): ISimpleAnimeData[] =>
         relationType: relationType || null,
         rank: index + 1,
         id,
-        title,
-        image: animeData.coverImage?.large || animeData.image,
+        title: String(title),
+        image: animeData.coverImage?.large || animeData.image || null,
         banner: animeData.bannerImage,
         type,
-        status: status ? (capitalize(status) as TStatus) : null,
-        genres: animeData.genres,
-        episodes: animeData.episodes,
-        chapters: animeData.chapters,
-        studios: animeData.studios
-          ? animeData.studios.nodes?.map((studio: Studio) => studio.name)
-          : null,
-        color: animeData.coverImage?.color || animeData.color,
+        status,
+        genres: animeData.genres ?? [],
+        episodes: typeof animeData.episodes === "number" ? animeData.episodes : null,
+        chapters: typeof animeData.chapters === "number" ? animeData.chapters : null,
+        studios: animeData.studios?.nodes?.map((studio: Studio) => studio.name) ?? [],
+        color: animeData.coverImage?.color || animeData.color || null,
         description: animeData.description,
       };
     });
