@@ -271,7 +271,7 @@ export function AnimeInfoBanner({
                     {data.episodes && data.episodes >= 1 ? (
                       <Button className="md:h-10 md:px-3" asChild>
                         <Link
-                          href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/1`}
+                          href={`/library/watch/${TitleSlug.fromTitle(data.title?.eng || data.title?.romaji || "No Title", data.id)}/episode-1`}
                         >
                           <PlayIcon fill="currentColor" />
                           Watch Now
@@ -425,11 +425,13 @@ export function AnimeInfoBannerV2({
               {/* Stats */}
               <div className="hidden sm:flex w-max items-center justify-start flex-wrap gap-1.5 md:gap-3">
                 {/* Episode */}
-                {data.episodes && (
-                  <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
-                    {data.episodes} EPS
-                  </Badge>
-                )}
+                {data.episodes &&
+                  data.episodes >= 1 &&
+                  data.status === "FINISHED" && (
+                    <Badge className="h-5 font-bold md:h-6 md:px-3.5 md:text-base">
+                      {data.episodes} EPS
+                    </Badge>
+                  )}
 
                 {/* Type */}
                 {data.type && (
@@ -502,13 +504,21 @@ export function AnimeInfoBannerV2({
               )}
 
               <div className="mt-2 mb-2.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
-                {data.score && (
+                {data.score ? (
                   <Badge
                     variant="outline"
                     className="size-auto px-2.5 py-1 text-[0.8rem] font-semibold border-cyan-500/20 bg-cyan-500/10 text-cyan-500"
                   >
                     <StarIcon fill="currentColor" />
                     {data.score / 10}
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className="size-auto px-2.5 py-1 text-[0.8rem] font-semibold border-muted-foreground/20 bg-muted-foreground/10 text-muted-foreground"
+                  >
+                    <StarIcon fill="currentColor" />
+                    {"N/A"}
                   </Badge>
                 )}
                 {data.status && (
@@ -519,14 +529,16 @@ export function AnimeInfoBannerV2({
                     {data.status}
                   </Badge>
                 )}
-                {data.episodes && (
-                  <Badge
-                    variant="ghost"
-                    className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-nowrap text-muted-foreground/60"
-                  >
-                    {data.episodes} Episodes
-                  </Badge>
-                )}
+                {data.episodes &&
+                  data.episodes > 1 &&
+                  data.status === "FINISHED" && (
+                    <Badge
+                      variant="ghost"
+                      className="size-auto px-2.5 py-1 text-[0.8rem] font-medium text-normal text-muted-foreground/60"
+                    >
+                      {data.episodes} Episodes
+                    </Badge>
+                  )}
               </div>
 
               <div className="sm:justify-start gap-3 flex w-max items-center *:focus-visible:relative *:focus-visible:z-10 has-[>[data-slot=button-group]]:gap-2">
@@ -1226,29 +1238,33 @@ export function Characters({
   );
 }
 
+export function AnimeEpisodes() {
+  return <>d</>;
+}
+
 export function AnimeInfoBannerSkeleton({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   return (
     <section>
-      <div className={cn("h-[550px] sm:h-[500px]", className)} {...props}>
-        {/* Banner Background */}
+      <div className={cn("h-[550px] sm:h-[500px]")} {...props}>
         <div className="relative bottom-0 h-[350px]">
-          <Skeleton className="absolute inset-0 z-10" />
+          {/* Banner Background */}
+          <Skeleton className="absolute size-full inset-0" />
           <div className="absolute bottom-[-2px] left-0 h-[101%] w-full bg-linear-to-t from-background from-20% via-background/80 via-60% to-transparent" />
-          
-          {/* Cover Image and Info */}
+
           <div
             className={cn(
               "absolute bottom-[-58%] left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 sm:bottom-[-35%] sm:left-[2%] sm:translate-x-0 sm:flex-row sm:gap-6",
               "sm:left-1.5 md:left-6 lg:left-12 xl:left-14",
             )}
           >
-            {/* Cover Image Skeleton */}
+            {/* Cover Image */}
             <Skeleton className="h-[245px] w-[170px] shrink-0 rounded-xl sm:h-[270px] sm:w-[180px] md:h-[300px] md:w-[200px]" />
+
             {/* Info Section */}
-            <div className="flex max-w-[95%] flex-col px-4 sm:max-w-[400px] sm:self-center sm:px-0 md:max-w-[500px] xl:max-w-[700px]">
+            <div className="flex max-w-[95%] flex-col px-4 sm:max-w-[400px] sm:self-center sm:px-0 md:max-w-[500px] xl:max-w-[700px] gap-1 sm:gap-1.5">
               {/* Stats */}
               <div className="hidden sm:flex w-max items-center justify-start flex-wrap gap-1.5 md:gap-3">
                 <Skeleton className="h-5 w-16 rounded-full md:h-6" />
@@ -1258,29 +1274,29 @@ export function AnimeInfoBannerSkeleton({
               </div>
 
               {/* Main Title */}
-              <Skeleton className="h-7 w-full md:w-96" />
+              <Skeleton className="h-[1.3rem] sm:h-[1.4rem] md:h-[1.5rem] lg:h-[1.7rem] xl:h-[1.9rem] w-64 md:h-10 md:w-96" />
 
               {/* Romaji Title */}
-              <Skeleton className="mt-1 h-5 w-48 md:w-64" />
+              <Skeleton className="hidden sm:block h-[0.95rem] w-48 md:w-64" />
 
               {/* Genres */}
-              <div className="hidden sm:flex mt-2.5 mb-2.5 flex-wrap items-center justify-start gap-2">
+              <div className="hidden sm:flex mt-1.5 mb-1.5 sm:mt-1 sm:mb-1 flex-wrap items-center justify-start gap-2">
                 <Skeleton className="h-7 w-16 rounded-full" />
                 <Skeleton className="h-7 w-20 rounded-full" />
                 <Skeleton className="h-7 w-14 rounded-full" />
                 <Skeleton className="h-7 w-18 rounded-full" />
               </div>
 
-              {/* Mobile Badges */}
-              <div className="mt-2 mb-2.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
+              {/* Badges */}
+              <div className="mt-1.5 mb-1.5 flex sm:hidden flex-wrap items-center justify-center gap-2">
                 <Skeleton className="h-7 w-14 rounded-full" />
-                <Skeleton className="h-7 w-20 rounded-full" />
-                <Skeleton className="h-7 w-24 rounded-full" />
+                <Skeleton className="h-7 w-[72px] rounded-full" />
+                <Skeleton className="h-7 w-[76px] rounded-full" />
               </div>
 
               {/* Actions */}
               <div className="sm:justify-start gap-3 flex w-max items-center">
-                <Skeleton className="h-8 w-24 rounded-md" />
+                <Skeleton className="h-8 w-40 rounded-md" />
                 <Skeleton className="size-8 rounded-md" />
                 <Skeleton className="size-8 rounded-md" />
               </div>
